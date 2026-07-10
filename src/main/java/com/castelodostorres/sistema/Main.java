@@ -2,6 +2,7 @@ package com.castelodostorres.sistema;
 
 
 
+import com.castelodostorres.sistema.modelo.SentidoCatraca;
 import javafx.application.Application;
 import javafx.scene.control.TextField;
 import javafx.scene.control.PasswordField;
@@ -13,6 +14,7 @@ import javafx.stage.Stage;
 import javafx.scene.Scene;
 import javafx.scene.layout.Pane;
 import com.castelodostorres.sistema.modelo.ConfiguracaoConexao;
+import com.castelodostorres.sistema.servico.ServicoControlId;
 
 
 public class Main extends Application {
@@ -31,17 +33,22 @@ public class Main extends Application {
         PasswordField campoSenha = new PasswordField();
 
         Button botaoConectar = new Button("Conectar");
+        Button botaoHorario = new Button("Liberar Sentido Horário");
+        Button botaoAntiHorario = new Button("Liberar Sentido Anti-Horário");
 
         GridPane formulario = new GridPane();
         formulario.setHgap(10);
         formulario.setVgap(8);
         formulario.setPadding(new Insets(15));
+        formulario.addRow(5, botaoHorario, botaoAntiHorario);
 
         formulario.addRow(0, new Label("IP da catraca:"), campoIp);
         formulario.addRow(1, new Label("Porta:"), campoPorta);
         formulario.addRow(2, new Label("Usuário:"), campoUsuario);
         formulario.addRow(3, new Label("Senha:"), campoSenha);
         formulario.addRow(4, botaoConectar);
+
+        ServicoControlId servico = new ServicoControlId();
 
         botaoConectar.setOnAction(evento -> {
             String ip = campoIp.getText();
@@ -57,6 +64,13 @@ public class Main extends Application {
             }
 
             ConfiguracaoConexao config = new ConfiguracaoConexao(ip, porta, usuario, senha);
+
+            try {
+                servico.login(config.getIp(), config.getPorta(), config.getUsuario(), config.getSenha());
+            } catch (Exception e) {
+                System.out.println("Erro ao conectar: " + e.getMessage());
+            }
+
             System.out.println("Configuração criada: " + config.getIp() + ":" + config.getPorta());
 
 
@@ -64,6 +78,22 @@ public class Main extends Application {
             System.out.println("Porta: " + porta);
             System.out.println("USUARIO " + usuario);
             System.out.println("SENHA " + senha);
+        });
+
+        botaoHorario.setOnAction(evento -> { // EVENTO do botão horário
+            try {
+                servico.liberarCatraca(SentidoCatraca.HORARIO);
+            } catch (Exception e) {
+                System.out.println("Erro ao liberar (horário): " + e.getMessage());
+            }
+        });
+
+        botaoAntiHorario.setOnAction(evento -> { // EVENTO do botão anti-horário
+            try {
+                servico.liberarCatraca(SentidoCatraca.ANTI_HORARIO);
+            } catch (Exception e) {
+                System.out.println("Erro ao liberar (anti-horário): " + e.getMessage());
+            }
         });
 
 
