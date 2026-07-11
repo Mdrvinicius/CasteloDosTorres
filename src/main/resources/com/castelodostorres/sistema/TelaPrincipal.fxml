@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.VBox?>
+
+
+<?import javafx.scene.control.TextArea?>
+<?import javafx.scene.control.ComboBox?>
+<BorderPane xmlns="http://javafx.com/javafx"
+            fx:controller="com.castelodostorres.sistema.controlador.ControladorTelaPrincipal"
+            xmlns:fx="http://javafx.com/fxml">
+
+    <top>
+        <VBox spacing="10">
+            <padding>
+                <Insets top="15" right="15" bottom="10" left="15" />
+            </padding>
+            <Label text="Castelo dos Torres - Recepção" style="-fx-font-size: 18px; -fx-font-weight: bold;" />
+            <Button text="Liberar Catraca (Avulso)" />
+        </VBox>
+    </top>
+
+    <center>
+        <HBox spacing="15">
+            <padding>
+                <Insets top="10" right="15" bottom="15" left="15" />
+            </padding>
+
+            <VBox spacing="10" prefWidth="350" fx:id="painelNovaVisita">
+                <Label text="Novo Grupo / Visita" style="-fx-font-size: 14px; -fx-font-weight: bold;" />
+
+                <Label text="Guia:" />
+                <ComboBox fx:id="comboGuia" prefWidth="300" />
+
+                <Label text="Recepcionista:" />
+                <ComboBox fx:id="comboRecepcionista" prefWidth="300" />
+
+                <HBox spacing="10" alignment="CENTER_LEFT">
+                    <Label text="Inteiras:" prefWidth="80" />
+                    <Button text="-" onAction="#decrementarInteira" />
+                    <Label fx:id="labelInteira" text="0" prefWidth="30" alignment="CENTER" />
+                    <Button text="+" onAction="#incrementarInteira" />
+                </HBox>
+
+                <HBox spacing="10" alignment="CENTER_LEFT">
+                    <Label text="Meias:" prefWidth="80" />
+                    <Button text="-" onAction="#decrementarMeia" />
+                    <Label fx:id="labelMeia" text="0" prefWidth="30" alignment="CENTER" />
+                    <Button text="+" onAction="#incrementarMeia" />
+                </HBox>
+
+                <HBox spacing="10" alignment="CENTER_LEFT">
+                    <Label text="Não Pagantes:" prefWidth="80" />
+                    <Button text="-" onAction="#decrementarNaoPagante" />
+                    <Label fx:id="labelNaoPagante" text="0" prefWidth="30" alignment="CENTER" />
+                    <Button text="+" onAction="#incrementarNaoPagante" />
+                </HBox>
+
+                <Label text="Observações sobre a visita:" />
+                <TextArea fx:id="campoObservacoes" prefRowCount="3" wrapText="true" />
+
+                <Label fx:id="labelValorTotal" text="Valor Total: R$ 0,00" style="-fx-font-size: 14px; -fx-font-weight: bold;" />
+
+                <Button text="Iniciar Visita" onAction="#iniciarVisita" />
+            </VBox>
+
+            <VBox spacing="10" prefWidth="350">
+                <Label text="Visita Atual" style="-fx-font-size: 14px; -fx-font-weight: bold;" />
+            </VBox>
+
+        </HBox>
+    </center>
+
+</BorderPane>

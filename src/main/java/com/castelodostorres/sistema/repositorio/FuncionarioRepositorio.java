@@ -8,6 +8,8 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.ArrayList;
+import java.util.List;
 
 public class FuncionarioRepositorio {
 
@@ -32,4 +34,31 @@ public class FuncionarioRepositorio {
             }
         }
     }
+    public List<Funcionario> listarPorPapel(String papel) throws SQLException { // MÉTODO: busca funcionários de um papel específico
+        String sql = "SELECT id, nome, papel, tipo_remuneracao, valor_remuneracao FROM funcionario WHERE papel = ?";
+        List<Funcionario> lista = new ArrayList<>();
+
+        Connection conexao = GerenciadorConexao.getConexao();
+
+        try (PreparedStatement comando = conexao.prepareStatement(sql)) {
+            comando.setString(1, papel);
+
+            try (ResultSet resultado = comando.executeQuery()) {
+                while (resultado.next()) { // percorre TODAS as linhas encontradas, uma por vez
+                    Funcionario funcionario = new Funcionario();
+                    funcionario.setId(resultado.getInt("id"));
+                    funcionario.setNome(resultado.getString("nome"));
+                    funcionario.setPapel(resultado.getString("papel"));
+                    funcionario.setTipoRemuneracao(resultado.getString("tipo_remuneracao"));
+                    funcionario.setValorRemuneracao(resultado.getDouble("valor_remuneracao"));
+                    lista.add(funcionario);
+                }
+            }
+        }
+
+        return lista;
+    }
+
+
+
 }

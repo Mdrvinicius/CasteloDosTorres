@@ -25,12 +25,12 @@ public class Main extends Application {
 
     @Override
     public void start(Stage stage) throws IOException { // "throws IOException": carregar arquivo pode falhar
-        FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/castelodostorres/sistema/CadastroFuncionario.fxml"));
+        FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/castelodostorres/sistema/TelaPrincipal.fxml"));
         Parent raiz = loader.load();
 
         stage.setTitle("Castelo dos Torres - Cadastro de Funcionário");
 
-        Scene scene = new Scene(raiz, 400, 300);
+        Scene scene = new Scene(raiz, 750, 400);
         stage.setScene(scene);
         stage.show();
     }
