@@ -17,14 +17,21 @@ public class ServicoControlId {
 
     private final HttpClient httpClient;
     private String sessionToken;
-    private String baseUrl; // ATRIBUTO NOVO: guarda "http://IP:porta" após o login, pra reusar depois
+    private String baseUrl;// ATRIBUTO NOVO: guarda "http://IP:porta" após o login, pra reusar depois
+    private String usuario;
+    private String senha;
+
 
     public ServicoControlId() {
         this.httpClient = HttpClient.newHttpClient();
     }
-
-    public void login(String ip, int porta, String usuario, String senha) throws Exception {
+    public void configurar(String ip, int porta, String usuario, String senha) { // MÉTODO: recebe os dados de conexão do Controller
         this.baseUrl = "http://" + ip + ":" + porta;
+        this.usuario = usuario;
+        this.senha = senha;
+    }
+
+    public void login() throws Exception { // MÉTODO: agora sem parâmetros, usa os dados já guardados por configurar()
         String url = baseUrl + "/login.fcgi";
 
         RequisicaoLogin requisicaoLogin = new RequisicaoLogin(usuario, senha);
@@ -37,40 +44,41 @@ public class ServicoControlId {
                 .build();
 
         HttpResponse<String> resposta = httpClient.send(requisicao, HttpResponse.BodyHandlers.ofString());
-
         RespostaLogin respostaLogin = ProvedorMapeadorJson.get().readValue(resposta.body(), RespostaLogin.class);
 
-        if (respostaLogin.hasError()) {                     // se a catraca devolveu um campo "error" preenchido
+        if (respostaLogin.hasError()) {
             throw new Exception("Erro no login: " + respostaLogin.getError());
         }
-
-        if (!respostaLogin.hasSession()) {                  // se não veio erro, mas também não veio sessão (caso estranho)
+        if (!respostaLogin.hasSession()) {
             throw new Exception("Login sem token de sessão na resposta.");
         }
 
-        this.sessionToken = respostaLogin.getSession();     // guarda o token no ATRIBUTO da classe, pra usar depois
-        System.out.println("Login OK. Sessão: " + sessionToken);
-
-
-        System.out.println("Status: " + resposta.statusCode());
-        System.out.println("Corpo: " + resposta.body());
+        this.sessionToken = respostaLogin.getSession();
     }
 
-    public void liberarCatraca(SentidoCatraca sentido) throws Exception { // MÉTODO: recebe o enum, não uma String solta
-        if (sessionToken == null) { // usa o ATRIBUTO sessionToken que já existe na classe, preenchido pelo login()
-            throw new Exception("Nenhuma sessão ativa. Faça login antes de liberar a catraca.");
+    public void liberarCatraca(SentidoCatraca sentido) throws Exception { // MÉTODO público: com retry automático
+        if (sessionToken == null) { // se nunca logou ainda, loga primeiro
+            login();
         }
 
+        int statusCode = enviarLiberacao(sentido); // primeira tentativa
+
+        if (statusCode == 401) { // 401 = não autorizado = token expirou
+            login();                        // reloga
+            statusCode = enviarLiberacao(sentido); // tenta de novo
+        }
+
+        if (statusCode != 200) { // se mesmo após relogar não deu 200, é erro real
+            throw new Exception("Falha ao liberar catraca. Código: " + statusCode);
+        }
+    }
+
+    private int enviarLiberacao(SentidoCatraca sentido) throws Exception { // MÉTODO privado: só envia o comando e devolve o status
         ItemAcao item = new ItemAcao("catra", "allow=" + sentido.getValorApi());
-        // ^ monta o item usando o valor exato da API que está guardado no enum
-
         RequisicaoExecutarAcoes requisicaoBody = new RequisicaoExecutarAcoes(List.of(item));
-        // ^ List.of(item) cria uma lista pronta contendo só esse 1 item
-
         String corpoJson = ProvedorMapeadorJson.get().writeValueAsString(requisicaoBody);
 
         String url = baseUrl + "/execute_actions.fcgi?session=" + sessionToken;
-        // ^ repare: aqui o token vai NA URL, como parâmetro "?session=...", não no corpo JSON
 
         HttpRequest requisicao = HttpRequest.newBuilder()
                 .uri(URI.create(url))
@@ -79,9 +87,7 @@ public class ServicoControlId {
                 .build();
 
         HttpResponse<String> resposta = httpClient.send(requisicao, HttpResponse.BodyHandlers.ofString());
-
-        System.out.println("Status liberação (" + sentido.getRotulo() + "): " + resposta.statusCode());
-        System.out.println("Corpo: " + resposta.body());
+        return resposta.statusCode();
     }
 
 }

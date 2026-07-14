@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.PasswordField?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.layout.GridPane?>
+
+<GridPane xmlns="http://javafx.com/javafx"
+          xmlns:fx="http://javafx.com/fxml"
+          fx:controller="com.castelodostorres.sistema.controlador.ControladorTelaConfiguracao"
+          hgap="10" vgap="8">
+
+    <padding>
+        <Insets top="15" right="15" bottom="15" left="15" />
+    </padding>
+
+    <Label text="IP da catraca:" GridPane.rowIndex="0" GridPane.columnIndex="0" />
+    <TextField fx:id="campoIp" GridPane.rowIndex="0" GridPane.columnIndex="1" />
+
+    <Label text="Porta:" GridPane.rowIndex="1" GridPane.columnIndex="0" />
+    <TextField fx:id="campoPorta" GridPane.rowIndex="1" GridPane.columnIndex="1" />
+
+    <Label text="Usuário:" GridPane.rowIndex="2" GridPane.columnIndex="0" />
+    <TextField fx:id="campoUsuario" GridPane.rowIndex="2" GridPane.columnIndex="1" />
+
+    <Label text="Senha:" GridPane.rowIndex="3" GridPane.columnIndex="0" />
+    <PasswordField fx:id="campoSenha" GridPane.rowIndex="3" GridPane.columnIndex="1" />
+
+    <Label text="Valor Inteira (R$):" GridPane.rowIndex="4" GridPane.columnIndex="0" />
+    <TextField fx:id="campoValorInteira" GridPane.rowIndex="4" GridPane.columnIndex="1" />
+
+    <Label text="Valor Meia (R$):" GridPane.rowIndex="5" GridPane.columnIndex="0" />
+    <TextField fx:id="campoValorMeia" GridPane.rowIndex="5" GridPane.columnIndex="1" />
+
+    <Button text="Salvar Configuração" onAction="#salvar" GridPane.rowIndex="6" GridPane.columnIndex="1" />
+
+</GridPane>

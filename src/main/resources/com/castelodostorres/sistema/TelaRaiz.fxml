@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.layout.VBox?>
+
+<BorderPane xmlns="http://javafx.com.javafx"
+            xmlns:fx="http://javafx.com.javafx"
+            fx:controller="com.castelodostorres.sistema.controlador.ControladorTelaRaiz"
+            fx:id="painelRaiz">
+
+    <left>
+        <VBox spacing="8" style="-fx-background-color: #1e2a3a;" prefWidth="180">
+            <padding>
+                <Insets top="20" right="10" bottom="20" left="10" />
+            </padding>
+
+            <Label text="CASTELO DOS TORRES" style="-fx-text-fill: white; -fx-font-size: 14px; -fx-font-weight: bold;" />
+
+            <Button text="Tela Principal" onAction="#abrirTelaPrincipal" prefWidth="160" />
+            <Button text="Visitas" onAction="#abrirVisitas" prefWidth="160" />
+            <Button text="Relatórios" onAction="#abrirRelatorios" prefWidth="160" />
+            <Button text="Funcionários" onAction="#abrirFuncionarios" prefWidth="160" />
+            <Button text="Configuração" onAction="#abrirConfiguracao" prefWidth="160" />
+
+        </VBox>
+    </left>
+
+    <center>
+        <Label text="Selecione uma opção no menu." />
+    </center>
+
+</BorderPane>
+
+

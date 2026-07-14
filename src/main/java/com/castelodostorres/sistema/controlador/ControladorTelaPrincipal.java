@@ -1,7 +1,17 @@
 package com.castelodostorres.sistema.controlador;
 
+import com.castelodostorres.sistema.modelo.SentidoCatraca;
+import com.castelodostorres.sistema.modelo.Visita;
+import com.castelodostorres.sistema.repositorio.VisitaRepositorio;
+import java.time.LocalDateTime;
+
+
+import com.castelodostorres.sistema.modelo.Configuracao;
 import com.castelodostorres.sistema.modelo.Funcionario;
+import com.castelodostorres.sistema.repositorio.ConfiguracaoRepositorio;
 import com.castelodostorres.sistema.repositorio.FuncionarioRepositorio;
+import com.castelodostorres.sistema.servico.ServicoControlId;
+import com.castelodostorres.sistema.modelo.SentidoCatraca;
 import javafx.collections.FXCollections;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
@@ -27,12 +37,16 @@ public class ControladorTelaPrincipal implements Initializable {
     private int quantidadeMeia = 0;
     private int quantidadeNaoPagante = 0;
 
-    private final double valorInteira = 30.00; // ATRIBUTO: por enquanto fixo, depois vem da tabela configuracao
-    private final double valorMeia = 15.00;
+    private double valorInteira; // ATRIBUTO: por enquanto fixo, depois vem da tabela configuracao
+    private double valorMeia ;
+
+    private final ServicoControlId servicoControlId = new ServicoControlId();
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
         carregarCombos();
+        carregarValores();
+        configurarCatraca();
     }
 
     private void carregarCombos() { // MÉTODO: busca no banco e popula os 2 combos
@@ -52,6 +66,64 @@ public class ControladorTelaPrincipal implements Initializable {
             comboRecepcionista.getSelectionModel().selectFirst(); // já inicia com "Nenhuma" selecionada
         } catch (SQLException e) {
             System.out.println("Erro ao carregar funcionários: " + e.getMessage());
+        }
+    }
+
+    private void carregarValores(){
+        ConfiguracaoRepositorio repositorio = new ConfiguracaoRepositorio();
+
+        try {
+            Configuracao configuracao = repositorio.buscar();
+            if (configuracao != null) {
+                valorInteira = configuracao.getValorInteira();
+                valorMeia = configuracao.getValorMeia();
+            } else {
+                valorInteira = 30.00;
+                valorMeia = 15.00;
+            }
+        } catch (SQLException e) {
+            System.out.println("Erro ao carregar valores: " + e.getMessage());
+            valorInteira = 30.00;
+            valorMeia = 15.00;
+        }
+        atualizarTela();
+    }
+
+    private void configurarCatraca() { // MÉTODO: busca os dados de conexão no banco e abastece o ServicoControlId
+        ConfiguracaoRepositorio repositorio = new ConfiguracaoRepositorio();
+        try {
+            Configuracao configuracao = repositorio.buscar();
+            if (configuracao != null && configuracao.getIpCatraca() != null) {
+                servicoControlId.configurar(
+                        configuracao.getIpCatraca(),
+                        configuracao.getPortaCatraca(),
+                        configuracao.getUsuarioCatraca(),
+                        configuracao.getSenhaCatraca()
+                );
+            } else {
+                System.out.println("Catraca não configurada. Vá em Configuração para definir IP/porta/usuário/senha.");
+            }
+        } catch (SQLException e) {
+            System.out.println("Erro ao carregar configuração da catraca: " + e.getMessage());
+        }
+    }
+
+    @FXML
+    public void liberarEntrada() { // MÉTODO: botão "Liberar Entrada" (sentido horário)
+        liberar(SentidoCatraca.HORARIO, "entrada");
+    }
+
+    @FXML
+    public void liberarSaida() { // MÉTODO: botão "Liberar Saída" (sentido anti-horário)
+        liberar(SentidoCatraca.ANTI_HORARIO, "saída");
+    }
+
+    private void liberar(SentidoCatraca sentido, String descricao) { // MÉTODO privado: lógica comum aos dois botões
+        try {
+            servicoControlId.liberarCatraca(sentido);
+            System.out.println("Catraca liberada para " + descricao + ".");
+        } catch (Exception e) {
+            System.out.println("Erro ao liberar " + descricao + ": " + e.getMessage());
         }
     }
 
@@ -87,9 +159,60 @@ public class ControladorTelaPrincipal implements Initializable {
 
     @FXML
     public void iniciarVisita() {
-        System.out.println("Guia: " + comboGuia.getValue());
-        System.out.println("Recepcionista: " + comboRecepcionista.getValue());
-        System.out.println("Inteiras: " + quantidadeInteira + ", Meias: " + quantidadeMeia + ", Não pagantes: " + quantidadeNaoPagante);
-        System.out.println("Observações: " + campoObservacoes.getText());
+        Funcionario guia = comboGuia.getValue();
+        Funcionario recepcionista = comboRecepcionista.getValue();
+
+        if (guia == null) { // validação: guia é obrigatório
+            System.out.println("Selecione uma guia para iniciar a visita.");
+            return;
+        }
+
+        if (quantidadeInteira == 0 && quantidadeMeia == 0 && quantidadeNaoPagante == 0) { // validação: precisa de pelo menos 1 pessoa
+            System.out.println("Adicione pelo menos uma pessoa à visita.");
+            return;
+        }
+
+        Visita visita = new Visita();
+
+        visita.setGuiaId(guia.getId());
+        visita.setGuiaTipoRemuneracao(guia.getTipoRemuneracao());
+        visita.setGuiaValorRemuneracao(guia.getValorRemuneracao());
+
+        if (recepcionista != null && recepcionista.getId() != null) { // se tem recepcionista de verdade (não é "Nenhuma")
+            visita.setRecepcionistaId(recepcionista.getId());
+            visita.setRecepcionistaTipoRemuneracao(recepcionista.getTipoRemuneracao());
+            visita.setRecepcionistaValorRemuneracao(recepcionista.getValorRemuneracao());
+        }
+        // se for "Nenhuma", não setamos nada -- os campos ficam null por padrão, como decidimos
+
+        visita.setQuantidadeInteira(quantidadeInteira);
+        visita.setQuantidadeMeia(quantidadeMeia);
+        visita.setQuantidadeNaoPagante(quantidadeNaoPagante);
+
+        visita.setValorUnitarioInteira(valorInteira);
+        visita.setValorUnitarioMeia(valorMeia);
+        visita.setValorTotal((quantidadeInteira * valorInteira) + (quantidadeMeia * valorMeia));
+
+        visita.setObservacoes(campoObservacoes.getText());
+        visita.setDataHoraInicio(LocalDateTime.now().toString());
+        visita.setStatus("ATIVA");
+
+        VisitaRepositorio repositorio = new VisitaRepositorio();
+        try {
+            repositorio.salvar(visita);
+            System.out.println("Visita iniciada e salva! ID: " + visita.getId());
+            limparFormulario();
+        } catch (SQLException e) {
+            System.out.println("Erro ao salvar visita: " + e.getMessage());
+        }
+    }
+    private void limparFormulario() { // MÉTODO: zera a tela após salvar uma visita
+        quantidadeInteira = 0;
+        quantidadeMeia = 0;
+        quantidadeNaoPagante = 0;
+        comboGuia.getSelectionModel().clearSelection();
+        comboRecepcionista.getSelectionModel().selectFirst(); // volta pra "Nenhuma"
+        campoObservacoes.clear();
+        atualizarTela();
     }
 }
