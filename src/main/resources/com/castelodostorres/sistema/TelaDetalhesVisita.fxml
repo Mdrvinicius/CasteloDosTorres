@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.layout.VBox?>
+
+<?import javafx.scene.layout.HBox?>
+<VBox xmlns="http://javafx.com/javafx"
+      xmlns:fx="http://javafx.com/fxml"
+      fx:controller="com.castelodostorres.sistema.controlador.ControladorTelaDetalhesVisita"
+      spacing="10">
+
+    <padding>
+        <Insets top="15" right="15" bottom="15" left="15" />
+    </padding>
+
+    <Button text="← Voltar" onAction="#voltar" />
+
+    <Label text="Detalhes da Visita" style="-fx-font-size: 18px; -fx-font-weight: bold;" />
+
+    <Label fx:id="labelGuia" text="Guia: -" />
+    <Label fx:id="labelRecepcionista" text="Recepcionista: -" />
+    <Label fx:id="labelDataHora" text="Data/Hora: -" />
+    <Label fx:id="labelInteiras" text="Inteiras: -" />
+    <Label fx:id="labelMeias" text="Meias: -" />
+    <Label fx:id="labelNaoPagantes" text="Não Pagantes: -" />
+    <Label fx:id="labelValorTotal" text="Valor Total: -" />
+    <Label fx:id="labelReembolso" text="Reembolsado: -" />
+    <Label fx:id="labelValorLiquido" text="Valor Líquido: -" style="-fx-font-weight: bold;" />
+    <Label fx:id="labelStatus" text="Status: -" />
+    <Label fx:id="labelObservacoes" text="Observações: -" wrapText="true" />
+
+    <HBox spacing="10">
+        <Button fx:id="botaoCancelar" text="Cancelar Visita" onAction="#cancelarVisita" />
+        <Button fx:id="botaoReembolsar" text="Reembolsar Valor" onAction="#reembolsar" />
+    </HBox>
+
+</VBox>

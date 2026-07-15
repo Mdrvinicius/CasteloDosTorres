@@ -23,8 +23,39 @@ public class Visita {
     private String dataHoraInicio;                   // ATRIBUTO: quando a visita começou
     private String status;                           // ATRIBUTO: "ATIVA" ou "CANCELADA"
 
+    private String nomeGuia; // ATRIBUTO: nome da guia, vindo do JOIN (não é coluna da tabela visita, só pra exibição)
+
+    private double valorReembolsado;   // ATRIBUTO: quanto foi devolvido (0 se não houve reembolso)
+    private String motivoReembolso;    // ATRIBUTO: justificativa do reembolso (null se não houve)
+    private double valorDinheiro;      // ATRIBUTO: parte do total paga em dinheiro
+    private double valorPix;           // ATRIBUTO: parte paga em pix
+    private double valorDebito;        // ATRIBUTO: parte paga em débito
+
     public Visita() { // CONSTRUTOR vazio
     }
+
+    public double getValorReembolsado() { return valorReembolsado; }
+    public void setValorReembolsado(double valorReembolsado) { this.valorReembolsado = valorReembolsado; }
+
+    public String getMotivoReembolso() { return motivoReembolso; }
+    public void setMotivoReembolso(String motivoReembolso) { this.motivoReembolso = motivoReembolso; }
+
+    public double getValorDinheiro() { return valorDinheiro; }
+    public void setValorDinheiro(double valorDinheiro) { this.valorDinheiro = valorDinheiro; }
+
+    public double getValorPix() { return valorPix; }
+    public void setValorPix(double valorPix) { this.valorPix = valorPix; }
+
+    public double getValorDebito() { return valorDebito; }
+    public void setValorDebito(double valorDebito) { this.valorDebito = valorDebito; }
+
+    public String getNomeGuia() { return nomeGuia; }
+    public void setNomeGuia(String nomeGuia) { this.nomeGuia = nomeGuia; }
+
+    private String nomeRecepcionista; // ATRIBUTO: nome da recepcionista via JOIN (null se "Nenhuma"), só pra exibição
+
+    public String getNomeRecepcionista() { return nomeRecepcionista; }
+    public void setNomeRecepcionista(String nomeRecepcionista) { this.nomeRecepcionista = nomeRecepcionista; }
 
     public Integer getId() { return id; }
     public void setId(Integer id) { this.id = id; }

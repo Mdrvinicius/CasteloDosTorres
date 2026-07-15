@@ -16,6 +16,7 @@ public class MigradorDeSchema {
 
         aplicarSeNecessario(conexao, versaoAtual, 1, MigradorDeSchema::migracaoVersao1);
         aplicarSeNecessario(conexao, versaoAtual, 2, MigradorDeSchema::migracaoVersao2);
+        aplicarSeNecessario(conexao, versaoAtual, 3, MigradorDeSchema::migracaoVersao3);
         // no futuro, cada mudança nova de schema vira mais uma linha aqui, com número seguinte (3, 4, 5...)
     }
 
@@ -126,6 +127,16 @@ public class MigradorDeSchema {
     private static void migracaoVersao2(Connection conexao) throws SQLException { // adiciona a senha de administrador
         try (Statement comando = conexao.createStatement()) {
             comando.execute("ALTER TABLE configuracao ADD COLUMN senha_admin TEXT");
+        }
+    }
+
+    private static void migracaoVersao3(Connection conexao) throws SQLException { // adiciona reembolso e forma de pagamento
+        try (Statement comando = conexao.createStatement()) {
+            comando.execute("ALTER TABLE visita ADD COLUMN valor_reembolsado REAL NOT NULL DEFAULT 0");
+            comando.execute("ALTER TABLE visita ADD COLUMN motivo_reembolso TEXT");
+            comando.execute("ALTER TABLE visita ADD COLUMN valor_dinheiro REAL NOT NULL DEFAULT 0");
+            comando.execute("ALTER TABLE visita ADD COLUMN valor_pix REAL NOT NULL DEFAULT 0");
+            comando.execute("ALTER TABLE visita ADD COLUMN valor_debito REAL NOT NULL DEFAULT 0");
         }
     }
 }

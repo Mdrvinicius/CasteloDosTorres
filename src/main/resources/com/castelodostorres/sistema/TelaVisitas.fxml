@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.TableColumn?>
+<?import javafx.scene.control.TableView?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.VBox?>
+
+<VBox xmlns="http://javafx.com/javafx"
+      xmlns:fx="http://javafx.com/fxml"
+      fx:controller="com.castelodostorres.sistema.controlador.ControladorTelaVisitas"
+      spacing="10">
+
+    <padding>
+        <Insets top="15" right="15" bottom="15" left="15" />
+    </padding>
+
+    <Label text="Visitas" style="-fx-font-size: 18px; -fx-font-weight: bold;" />
+
+    <HBox spacing="10">
+        <TextField fx:id="campoBusca" promptText="Buscar por guia..." prefWidth="250" />
+        <TextField fx:id="campoData" promptText="Data (aaaa-mm-dd)" prefWidth="150" />
+        <Button text="Buscar" onAction="#buscar" />
+        <Button text="Limpar" onAction="#limpar" />
+    </HBox>
+
+    <TableView fx:id="tabelaVisitas">
+        <columns>
+            <TableColumn fx:id="colunaData" text="Data/Hora" prefWidth="140" />
+            <TableColumn fx:id="colunaGuia" text="Guia" prefWidth="130" />
+            <TableColumn fx:id="colunaRecepcionista" text="Recepcionista" prefWidth="130" />
+            <TableColumn fx:id="colunaInteiras" text="Inteiras" prefWidth="70" />
+            <TableColumn fx:id="colunaMeias" text="Meias" prefWidth="60" />
+            <TableColumn fx:id="colunaNaoPagantes" text="Não Pag." prefWidth="70" />
+            <TableColumn fx:id="colunaTotal" text="Total (R$)" prefWidth="90" />
+            <TableColumn fx:id="colunaStatus" text="Status" prefWidth="90" />
+        </columns>
+    </TableView>
+
+</VBox>

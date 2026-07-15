@@ -28,8 +28,8 @@ public class ControladorTelaRaiz {
     }
 
     @FXML
-    public void abrirVisitas() { // MÉTODO: tela ainda não existe
-        mostrarEmConstrucao("Visitas");
+    public void abrirVisitas() {
+        trocarConteudo("/com/castelodostorres/sistema/TelaVisitas.fxml");
     }
 
     @FXML
@@ -37,13 +37,33 @@ public class ControladorTelaRaiz {
         mostrarEmConstrucao("Relatórios");
     }
 
-    private void trocarConteudo(String caminhoFxml) { // MÉTODO: carrega um FXML e coloca no centro do painel
+    private void trocarConteudo(String caminhoFxml) {
         try {
             FXMLLoader loader = new FXMLLoader(getClass().getResource(caminhoFxml));
             Parent tela = loader.load();
+
+            Object controlador = loader.getController(); // pega o Controller que o FXML acabou de criar
+            if (controlador instanceof PrecisaDaTelaRaiz) { // se esse Controller implementa a interface...
+                ((PrecisaDaTelaRaiz) controlador).setTelaRaiz(this); // ...entrega a referência da TelaRaiz (this) pra ele
+            }
+
             painelRaiz.setCenter(tela);
         } catch (IOException e) {
             System.out.println("Erro ao abrir tela: " + e.getMessage());
+        }
+    }
+    public void abrirDetalhesVisita(com.castelodostorres.sistema.modelo.Visita visita) { // MÉTODO: abre Detalhes passando a visita
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/castelodostorres/sistema/TelaDetalhesVisita.fxml"));
+            Parent tela = loader.load();
+
+            ControladorTelaDetalhesVisita controlador = loader.getController();
+            controlador.setTelaRaiz(this);   // pra ela conseguir voltar
+            controlador.setVisita(visita);    // entrega a visita a ser mostrada
+
+            painelRaiz.setCenter(tela);
+        } catch (IOException e) {
+            System.out.println("Erro ao abrir detalhes: " + e.getMessage());
         }
     }
 
