@@ -157,4 +157,184 @@ public class VisitaRepositorio {
             comando.executeUpdate();
         }
     }
+
+    public double calcularTotalArrecadadoDoDia(String data) throws SQLException { // MÉTODO: soma o valor líquido das visitas de um dia
+        String sql = """
+        SELECT COALESCE(SUM(valor_total - valor_reembolsado), 0) AS total
+        FROM visita
+        WHERE date(data_hora_inicio) = ?
+          AND status != 'CANCELADA'
+        """;
+
+        Connection conexao = GerenciadorConexao.getConexao();
+
+        try (PreparedStatement comando = conexao.prepareStatement(sql)) {
+            comando.setString(1, data);
+
+            try (ResultSet resultado = comando.executeQuery()) {
+                if (resultado.next()) {
+                    return resultado.getDouble("total");
+                }
+            }
+        }
+
+        return 0.0;
+    }
+
+    public double[] calcularFormasPagamentoDoDia(String data) throws SQLException { // MÉTODO: soma dinheiro, pix e débito do dia
+        String sql = """
+        SELECT
+            COALESCE(SUM(valor_dinheiro), 0) AS dinheiro,
+            COALESCE(SUM(valor_pix), 0) AS pix,
+            COALESCE(SUM(valor_debito), 0) AS debito
+        FROM visita
+        WHERE date(data_hora_inicio) = ?
+          AND status != 'CANCELADA'
+        """;
+
+        Connection conexao = GerenciadorConexao.getConexao();
+
+        try (PreparedStatement comando = conexao.prepareStatement(sql)) {
+            comando.setString(1, data);
+
+            try (ResultSet resultado = comando.executeQuery()) {
+                if (resultado.next()) {
+                    double dinheiro = resultado.getDouble("dinheiro");
+                    double pix = resultado.getDouble("pix");
+                    double debito = resultado.getDouble("debito");
+                    return new double[] { dinheiro, pix, debito };
+                }
+            }
+        }
+
+        return new double[] { 0, 0, 0 };
+    }
+
+    public List<Visita> listarDoDia(String data) throws SQLException { // MÉTODO: visitas não-canceladas de um dia, com nomes
+        String sql = """
+        SELECT v.*, f.nome AS nome_guia, r.nome AS nome_recepcionista
+        FROM visita v
+        JOIN funcionario f ON v.guia_id = f.id
+        LEFT JOIN funcionario r ON v.recepcionista_id = r.id
+        WHERE date(v.data_hora_inicio) = ?
+          AND v.status != 'CANCELADA'
+        """;
+
+        List<Visita> lista = new ArrayList<>();
+        Connection conexao = GerenciadorConexao.getConexao();
+
+        try (PreparedStatement comando = conexao.prepareStatement(sql)) {
+            comando.setString(1, data);
+
+            try (ResultSet resultado = comando.executeQuery()) {
+                while (resultado.next()) {
+                    Visita visita = new Visita();
+                    visita.setId(resultado.getInt("id"));
+                    visita.setNomeGuia(resultado.getString("nome_guia"));
+                    visita.setNomeRecepcionista(resultado.getString("nome_recepcionista"));
+                    visita.setQuantidadeInteira(resultado.getInt("quantidade_inteira"));
+                    visita.setQuantidadeMeia(resultado.getInt("quantidade_meia"));
+                    visita.setValorTotal(resultado.getDouble("valor_total"));
+                    visita.setValorReembolsado(resultado.getDouble("valor_reembolsado"));
+                    visita.setGuiaTipoRemuneracao(resultado.getString("guia_tipo_remuneracao"));
+                    visita.setGuiaValorRemuneracao(resultado.getDouble("guia_valor_remuneracao"));
+                    visita.setRecepcionistaTipoRemuneracao(resultado.getString("recepcionista_tipo_remuneracao"));
+                    Object recepValor = resultado.getObject("recepcionista_valor_remuneracao");
+                    visita.setRecepcionistaValorRemuneracao(recepValor == null ? null : ((Number) recepValor).doubleValue());
+                    lista.add(visita);
+                }
+            }
+        }
+
+        return lista;
+    }
+
+    public double[] calcularEstatisticasDoDia(String data) throws SQLException { // MÉTODO: contagens e totais do dia numa consulta só
+        String sql = """
+        SELECT
+            COUNT(*) AS qtd_visitas,
+            COALESCE(SUM(quantidade_inteira), 0) AS total_inteiras,
+            COALESCE(SUM(quantidade_meia), 0) AS total_meias,
+            COALESCE(SUM(quantidade_nao_pagante), 0) AS total_nao_pagantes,
+            COALESCE(SUM(valor_total), 0) AS total_bruto,
+            COALESCE(SUM(valor_reembolsado), 0) AS total_reembolsos
+        FROM visita
+        WHERE date(data_hora_inicio) = ?
+          AND status != 'CANCELADA'
+        """;
+
+        Connection conexao = GerenciadorConexao.getConexao();
+
+        try (PreparedStatement comando = conexao.prepareStatement(sql)) {
+            comando.setString(1, data);
+
+            try (ResultSet r = comando.executeQuery()) {
+                if (r.next()) {
+                    return new double[] {
+                            r.getInt("qtd_visitas"),
+                            r.getInt("total_inteiras"),
+                            r.getInt("total_meias"),
+                            r.getInt("total_nao_pagantes"),
+                            r.getDouble("total_bruto"),
+                            r.getDouble("total_reembolsos")
+                    };
+                }
+            }
+        }
+
+        return new double[] { 0, 0, 0, 0, 0, 0 };
+    }
+    public double calcularTotalArrecadadoDoMes(String mes) throws SQLException { // MÉTODO: total líquido do mês (mes = "aaaa-mm")
+        String sql = """
+        SELECT COALESCE(SUM(valor_total - valor_reembolsado), 0) AS total
+        FROM visita
+        WHERE strftime('%Y-%m', data_hora_inicio) = ?
+          AND status != 'CANCELADA'
+        """;
+
+        Connection conexao = GerenciadorConexao.getConexao();
+        try (PreparedStatement comando = conexao.prepareStatement(sql)) {
+            comando.setString(1, mes);
+            try (ResultSet r = comando.executeQuery()) {
+                if (r.next()) return r.getDouble("total");
+            }
+        }
+        return 0.0;
+    }
+
+    public List<Visita> listarDoMes(String mes) throws SQLException { // MÉTODO: visitas não-canceladas do mês, com dados de comissão
+        String sql = """
+        SELECT v.*, f.nome AS nome_guia, r.nome AS nome_recepcionista
+        FROM visita v
+        JOIN funcionario f ON v.guia_id = f.id
+        LEFT JOIN funcionario r ON v.recepcionista_id = r.id
+        WHERE strftime('%Y-%m', v.data_hora_inicio) = ?
+          AND v.status != 'CANCELADA'
+        """;
+
+        List<Visita> lista = new ArrayList<>();
+        Connection conexao = GerenciadorConexao.getConexao();
+        try (PreparedStatement comando = conexao.prepareStatement(sql)) {
+            comando.setString(1, mes);
+            try (ResultSet resultado = comando.executeQuery()) {
+                while (resultado.next()) {
+                    Visita visita = new Visita();
+                    visita.setId(resultado.getInt("id"));
+                    visita.setNomeGuia(resultado.getString("nome_guia"));
+                    visita.setNomeRecepcionista(resultado.getString("nome_recepcionista"));
+                    visita.setQuantidadeInteira(resultado.getInt("quantidade_inteira"));
+                    visita.setQuantidadeMeia(resultado.getInt("quantidade_meia"));
+                    visita.setValorTotal(resultado.getDouble("valor_total"));
+                    visita.setValorReembolsado(resultado.getDouble("valor_reembolsado"));
+                    visita.setGuiaTipoRemuneracao(resultado.getString("guia_tipo_remuneracao"));
+                    visita.setGuiaValorRemuneracao(resultado.getDouble("guia_valor_remuneracao"));
+                    visita.setRecepcionistaTipoRemuneracao(resultado.getString("recepcionista_tipo_remuneracao"));
+                    Object recepValor = resultado.getObject("recepcionista_valor_remuneracao");
+                    visita.setRecepcionistaValorRemuneracao(recepValor == null ? null : ((Number) recepValor).doubleValue());
+                    lista.add(visita);
+                }
+            }
+        }
+        return lista;
+    }
 }

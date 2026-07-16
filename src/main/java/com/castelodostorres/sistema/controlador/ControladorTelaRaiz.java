@@ -33,8 +33,12 @@ public class ControladorTelaRaiz {
     }
 
     @FXML
-    public void abrirRelatorios() { // MÉTODO: tela ainda não existe
-        mostrarEmConstrucao("Relatórios");
+    public void abrirRelatorios() {
+        trocarConteudo("/com/castelodostorres/sistema/TelaResumoDia.fxml");
+    }
+    @FXML
+    public void abrirResumoMes() {
+        trocarConteudo("/com/castelodostorres/sistema/TelaResumoMes.fxml");
     }
 
     private void trocarConteudo(String caminhoFxml) {
