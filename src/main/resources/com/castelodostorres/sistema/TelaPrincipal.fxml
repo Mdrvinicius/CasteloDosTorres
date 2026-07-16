@@ -10,6 +10,7 @@
 
 <?import javafx.scene.control.TextArea?>
 <?import javafx.scene.control.ComboBox?>
+<?import javafx.scene.control.TextField?>
 <BorderPane xmlns="http://javafx.com/javafx"
             fx:controller="com.castelodostorres.sistema.controlador.ControladorTelaPrincipal"
             xmlns:fx="http://javafx.com/fxml">
@@ -67,6 +68,25 @@
                 <TextArea fx:id="campoObservacoes" prefRowCount="3" wrapText="true" />
 
                 <Label fx:id="labelValorTotal" text="Valor Total: R$ 0,00" style="-fx-font-size: 14px; -fx-font-weight: bold;" />
+
+                <Label text="Forma de pagamento:" style="-fx-font-weight: bold;" />
+
+                <HBox spacing="10" alignment="CENTER_LEFT">
+                    <Label text="Dinheiro:" prefWidth="80" />
+                    <TextField fx:id="campoDinheiro" text="0" prefWidth="90" />
+                </HBox>
+
+                <HBox spacing="10" alignment="CENTER_LEFT">
+                    <Label text="Pix:" prefWidth="80" />
+                    <TextField fx:id="campoPix" text="0" prefWidth="90" />
+                </HBox>
+
+                <HBox spacing="10" alignment="CENTER_LEFT">
+                    <Label text="Débito:" prefWidth="80" />
+                    <TextField fx:id="campoDebito" text="0" prefWidth="90" />
+                </HBox>
+
+                <Label fx:id="labelSomaPagamento" text="Soma: R$ 0,00" />
 
                 <Button text="Iniciar Visita" onAction="#iniciarVisita" />
             </VBox>

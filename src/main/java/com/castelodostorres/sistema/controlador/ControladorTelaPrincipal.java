@@ -17,11 +17,13 @@ import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.*;
 import javafx.util.StringConverter;
-
+import javafx.scene.control.Alert;
 import java.net.URL;
 import java.sql.SQLException;
 import java.util.List;
 import java.util.ResourceBundle;
+
+
 
 public class ControladorTelaPrincipal implements Initializable {
 
@@ -32,6 +34,10 @@ public class ControladorTelaPrincipal implements Initializable {
     @FXML private Label labelNaoPagante;
     @FXML private TextArea campoObservacoes;
     @FXML private Label labelValorTotal;
+    @FXML private TextField campoDinheiro;
+    @FXML private TextField campoPix;
+    @FXML private TextField campoDebito;
+    @FXML private Label labelSomaPagamento;
 
     private int quantidadeInteira = 0; // ATRIBUTO: guarda o estado atual do contador
     private int quantidadeMeia = 0;
@@ -47,6 +53,7 @@ public class ControladorTelaPrincipal implements Initializable {
         carregarCombos();
         carregarValores();
         configurarCatraca();
+        configurarSomaPagamento();
     }
 
     private void carregarCombos() { // MÉTODO: busca no banco e popula os 2 combos
@@ -157,6 +164,14 @@ public class ControladorTelaPrincipal implements Initializable {
         labelValorTotal.setText("Valor Total: R$ " + String.format("%.2f", total));
     }
 
+    private void mostrarAviso(String mensagem) {
+        Alert alerta = new Alert(Alert.AlertType.INFORMATION);
+        alerta.setTitle("Aviso");
+        alerta.setHeaderText(null);
+        alerta.setContentText(mensagem);
+        alerta.showAndWait();
+    }
+
     @FXML
     public void iniciarVisita() {
         Funcionario guia = comboGuia.getValue();
@@ -171,12 +186,31 @@ public class ControladorTelaPrincipal implements Initializable {
             System.out.println("Adicione pelo menos uma pessoa à visita.");
             return;
         }
+        double valorTotal = (quantidadeInteira * valorInteira) + (quantidadeMeia * valorMeia);
+
+        double dinheiro = lerValorCampo(campoDinheiro);
+        double pix = lerValorCampo(campoPix);
+        double debito = lerValorCampo(campoDebito);
+
+        if (dinheiro < 0 || pix < 0 || debito < 0) { // nenhum valor pode ser negativo
+            mostrarAviso("Os valores de pagamento não podem ser negativos.");
+            return;
+        }
+
+        double somaPagamento = dinheiro + pix + debito;
+
+        if (Math.abs(somaPagamento - valorTotal) > 0.001) { // a soma tem que bater com o total
+            mostrarAviso("A soma das formas de pagamento (R$ " + String.format("%.2f", somaPagamento) +
+                    ") não bate com o valor total (R$ " + String.format("%.2f", valorTotal) + ").");
+            return;
+        }
 
         Visita visita = new Visita();
 
         visita.setGuiaId(guia.getId());
         visita.setGuiaTipoRemuneracao(guia.getTipoRemuneracao());
         visita.setGuiaValorRemuneracao(guia.getValorRemuneracao());
+
 
         if (recepcionista != null && recepcionista.getId() != null) { // se tem recepcionista de verdade (não é "Nenhuma")
             visita.setRecepcionistaId(recepcionista.getId());
@@ -196,6 +230,9 @@ public class ControladorTelaPrincipal implements Initializable {
         visita.setObservacoes(campoObservacoes.getText());
         visita.setDataHoraInicio(LocalDateTime.now().toString());
         visita.setStatus("ATIVA");
+        visita.setValorDinheiro(dinheiro);
+        visita.setValorPix(pix);
+        visita.setValorDebito(debito);
 
         VisitaRepositorio repositorio = new VisitaRepositorio();
         try {
@@ -213,6 +250,29 @@ public class ControladorTelaPrincipal implements Initializable {
         comboGuia.getSelectionModel().clearSelection();
         comboRecepcionista.getSelectionModel().selectFirst(); // volta pra "Nenhuma"
         campoObservacoes.clear();
+        campoDinheiro.setText("0");
+        campoPix.setText("0");
+        campoDebito.setText("0");
         atualizarTela();
+    }
+
+    private void configurarSomaPagamento() { // MÉTODO: atualiza a soma dos pagamentos sempre que um campo muda
+        campoDinheiro.textProperty().addListener((obs, antigo, novo) -> atualizarSomaPagamento());
+        campoPix.textProperty().addListener((obs, antigo, novo) -> atualizarSomaPagamento());
+        campoDebito.textProperty().addListener((obs, antigo, novo) -> atualizarSomaPagamento());
+    }
+
+    private void atualizarSomaPagamento() { // MÉTODO: lê os 3 campos, soma, e mostra no label
+        double soma = lerValorCampo(campoDinheiro) + lerValorCampo(campoPix) + lerValorCampo(campoDebito);
+        labelSomaPagamento.setText("Soma: R$ " + String.format("%.2f", soma));
+    }
+
+    private double lerValorCampo(TextField campo) { // MÉTODO auxiliar: lê um campo como número, tratando vazio/inválido
+        try {
+            String texto = campo.getText().replace(",", ".").trim();
+            return texto.isBlank() ? 0.0 : Double.parseDouble(texto);
+        } catch (NumberFormatException e) {
+            return 0.0; // se digitou algo inválido, considera 0 (a validação final barra depois)
+        }
     }
 }

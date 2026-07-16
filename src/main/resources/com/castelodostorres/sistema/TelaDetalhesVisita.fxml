@@ -29,6 +29,8 @@
     <Label fx:id="labelReembolso" text="Reembolsado: -" />
     <Label fx:id="labelValorLiquido" text="Valor Líquido: -" style="-fx-font-weight: bold;" />
     <Label fx:id="labelStatus" text="Status: -" />
+    <Label fx:id="labelMotivoCancelamento" text="" wrapText="true" style="-fx-text-fill: #b00020;" />
+    <Label fx:id="labelMotivoReembolso" text="" wrapText="true" style="-fx-text-fill: #b00020;" />
     <Label fx:id="labelObservacoes" text="Observações: -" wrapText="true" />
 
     <HBox spacing="10">

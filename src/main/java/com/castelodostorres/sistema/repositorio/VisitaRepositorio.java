@@ -23,8 +23,9 @@ public class VisitaRepositorio {
                 recepcionista_tipo_remuneracao, recepcionista_valor_remuneracao,
                 quantidade_inteira, quantidade_meia, quantidade_nao_pagante,
                 valor_unitario_inteira, valor_unitario_meia, valor_total,
-                observacoes, data_hora_inicio, status
-            ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+                observacoes, data_hora_inicio, status,
+                valor_dinheiro, valor_pix, valor_debito
+            ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
             """;
 
         Connection conexao = GerenciadorConexao.getConexao();
@@ -58,6 +59,9 @@ public class VisitaRepositorio {
             comando.setString(13, visita.getObservacoes());
             comando.setString(14, visita.getDataHoraInicio());
             comando.setString(15, visita.getStatus());
+            comando.setDouble(16, visita.getValorDinheiro());
+            comando.setDouble(17, visita.getValorPix());
+            comando.setDouble(18, visita.getValorDebito());
 
             comando.executeUpdate();
 
@@ -95,7 +99,13 @@ public class VisitaRepositorio {
                 visita.setValorTotal(resultado.getDouble("valor_total"));
                 visita.setValorReembolsado(resultado.getDouble("valor_reembolsado"));
                 visita.setDataHoraInicio(resultado.getString("data_hora_inicio"));
+                visita.setMotivoCancelamento(resultado.getString("motivo_cancelamento"));
+                visita.setMotivoReembolso(resultado.getString("motivo_reembolso"));
+                visita.setObservacoes(resultado.getString("observacoes"));
                 visita.setStatus(resultado.getString("status"));
+                visita.setValorDinheiro(resultado.getDouble("valor_dinheiro"));
+                visita.setValorPix(resultado.getDouble("valor_pix"));
+                visita.setValorDebito(resultado.getDouble("valor_debito"));
                 lista.add(visita);
             }
         }
@@ -122,24 +132,28 @@ public class VisitaRepositorio {
         }
     }
 
-    public void reembolsar(int visitaId, double valorReembolso, String motivo) throws SQLException { // MÉTODO: registra reembolso
+    public void reembolsar(int visitaId, double valorReembolso, String motivo, String forma) throws SQLException {
+        String colunaForma = "DINHEIRO".equals(forma) ? "valor_dinheiro" : "valor_pix";
+
         String sql = """
         UPDATE visita
         SET valor_reembolsado = valor_reembolsado + ?,
             motivo_reembolso = CASE
                 WHEN motivo_reembolso IS NULL OR motivo_reembolso = '' THEN ?
                 ELSE motivo_reembolso || ' | ' || ?
-            END
+            END,
+            %s = %s - ?
         WHERE id = ?
-        """;
+        """.formatted(colunaForma, colunaForma);
 
         Connection conexao = GerenciadorConexao.getConexao();
 
         try (PreparedStatement comando = conexao.prepareStatement(sql)) {
             comando.setDouble(1, valorReembolso);
-            comando.setString(2, motivo); // usado quando ainda não há motivo anterior
-            comando.setString(3, motivo); // usado quando concatena ao motivo anterior
-            comando.setInt(4, visitaId);
+            comando.setString(2, motivo);
+            comando.setString(3, motivo);
+            comando.setDouble(4, valorReembolso);
+            comando.setInt(5, visitaId);
             comando.executeUpdate();
         }
     }

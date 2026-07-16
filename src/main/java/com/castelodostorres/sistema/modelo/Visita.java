@@ -31,6 +31,8 @@ public class Visita {
     private double valorPix;           // ATRIBUTO: parte paga em pix
     private double valorDebito;        // ATRIBUTO: parte paga em débito
 
+    private String motivoCancelamento;
+
     public Visita() { // CONSTRUTOR vazio
     }
 
@@ -104,6 +106,9 @@ public class Visita {
 
     public String getStatus() { return status; }
     public void setStatus(String status) { this.status = status; }
+
+    public String getMotivoCancelamento() { return motivoCancelamento; }
+    public void setMotivoCancelamento(String motivoCancelamento) { this.motivoCancelamento = motivoCancelamento; }
 
 
 

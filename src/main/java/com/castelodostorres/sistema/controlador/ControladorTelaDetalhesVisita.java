@@ -23,6 +23,8 @@ public class ControladorTelaDetalhesVisita implements PrecisaDaTelaRaiz{
     @FXML private Label labelValorLiquido;
     @FXML private Label labelStatus;
     @FXML private Label labelObservacoes;
+    @FXML private Label labelMotivoCancelamento;
+    @FXML private Label labelMotivoReembolso;
 
     private Visita visita; // ATRIBUTO: a visita que esta tela está mostrando
 
@@ -53,6 +55,26 @@ public class ControladorTelaDetalhesVisita implements PrecisaDaTelaRaiz{
 
         labelStatus.setText("Status: " + visita.getStatus());
         labelObservacoes.setText("Observações: " + (visita.getObservacoes() == null || visita.getObservacoes().isBlank() ? "-" : visita.getObservacoes()));
+
+        // Motivo do cancelamento: só aparece se a visita foi cancelada
+        if ("CANCELADA".equals(visita.getStatus()) && visita.getMotivoCancelamento() != null) {
+            labelMotivoCancelamento.setText("Motivo do cancelamento: " + visita.getMotivoCancelamento());
+            labelMotivoCancelamento.setVisible(true);
+            labelMotivoCancelamento.setManaged(true);
+        } else {
+            labelMotivoCancelamento.setVisible(false);
+            labelMotivoCancelamento.setManaged(false);
+        }
+
+// Motivo do reembolso: só aparece se houve reembolso
+        if (visita.getValorReembolsado() > 0 && visita.getMotivoReembolso() != null) {
+            labelMotivoReembolso.setText("Motivo do reembolso: " + visita.getMotivoReembolso());
+            labelMotivoReembolso.setVisible(true);
+            labelMotivoReembolso.setManaged(true);
+        } else {
+            labelMotivoReembolso.setVisible(false);
+            labelMotivoReembolso.setManaged(false);
+        }
     }
 
     @FXML
@@ -124,19 +146,25 @@ public class ControladorTelaDetalhesVisita implements PrecisaDaTelaRaiz{
         campoMotivo.setPromptText("Motivo do reembolso");
         campoMotivo.setPrefRowCount(3);
 
+        ComboBox<String> comboForma = new ComboBox<>();
+        comboForma.getItems().addAll("DINHEIRO", "PIX");
+        comboForma.getSelectionModel().selectFirst(); // já começa com DINHEIRO selecionado
+
         VBox conteudo = new VBox(10,
                 new Label("Valor a reembolsar (R$):"), campoValor,
+                new Label("Reembolso em:"), comboForma,
                 new Label("Motivo:"), campoMotivo
         );
+
         dialogo.getDialogPane().setContent(conteudo);
 
-        dialogo.setResultConverter(botaoClicado -> { // converte o clique num objeto DadosReembolso
+        dialogo.setResultConverter(botaoClicado -> {
             if (botaoClicado == botaoConfirmar) {
                 try {
                     double valor = Double.parseDouble(campoValor.getText().replace(",", "."));
-                    return new DadosReembolso(valor, campoMotivo.getText().trim());
+                    return new DadosReembolso(valor, campoMotivo.getText().trim(), comboForma.getValue());
                 } catch (NumberFormatException e) {
-                    return null; // valor inválido -> trata como se não tivesse confirmado
+                    return null;
                 }
             }
             return null;
@@ -168,9 +196,16 @@ public class ControladorTelaDetalhesVisita implements PrecisaDaTelaRaiz{
 
         try {
             VisitaRepositorio repositorio = new VisitaRepositorio();
-            repositorio.reembolsar(visita.getId(), dados.getValor(), dados.getMotivo());
+            repositorio.reembolsar(visita.getId(), dados.getValor(), dados.getMotivo(), dados.getForma());
 
             visita.setValorReembolsado(visita.getValorReembolsado() + dados.getValor()); // soma, não substitui
+
+            if ("DINHEIRO".equals(dados.getForma())) {
+                visita.setValorDinheiro(visita.getValorDinheiro() - dados.getValor());
+            } else {
+                visita.setValorPix(visita.getValorPix() - dados.getValor());
+            }
+
             visita.setMotivoReembolso(dados.getMotivo());
             preencherCampos();                             // atualiza a tela (o valor líquido recalcula)
             mostrarAviso("Reembolso registrado com sucesso.");
