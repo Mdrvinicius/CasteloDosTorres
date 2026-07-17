@@ -9,6 +9,7 @@
 
 <?import javafx.scene.control.TableView?>
 <?import javafx.scene.control.TableColumn?>
+<?import javafx.scene.control.TextField?>
 <VBox xmlns="http://javafx.com/javafx"
       xmlns:fx="http://javafx.com/fxml"
       fx:controller="com.castelodostorres.sistema.controlador.ControladorTelaResumoDia"
@@ -20,10 +21,16 @@
 
     <Label text="Resumo do Dia" style="-fx-font-size: 18px; -fx-font-weight: bold;" />
 
-    <HBox spacing="10">
+    <HBox spacing="10" alignment="CENTER_LEFT">
         <Label text="Data:" />
         <DatePicker fx:id="seletorData" />
         <Button text="Gerar" onAction="#gerar" />
+    </HBox>
+
+    <HBox spacing="10" alignment="CENTER_LEFT">
+        <Label text="Fundo de Troco (R$):" />
+        <TextField fx:id="campoFundoTroco" prefWidth="100" />
+        <Button text="Salvar Fundo" onAction="#salvarFundo" />
     </HBox>
 
     <Label text="Resumo Geral do Dia:" style="-fx-font-weight: bold;" />

@@ -17,6 +17,7 @@ public class MigradorDeSchema {
         aplicarSeNecessario(conexao, versaoAtual, 1, MigradorDeSchema::migracaoVersao1);
         aplicarSeNecessario(conexao, versaoAtual, 2, MigradorDeSchema::migracaoVersao2);
         aplicarSeNecessario(conexao, versaoAtual, 3, MigradorDeSchema::migracaoVersao3);
+        aplicarSeNecessario(conexao, versaoAtual, 4, MigradorDeSchema::migracaoVersao4);
         // no futuro, cada mudança nova de schema vira mais uma linha aqui, com número seguinte (3, 4, 5...)
     }
 
@@ -137,6 +138,17 @@ public class MigradorDeSchema {
             comando.execute("ALTER TABLE visita ADD COLUMN valor_dinheiro REAL NOT NULL DEFAULT 0");
             comando.execute("ALTER TABLE visita ADD COLUMN valor_pix REAL NOT NULL DEFAULT 0");
             comando.execute("ALTER TABLE visita ADD COLUMN valor_debito REAL NOT NULL DEFAULT 0");
+        }
+    }
+
+    private static void migracaoVersao4(Connection conexao) throws SQLException { // cria a tabela de fundo de troco
+        try (Statement comando = conexao.createStatement()) {
+            comando.execute("""
+            CREATE TABLE IF NOT EXISTS fundo_troco (
+                data TEXT PRIMARY KEY,
+                valor REAL NOT NULL
+            )
+            """);
         }
     }
 }

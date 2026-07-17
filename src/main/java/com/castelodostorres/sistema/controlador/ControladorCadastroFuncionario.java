@@ -1,20 +1,22 @@
 package com.castelodostorres.sistema.controlador;
 
 import com.castelodostorres.sistema.modelo.Funcionario;
+import com.castelodostorres.sistema.modelo.Visita;
 import com.castelodostorres.sistema.repositorio.FuncionarioRepositorio;
+import com.castelodostorres.sistema.util.VerificadorSenha;
 import javafx.collections.FXCollections;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
-import javafx.scene.control.Button;
-import javafx.scene.control.ComboBox;
-import javafx.scene.control.TextField;
+import javafx.scene.control.*;
 
+import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.util.StringConverter;
 import java.net.URL;
 import java.sql.SQLException;
+import java.util.List;
 import java.util.ResourceBundle;
 
-public class ControladorCadastroFuncionario implements Initializable {
+public class ControladorCadastroFuncionario implements Initializable, PrecisaDaTelaRaiz {
 
     @FXML
     private TextField campoNome; // ATRIBUTO: representa o TextField do FXML com fx:id="campoNome"
@@ -27,6 +29,19 @@ public class ControladorCadastroFuncionario implements Initializable {
 
     @FXML
     private TextField campoValor; // ATRIBUTO: representa o TextField fx:id="campoValor"
+
+    @FXML private TableView<Funcionario> tabelaFuncionarios;
+    @FXML private TableColumn<Funcionario, String> colunaNome;
+    @FXML private TableColumn<Funcionario, String> colunaPapel;
+
+    private ControladorTelaRaiz telaRaiz;
+
+    @Override
+    public void setTelaRaiz(ControladorTelaRaiz telaRaiz) {
+        this.telaRaiz = telaRaiz;
+    }
+
+    private final FuncionarioRepositorio repositorio = new FuncionarioRepositorio();
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
@@ -65,6 +80,12 @@ public class ControladorCadastroFuncionario implements Initializable {
                 return texto;
             }
         });
+
+        colunaNome.setCellValueFactory(new PropertyValueFactory<>("nome"));
+        colunaPapel.setCellValueFactory(new PropertyValueFactory<>("papel"));
+
+        carregarFuncionarios();
+        configurarCliqueDuplo();
     }
 
     @FXML
@@ -104,8 +125,36 @@ public class ControladorCadastroFuncionario implements Initializable {
         try {
             repositorio.salvar(funcionario);
             System.out.println("Funcionário salvo com sucesso! ID: " + funcionario.getId());
+            carregarFuncionarios(); // recarrega a lista pra mostrar o novo funcionário
+            campoNome.clear();
+            comboPapel.getSelectionModel().clearSelection();
+            comboTipoRemuneracao.getSelectionModel().clearSelection();
+            campoValor.clear();
         } catch (SQLException e) {
             System.out.println("Erro ao salvar funcionário: " + e.getMessage());
         }
     }
+
+    private void carregarFuncionarios() { // MÉTODO: busca todos os funcionários e joga na tabela
+        try {
+            List<Funcionario> funcionarios = repositorio.listarTodos();
+            tabelaFuncionarios.setItems(FXCollections.observableArrayList(funcionarios));
+        } catch (SQLException e) {
+            System.out.println("Erro ao carregar funcionários: " + e.getMessage());
+        }
+    }
+
+    private void configurarCliqueDuplo() { // MÉTODO: duplo-clique num funcionário pede senha e abre detalhes
+        tabelaFuncionarios.setOnMouseClicked(evento -> {
+            if (evento.getClickCount() == 2) {
+                Funcionario selecionado = tabelaFuncionarios.getSelectionModel().getSelectedItem();
+                if (selecionado != null && telaRaiz != null) {
+                    if (VerificadorSenha.verificar()) { // pede a senha ANTES de abrir os detalhes
+                        telaRaiz.abrirDetalhesFuncionario(selecionado);
+                    }
+                }
+            }
+        });
+    }
+
 }

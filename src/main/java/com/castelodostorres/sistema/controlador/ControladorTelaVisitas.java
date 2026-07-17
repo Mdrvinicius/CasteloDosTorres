@@ -1,24 +1,26 @@
 package com.castelodostorres.sistema.controlador;
 
+import com.castelodostorres.sistema.modelo.Funcionario;
 import com.castelodostorres.sistema.modelo.Visita;
+import com.castelodostorres.sistema.repositorio.FuncionarioRepositorio;
 import com.castelodostorres.sistema.repositorio.VisitaRepositorio;
 import javafx.collections.FXCollections;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
-import javafx.scene.control.TableColumn;
-import javafx.scene.control.TableView;
-import javafx.scene.control.TextField;
+import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
+import javafx.util.StringConverter;
 
 import java.net.URL;
 import java.sql.SQLException;
+import java.time.LocalDate;
 import java.util.List;
 import java.util.ResourceBundle;
 
 public class ControladorTelaVisitas implements Initializable, PrecisaDaTelaRaiz {
 
-    @FXML private TextField campoBusca;
-    @FXML private TextField campoData;
+    @FXML private ComboBox<Funcionario> comboGuiaBusca;
+    @FXML private DatePicker seletorDataBusca;
     @FXML private TableView<Visita> tabelaVisitas;
     @FXML private TableColumn<Visita, String> colunaData;
     @FXML private TableColumn<Visita, String> colunaGuia;
@@ -43,6 +45,7 @@ public class ControladorTelaVisitas implements Initializable, PrecisaDaTelaRaiz 
         configurarColunas();
         carregarTodas();
         configurarCliqueDuplo();
+        carregarGuiasNoComboBusca();
     }
 
     private void configurarCliqueDuplo() { // MÉTODO: abre Detalhes ao dar duplo-clique numa linha
@@ -80,15 +83,46 @@ public class ControladorTelaVisitas implements Initializable, PrecisaDaTelaRaiz 
 
 
     @FXML
-    public void buscar() { // MÉTODO: por enquanto placeholder, implementamos o filtro no próximo passo
-        System.out.println("Busca: guia=" + campoBusca.getText() + ", data=" + campoData.getText());
+    public void buscar() { // MÉTODO: filtra as visitas por guia e/ou data
+        Funcionario guiaSelecionada = comboGuiaBusca.getValue();
+        Integer guiaId = (guiaSelecionada == null) ? null : guiaSelecionada.getId();
+
+        LocalDate data = seletorDataBusca.getValue();
+        String dataTexto = (data == null) ? null : data.toString();
+
+        try {
+            List<Visita> resultado = repositorio.buscar(guiaId, dataTexto);
+            tabelaVisitas.setItems(FXCollections.observableArrayList(resultado));
+        } catch (SQLException e) {
+            System.out.println("Erro na busca: " + e.getMessage());
+        }
     }
 
     @FXML
-    public void limpar() { // MÉTODO: limpa os campos e recarrega tudo
-        campoBusca.clear();
-        campoData.clear();
+    public void limpar() {
+        comboGuiaBusca.getSelectionModel().clearSelection();
+        seletorDataBusca.setValue(null);
         carregarTodas();
+    }
+
+    private void carregarGuiasNoComboBusca() { // MÉTODO: enche o combo de busca com as guias
+        FuncionarioRepositorio funcRepositorio = new FuncionarioRepositorio();
+        try {
+            List<Funcionario> guias = funcRepositorio.listarPorPapel("GUIA");
+            comboGuiaBusca.setItems(FXCollections.observableArrayList(guias));
+            comboGuiaBusca.setConverter(new StringConverter<>() {
+                @Override
+                public String toString(Funcionario f) {
+                    return f == null ? "" : f.getNome();
+                }
+                @Override
+                public Funcionario fromString(String texto) {
+                    return null;
+                }
+            });
+        } catch (SQLException e) {
+            System.out.println("Erro ao carregar guias: " + e.getMessage());
+        }
     }
 
 

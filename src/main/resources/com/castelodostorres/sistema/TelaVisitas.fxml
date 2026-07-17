@@ -9,6 +9,8 @@
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.VBox?>
 
+<?import javafx.scene.control.DatePicker?>
+<?import javafx.scene.control.ComboBox?>
 <VBox xmlns="http://javafx.com/javafx"
       xmlns:fx="http://javafx.com/fxml"
       fx:controller="com.castelodostorres.sistema.controlador.ControladorTelaVisitas"
@@ -21,8 +23,10 @@
     <Label text="Visitas" style="-fx-font-size: 18px; -fx-font-weight: bold;" />
 
     <HBox spacing="10">
-        <TextField fx:id="campoBusca" promptText="Buscar por guia..." prefWidth="250" />
-        <TextField fx:id="campoData" promptText="Data (aaaa-mm-dd)" prefWidth="150" />
+        <Label text="Guia:" />
+        <ComboBox fx:id="comboGuiaBusca" prefWidth="200" />
+        <Label text="Data:" />
+        <DatePicker fx:id="seletorDataBusca" />
         <Button text="Buscar" onAction="#buscar" />
         <Button text="Limpar" onAction="#limpar" />
     </HBox>

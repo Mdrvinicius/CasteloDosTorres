@@ -58,4 +58,31 @@ public class ConfiguracaoRepositorio {
             comando.executeUpdate();
         }
     }
+
+    public String buscarSenhaAdmin() throws SQLException { // MÉTODO: retorna a senha admin salva (null se não houver)
+        String sql = "SELECT senha_admin FROM configuracao WHERE id = 1";
+
+        Connection conexao = GerenciadorConexao.getConexao();
+        try (PreparedStatement comando = conexao.prepareStatement(sql);
+             ResultSet r = comando.executeQuery()) {
+            if (r.next()) {
+                return r.getString("senha_admin");
+            }
+        }
+        return null;
+    }
+
+    public void salvarSenhaAdmin(String senha) throws SQLException { // MÉTODO: define/atualiza a senha admin
+        String sql = """
+        INSERT INTO configuracao (id, senha_admin)
+        VALUES (1, ?)
+        ON CONFLICT(id) DO UPDATE SET senha_admin = excluded.senha_admin
+        """;
+
+        Connection conexao = GerenciadorConexao.getConexao();
+        try (PreparedStatement comando = conexao.prepareStatement(sql)) {
+            comando.setString(1, senha);
+            comando.executeUpdate();
+        }
+    }
 }

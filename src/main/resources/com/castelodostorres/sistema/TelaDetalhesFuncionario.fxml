@@ -5,21 +5,22 @@
 <?import javafx.scene.control.ComboBox?>
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.control.TextField?>
-<?import javafx.scene.control.TableColumn?>
-<?import javafx.scene.control.TableView?>
 <?import javafx.scene.layout.GridPane?>
+<?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.VBox?>
 
 <VBox xmlns="http://javafx.com/javafx"
       xmlns:fx="http://javafx.com/fxml"
-      fx:controller="com.castelodostorres.sistema.controlador.ControladorCadastroFuncionario"
+      fx:controller="com.castelodostorres.sistema.controlador.ControladorTelaDetalhesFuncionario"
       spacing="15">
 
     <padding>
         <Insets top="15" right="15" bottom="15" left="15" />
     </padding>
 
-    <Label text="Novo Funcionário" style="-fx-font-size: 16px; -fx-font-weight: bold;" />
+    <Button text="← Voltar" onAction="#voltar" />
+
+    <Label text="Detalhes do Funcionário" style="-fx-font-size: 18px; -fx-font-weight: bold;" />
 
     <GridPane hgap="10" vgap="8">
         <Label text="Nome:" GridPane.rowIndex="0" GridPane.columnIndex="0" />
@@ -33,18 +34,10 @@
 
         <Label text="Valor:" GridPane.rowIndex="3" GridPane.columnIndex="0" />
         <TextField fx:id="campoValor" GridPane.rowIndex="3" GridPane.columnIndex="1" />
-
-        <Button text="Salvar" onAction="#salvar" GridPane.rowIndex="4" GridPane.columnIndex="1" />
     </GridPane>
 
-    <Label text="Funcionários Cadastrados" style="-fx-font-size: 16px; -fx-font-weight: bold;" />
-    <Label text="Dê duplo-clique num funcionário para ver detalhes." style="-fx-font-size: 11px; -fx-text-fill: #666;" />
-
-    <TableView fx:id="tabelaFuncionarios" prefHeight="250">
-        <columns>
-            <TableColumn fx:id="colunaNome" text="Nome" prefWidth="250" />
-            <TableColumn fx:id="colunaPapel" text="Função" prefWidth="150" />
-        </columns>
-    </TableView>
+    <HBox spacing="10">
+        <Button text="Salvar Alterações" onAction="#salvarAlteracoes" />
+    </HBox>
 
 </VBox>

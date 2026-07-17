@@ -59,6 +59,50 @@ public class FuncionarioRepositorio {
         return lista;
     }
 
+    public List<Funcionario> listarTodos() throws SQLException { // MÉTODO: traz todos os funcionários cadastrados
+        String sql = "SELECT id, nome, papel, tipo_remuneracao, valor_remuneracao FROM funcionario ORDER BY nome";
+
+        List<Funcionario> lista = new ArrayList<>();
+        Connection conexao = GerenciadorConexao.getConexao();
+
+        try (PreparedStatement comando = conexao.prepareStatement(sql);
+             ResultSet resultado = comando.executeQuery()) {
+
+            while (resultado.next()) {
+                Funcionario funcionario = new Funcionario();
+                funcionario.setId(resultado.getInt("id"));
+                funcionario.setNome(resultado.getString("nome"));
+                funcionario.setPapel(resultado.getString("papel"));
+                funcionario.setTipoRemuneracao(resultado.getString("tipo_remuneracao"));
+                funcionario.setValorRemuneracao(resultado.getDouble("valor_remuneracao"));
+                lista.add(funcionario);
+            }
+        }
+
+        return lista;
+    }
+
+    public void atualizar(Funcionario funcionario) throws SQLException { // MÉTODO: edita um funcionário existente
+        String sql = """
+        UPDATE funcionario
+        SET nome = ?,
+            papel = ?,
+            tipo_remuneracao = ?,
+            valor_remuneracao = ?
+        WHERE id = ?
+        """;
+
+        Connection conexao = GerenciadorConexao.getConexao();
+        try (PreparedStatement comando = conexao.prepareStatement(sql)) {
+            comando.setString(1, funcionario.getNome());
+            comando.setString(2, funcionario.getPapel());
+            comando.setString(3, funcionario.getTipoRemuneracao());
+            comando.setDouble(4, funcionario.getValorRemuneracao());
+            comando.setInt(5, funcionario.getId());
+            comando.executeUpdate();
+        }
+    }
+
 
 
 }

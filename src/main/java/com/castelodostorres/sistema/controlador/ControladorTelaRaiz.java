@@ -1,5 +1,6 @@
 package com.castelodostorres.sistema.controlador;
 
+import com.castelodostorres.sistema.util.VerificadorSenha;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
@@ -23,8 +24,10 @@ public class ControladorTelaRaiz {
     }
 
     @FXML
-    public void abrirConfiguracao() { // MÉTODO: será protegido por senha depois
-        trocarConteudo("/com/castelodostorres/sistema/TelaConfiguracao.fxml");
+    public void abrirConfiguracao() {
+        if (VerificadorSenha.verificar()) { // só abre se a senha for aceita (ou se não houver senha definida)
+            trocarConteudo("/com/castelodostorres/sistema/TelaConfiguracao.fxml");
+        }
     }
 
     @FXML
@@ -73,5 +76,20 @@ public class ControladorTelaRaiz {
 
     private void mostrarEmConstrucao(String nome) { // MÉTODO: placeholder pras telas que faremos depois
         painelRaiz.setCenter(new Label("Tela de " + nome + " em construção."));
+    }
+
+    public void abrirDetalhesFuncionario(com.castelodostorres.sistema.modelo.Funcionario funcionario) { // MÉTODO: abre detalhes passando o funcionário
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/castelodostorres/sistema/TelaDetalhesFuncionario.fxml"));
+            Parent tela = loader.load();
+
+            ControladorTelaDetalhesFuncionario controlador = loader.getController();
+            controlador.setTelaRaiz(this);
+            controlador.setFuncionario(funcionario);
+
+            painelRaiz.setCenter(tela);
+        } catch (IOException e) {
+            System.out.println("Erro ao abrir detalhes do funcionário: " + e.getMessage());
+        }
     }
 }

@@ -15,6 +15,39 @@ import java.util.List;
 
 public class VisitaRepositorio {
 
+    public Visita buscarUltima() throws SQLException { // MÉTODO: retorna a visita mais recente (ou null se não houver)
+        String sql = """
+        SELECT v.*, f.nome AS nome_guia, r.nome AS nome_recepcionista
+        FROM visita v
+        JOIN funcionario f ON v.guia_id = f.id
+        LEFT JOIN funcionario r ON v.recepcionista_id = r.id
+        ORDER BY v.data_hora_inicio DESC
+        LIMIT 1
+        """;
+
+        Connection conexao = GerenciadorConexao.getConexao();
+        try (PreparedStatement comando = conexao.prepareStatement(sql);
+             ResultSet resultado = comando.executeQuery()) {
+
+            if (resultado.next()) {
+                Visita visita = new Visita();
+                visita.setId(resultado.getInt("id"));
+                visita.setNomeGuia(resultado.getString("nome_guia"));
+                visita.setNomeRecepcionista(resultado.getString("nome_recepcionista"));
+                visita.setQuantidadeInteira(resultado.getInt("quantidade_inteira"));
+                visita.setQuantidadeMeia(resultado.getInt("quantidade_meia"));
+                visita.setQuantidadeNaoPagante(resultado.getInt("quantidade_nao_pagante"));
+                visita.setValorTotal(resultado.getDouble("valor_total"));
+                visita.setValorReembolsado(resultado.getDouble("valor_reembolsado"));
+                visita.setDataHoraInicio(resultado.getString("data_hora_inicio"));
+                visita.setStatus(resultado.getString("status"));
+                visita.setObservacoes(resultado.getString("observacoes"));
+                return visita;
+            }
+        }
+        return null; // nenhuma visita ainda
+    }
+
     public void salvar(Visita visita) throws SQLException { // MÉTODO: insere uma nova visita no banco
         String sql = """
             INSERT INTO visita (
@@ -335,6 +368,56 @@ public class VisitaRepositorio {
                 }
             }
         }
+        return lista;
+    }
+
+    public List<Visita> buscar(Integer guiaId, String data) throws SQLException { // MÉTODO: busca visitas por guia e/ou data (ambos opcionais)
+        StringBuilder sql = new StringBuilder("""
+        SELECT v.*, f.nome AS nome_guia, r.nome AS nome_recepcionista
+        FROM visita v
+        JOIN funcionario f ON v.guia_id = f.id
+        LEFT JOIN funcionario r ON v.recepcionista_id = r.id
+        WHERE 1 = 1
+        """);
+
+        if (guiaId != null) {
+            sql.append(" AND v.guia_id = ? ");
+        }
+        if (data != null && !data.isBlank()) {
+            sql.append(" AND date(v.data_hora_inicio) = ? ");
+        }
+        sql.append(" ORDER BY v.data_hora_inicio DESC ");
+
+        List<Visita> lista = new ArrayList<>();
+        Connection conexao = GerenciadorConexao.getConexao();
+
+        try (PreparedStatement comando = conexao.prepareStatement(sql.toString())) {
+            int indice = 1;
+            if (guiaId != null) {
+                comando.setInt(indice++, guiaId);
+            }
+            if (data != null && !data.isBlank()) {
+                comando.setString(indice++, data);
+            }
+
+            try (ResultSet resultado = comando.executeQuery()) {
+                while (resultado.next()) {
+                    Visita visita = new Visita();
+                    visita.setId(resultado.getInt("id"));
+                    visita.setNomeGuia(resultado.getString("nome_guia"));
+                    visita.setNomeRecepcionista(resultado.getString("nome_recepcionista"));
+                    visita.setQuantidadeInteira(resultado.getInt("quantidade_inteira"));
+                    visita.setQuantidadeMeia(resultado.getInt("quantidade_meia"));
+                    visita.setQuantidadeNaoPagante(resultado.getInt("quantidade_nao_pagante"));
+                    visita.setValorTotal(resultado.getDouble("valor_total"));
+                    visita.setValorReembolsado(resultado.getDouble("valor_reembolsado"));
+                    visita.setStatus(resultado.getString("status"));
+                    visita.setDataHoraInicio(resultado.getString("data_hora_inicio"));
+                    lista.add(visita);
+                }
+            }
+        }
+
         return lista;
     }
 }

@@ -25,7 +25,7 @@ import java.util.ResourceBundle;
 
 
 
-public class ControladorTelaPrincipal implements Initializable {
+public class ControladorTelaPrincipal implements Initializable, PrecisaDaTelaRaiz {
 
     @FXML private ComboBox<Funcionario> comboGuia;
     @FXML private ComboBox<Funcionario> comboRecepcionista;
@@ -38,15 +38,27 @@ public class ControladorTelaPrincipal implements Initializable {
     @FXML private TextField campoPix;
     @FXML private TextField campoDebito;
     @FXML private Label labelSomaPagamento;
+    @FXML private Label labelUltimaGuia;
+    @FXML private Label labelUltimaDataHora;
+    @FXML private Label labelUltimaInteiras;
+    @FXML private Label labelUltimaMeias;
+    @FXML private Label labelUltimaNaoPagantes;
+    @FXML private Button botaoDetalhesUltima;
 
     private int quantidadeInteira = 0; // ATRIBUTO: guarda o estado atual do contador
     private int quantidadeMeia = 0;
     private int quantidadeNaoPagante = 0;
-
     private double valorInteira; // ATRIBUTO: por enquanto fixo, depois vem da tabela configuracao
     private double valorMeia ;
-
     private final ServicoControlId servicoControlId = new ServicoControlId();
+    private final VisitaRepositorio visitaRepositorio = new VisitaRepositorio();
+    private Visita ultimaVisita; // guarda a última visita, pra abrir os detalhes dela
+    private ControladorTelaRaiz telaRaiz;
+
+    @Override
+    public void setTelaRaiz(ControladorTelaRaiz telaRaiz) {
+        this.telaRaiz = telaRaiz;
+    }
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
@@ -54,6 +66,33 @@ public class ControladorTelaPrincipal implements Initializable {
         carregarValores();
         configurarCatraca();
         configurarSomaPagamento();
+        carregarUltimaVisita();
+    }
+
+    private void carregarUltimaVisita() { // MÉTODO: busca a última visita e mostra no painel
+        try {
+            ultimaVisita = visitaRepositorio.buscarUltima();
+            if (ultimaVisita != null) {
+                labelUltimaGuia.setText("Guia: " + ultimaVisita.getNomeGuia());
+                labelUltimaDataHora.setText("Data/Hora: " + ultimaVisita.getDataHoraInicio());
+                labelUltimaInteiras.setText("Inteiras: " + ultimaVisita.getQuantidadeInteira());
+                labelUltimaMeias.setText("Meias: " + ultimaVisita.getQuantidadeMeia());
+                labelUltimaNaoPagantes.setText("Não Pagantes: " + ultimaVisita.getQuantidadeNaoPagante());
+                botaoDetalhesUltima.setDisable(false);
+            } else {
+                labelUltimaGuia.setText("Nenhuma visita registrada ainda.");
+                botaoDetalhesUltima.setDisable(true); // desabilita o botão se não há visita
+            }
+        } catch (SQLException e) {
+            System.out.println("Erro ao carregar última visita: " + e.getMessage());
+        }
+    }
+
+    @FXML
+    public void abrirDetalhesUltima() { // MÉTODO: abre os detalhes da última visita
+        if (ultimaVisita != null && telaRaiz != null) {
+            telaRaiz.abrirDetalhesVisita(ultimaVisita);
+        }
     }
 
     private void carregarCombos() { // MÉTODO: busca no banco e popula os 2 combos
@@ -239,10 +278,13 @@ public class ControladorTelaPrincipal implements Initializable {
             repositorio.salvar(visita);
             System.out.println("Visita iniciada e salva! ID: " + visita.getId());
             limparFormulario();
+            carregarUltimaVisita();
         } catch (SQLException e) {
             System.out.println("Erro ao salvar visita: " + e.getMessage());
         }
     }
+
+
     private void limparFormulario() { // MÉTODO: zera a tela após salvar uma visita
         quantidadeInteira = 0;
         quantidadeMeia = 0;

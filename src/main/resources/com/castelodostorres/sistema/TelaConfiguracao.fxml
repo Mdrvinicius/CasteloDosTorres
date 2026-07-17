@@ -34,6 +34,9 @@
     <Label text="Valor Meia (R$):" GridPane.rowIndex="5" GridPane.columnIndex="0" />
     <TextField fx:id="campoValorMeia" GridPane.rowIndex="5" GridPane.columnIndex="1" />
 
-    <Button text="Salvar Configuração" onAction="#salvar" GridPane.rowIndex="6" GridPane.columnIndex="1" />
+    <Label text="Senha de Administrador:" GridPane.rowIndex="6" GridPane.columnIndex="0" />
+    <PasswordField fx:id="campoSenhaAdmin" GridPane.rowIndex="6" GridPane.columnIndex="1" />
+
+    <Button text="Salvar Configuração" onAction="#salvar" GridPane.rowIndex="7" GridPane.columnIndex="1" />
 
 </GridPane>

@@ -91,8 +91,14 @@
                 <Button text="Iniciar Visita" onAction="#iniciarVisita" />
             </VBox>
 
-            <VBox spacing="10" prefWidth="350">
-                <Label text="Visita Atual" style="-fx-font-size: 14px; -fx-font-weight: bold;" />
+            <VBox spacing="8" prefWidth="350">
+                <Label text="Última Visita" style="-fx-font-size: 14px; -fx-font-weight: bold;" />
+                <Label fx:id="labelUltimaGuia" text="Guia: -" />
+                <Label fx:id="labelUltimaDataHora" text="Data/Hora: -" />
+                <Label fx:id="labelUltimaInteiras" text="Inteiras: -" />
+                <Label fx:id="labelUltimaMeias" text="Meias: -" />
+                <Label fx:id="labelUltimaNaoPagantes" text="Não Pagantes: -" />
+                <Button fx:id="botaoDetalhesUltima" text="Detalhes da Visita" onAction="#abrirDetalhesUltima" />
             </VBox>
 
         </HBox>

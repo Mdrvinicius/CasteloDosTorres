@@ -2,15 +2,13 @@ package com.castelodostorres.sistema.controlador;
 
 import com.castelodostorres.sistema.modelo.Visita;
 import com.castelodostorres.sistema.modelo.dto.ComissaoFuncionario;
+import com.castelodostorres.sistema.repositorio.FundoTrocoRepositorio;
 import com.castelodostorres.sistema.repositorio.VisitaRepositorio;
 import com.castelodostorres.sistema.servico.CalculadoraComissao;
 import javafx.collections.FXCollections;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
-import javafx.scene.control.DatePicker;
-import javafx.scene.control.Label;
-import javafx.scene.control.TableColumn;
-import javafx.scene.control.TableView;
+import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
 
 import java.net.URL;
@@ -37,9 +35,11 @@ public class ControladorTelaResumoDia implements Initializable {
     @FXML private Label labelTotalNaoPagantes;
     @FXML private Label labelTotalReembolsos;
     @FXML private Label labelValorFinal;
+    @FXML private TextField campoFundoTroco;
 
     private final VisitaRepositorio repositorio = new VisitaRepositorio();
     private final CalculadoraComissao calculadoraComissao = new CalculadoraComissao();
+    private final FundoTrocoRepositorio fundoTrocoRepositorio = new FundoTrocoRepositorio();
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
@@ -60,6 +60,14 @@ public class ControladorTelaResumoDia implements Initializable {
         }
 
         String dataTexto = data.toString(); // LocalDate.toString() já dá "aaaa-mm-dd"
+
+
+        try {
+            double fundo = fundoTrocoRepositorio.buscar(dataTexto);
+            campoFundoTroco.setText(String.format("%.2f", fundo));
+        } catch (SQLException e) {
+            campoFundoTroco.setText("0,00");
+        }
 
         try {
             double total = repositorio.calcularTotalArrecadadoDoDia(dataTexto);
@@ -96,9 +104,46 @@ public class ControladorTelaResumoDia implements Initializable {
         } catch (SQLException e) {
             labelTotal.setText("Erro ao gerar resumo: " + e.getMessage());
         }
-
-
     }
+
+    @FXML
+    public void salvarFundo() { // MÉTODO: salva o fundo de troco do dia selecionado
+        LocalDate data = seletorData.getValue();
+        if (data == null) {
+            mostrarAviso("Selecione uma data.");
+            return;
+        }
+
+        double valor;
+        try {
+            valor = Double.parseDouble(campoFundoTroco.getText().replace(",", ".").trim());
+        } catch (NumberFormatException e) {
+            mostrarAviso("Valor de fundo de troco inválido.");
+            return;
+        }
+
+        if (valor < 0) {
+            mostrarAviso("O fundo de troco não pode ser negativo.");
+            return;
+        }
+
+        try {
+            fundoTrocoRepositorio.salvar(data.toString(), valor);
+            mostrarAviso("Fundo de troco salvo com sucesso.");
+        } catch (SQLException e) {
+            mostrarAviso("Erro ao salvar fundo de troco: " + e.getMessage());
+        }
+    }
+
+    private void mostrarAviso(String mensagem) {
+        Alert alerta = new Alert(Alert.AlertType.INFORMATION);
+        alerta.setTitle("Aviso");
+        alerta.setHeaderText(null);
+        alerta.setContentText(mensagem);
+        alerta.showAndWait();
+    }
+
+
 
 
 }
