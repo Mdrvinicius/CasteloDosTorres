@@ -38,6 +38,7 @@
 
     <HBox spacing="10">
         <Button text="Salvar Alterações" onAction="#salvarAlteracoes" />
+        <Button text="Excluir Funcionário" onAction="#excluirFuncionario" styleClass="botao-perigo" />
     </HBox>
 
 </VBox>

@@ -37,11 +37,15 @@ public class ControladorTelaRaiz {
 
     @FXML
     public void abrirRelatorios() {
-        trocarConteudo("/com/castelodostorres/sistema/TelaResumoDia.fxml");
+        if (VerificadorSenha.verificar()) {
+            trocarConteudo("/com/castelodostorres/sistema/TelaResumoDia.fxml");
+        }
     }
     @FXML
     public void abrirResumoMes() {
-        trocarConteudo("/com/castelodostorres/sistema/TelaResumoMes.fxml");
+        if (VerificadorSenha.verificar()) {
+            trocarConteudo("/com/castelodostorres/sistema/TelaResumoMes.fxml");
+        }
     }
 
     private void trocarConteudo(String caminhoFxml) {
@@ -91,5 +95,10 @@ public class ControladorTelaRaiz {
         } catch (IOException e) {
             System.out.println("Erro ao abrir detalhes do funcionário: " + e.getMessage());
         }
+    }
+
+    @FXML
+    public void abrirDespesas() {
+        trocarConteudo("/com/castelodostorres/sistema/TelaDespesas.fxml");
     }
 }

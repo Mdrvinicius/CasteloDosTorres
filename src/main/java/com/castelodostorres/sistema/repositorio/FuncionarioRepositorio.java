@@ -35,7 +35,7 @@ public class FuncionarioRepositorio {
         }
     }
     public List<Funcionario> listarPorPapel(String papel) throws SQLException { // MÉTODO: busca funcionários de um papel específico
-        String sql = "SELECT id, nome, papel, tipo_remuneracao, valor_remuneracao FROM funcionario WHERE papel = ?";
+        String sql = "SELECT id, nome, papel, tipo_remuneracao, valor_remuneracao FROM funcionario WHERE papel = ? AND ativo = 1 ";
         List<Funcionario> lista = new ArrayList<>();
 
         Connection conexao = GerenciadorConexao.getConexao();
@@ -60,7 +60,7 @@ public class FuncionarioRepositorio {
     }
 
     public List<Funcionario> listarTodos() throws SQLException { // MÉTODO: traz todos os funcionários cadastrados
-        String sql = "SELECT id, nome, papel, tipo_remuneracao, valor_remuneracao FROM funcionario ORDER BY nome";
+        String sql = "SELECT id, nome, papel, tipo_remuneracao, valor_remuneracao FROM funcionario WHERE ativo = 1 ORDER BY nome";
 
         List<Funcionario> lista = new ArrayList<>();
         Connection conexao = GerenciadorConexao.getConexao();
@@ -99,6 +99,15 @@ public class FuncionarioRepositorio {
             comando.setString(3, funcionario.getTipoRemuneracao());
             comando.setDouble(4, funcionario.getValorRemuneracao());
             comando.setInt(5, funcionario.getId());
+            comando.executeUpdate();
+        }
+    }
+
+    public void desativar(int id) throws SQLException { // MÉTODO: soft delete - marca inativo
+        String sql = "UPDATE funcionario SET ativo = 0 WHERE id = ?";
+        Connection conexao = GerenciadorConexao.getConexao();
+        try (PreparedStatement comando = conexao.prepareStatement(sql)) {
+            comando.setInt(1, id);
             comando.executeUpdate();
         }
     }

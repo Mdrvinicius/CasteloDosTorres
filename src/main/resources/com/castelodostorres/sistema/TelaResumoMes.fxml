@@ -30,8 +30,6 @@
     </HBox>
 
     <Label fx:id="labelArrecadado" text="Valor Total Arrecadado: R$ 0,00" style="-fx-font-size: 15px; -fx-font-weight: bold;" />
-    <Label fx:id="labelTotalPago" text="Total Pago aos Funcionários: R$ 0,00" style="-fx-font-size: 15px;" />
-    <Label fx:id="labelLiquidoFinal" text="Valor Líquido Final: R$ 0,00" style="-fx-font-size: 16px; -fx-font-weight: bold; -fx-text-fill: #1a7a1a;" />
 
     <Label text="Detalhamento de Pagamentos aos Funcionários:" style="-fx-font-weight: bold;" />
 
@@ -42,5 +40,20 @@
             <TableColumn fx:id="colunaValor" text="Total Pago no Mês (R$)" prefWidth="160" />
         </columns>
     </TableView>
+    <Label fx:id="labelTotalPago" text="Total Pago aos Funcionários: R$ 0,00" style="-fx-font-size: 15px;" />
 
+    <Label text="Detalhamento de Despesas" styleClass="subtitulo" />
+
+    <TableView fx:id="tabelaDespesas" prefHeight="200">
+        <columns>
+            <TableColumn fx:id="colunaDataDespesa" text="Data" prefWidth="140" />
+            <TableColumn fx:id="colunaRazaoDespesa" text="Razão" prefWidth="220" />
+            <TableColumn fx:id="colunaTipoDespesa" text="Tipo" prefWidth="120" />
+            <TableColumn fx:id="colunaValorDespesa" text="Valor (R$)" prefWidth="120" />
+        </columns>
+    </TableView>
+
+    <Label fx:id="labelTotalDespesas" text="Total de Despesas: R$ 0,00" styleClass="valor-negativo" />
+
+    <Label fx:id="labelLiquidoFinal" text="Valor Líquido Final: R$ 0,00" style="-fx-font-size: 16px; -fx-font-weight: bold; -fx-text-fill: #1a7a1a;" />
 </VBox>

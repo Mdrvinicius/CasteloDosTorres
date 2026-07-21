@@ -1,9 +1,12 @@
 package com.castelodostorres.sistema.controlador;
 
+import com.castelodostorres.sistema.modelo.Despesa;
 import com.castelodostorres.sistema.modelo.Visita;
 import com.castelodostorres.sistema.modelo.dto.ComissaoFuncionario;
+import com.castelodostorres.sistema.repositorio.DespesaRepositorio;
 import com.castelodostorres.sistema.repositorio.VisitaRepositorio;
 import com.castelodostorres.sistema.servico.CalculadoraComissao;
+import com.castelodostorres.sistema.util.FormatadorData;
 import javafx.collections.FXCollections;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
@@ -31,6 +34,14 @@ public class ControladorTelaResumoMes implements Initializable {
     @FXML private TableColumn<ComissaoFuncionario, String> colunaNome;
     @FXML private TableColumn<ComissaoFuncionario, String> colunaPapel;
     @FXML private TableColumn<ComissaoFuncionario, Double> colunaValor;
+    @FXML private TableView<Despesa> tabelaDespesas;
+    @FXML private TableColumn<Despesa, String> colunaDataDespesa;
+    @FXML private TableColumn<Despesa, String> colunaRazaoDespesa;
+    @FXML private TableColumn<Despesa, String> colunaTipoDespesa;
+    @FXML private TableColumn<Despesa, Double> colunaValorDespesa;
+    @FXML private Label labelTotalDespesas;
+
+    private final DespesaRepositorio despesaRepositorio = new DespesaRepositorio();
 
     private final VisitaRepositorio repositorio = new VisitaRepositorio();
     private final CalculadoraComissao calculadoraComissao = new CalculadoraComissao();
@@ -47,6 +58,15 @@ public class ControladorTelaResumoMes implements Initializable {
         colunaNome.setCellValueFactory(new PropertyValueFactory<>("nome"));
         colunaPapel.setCellValueFactory(new PropertyValueFactory<>("papel"));
         colunaValor.setCellValueFactory(new PropertyValueFactory<>("valor"));
+
+        colunaRazaoDespesa.setCellValueFactory(new PropertyValueFactory<>("nome"));
+        colunaValorDespesa.setCellValueFactory(new PropertyValueFactory<>("valor"));
+        colunaDataDespesa.setCellValueFactory(dados ->
+                new javafx.beans.property.SimpleStringProperty(
+                        FormatadorData.formatar(dados.getValue().getDataHoraCadastro())));
+        colunaTipoDespesa.setCellValueFactory(dados ->
+                new javafx.beans.property.SimpleStringProperty(
+                        "RECORRENTE".equals(dados.getValue().getTipo()) ? "Recorrente" : "Avulsa"));
 
         gerar();
     }
@@ -81,7 +101,18 @@ public class ControladorTelaResumoMes implements Initializable {
                 totalPago += c.getValor();
             }
 
-            double liquidoFinal = arrecadado - totalPago;
+            // despesas do mês
+
+            List<Despesa> despesas = despesaRepositorio.listarDoMes(mesTexto);
+
+            double totalDespesas = 0;
+            for (Despesa d : despesas) {
+                totalDespesas += d.getValor();
+            }
+            tabelaDespesas.setItems(FXCollections.observableArrayList(despesas));
+            labelTotalDespesas.setText("Total de Despesas: R$ " + String.format("%.2f", totalDespesas));
+
+            double liquidoFinal = arrecadado - totalPago - totalDespesas;
 
             labelArrecadado.setText("Valor Total Arrecadado: R$ " + String.format("%.2f", arrecadado));
             labelTotalPago.setText("Total Pago aos Funcionários: R$ " + String.format("%.2f", totalPago));

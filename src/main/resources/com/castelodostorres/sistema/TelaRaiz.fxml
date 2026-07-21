@@ -21,8 +21,9 @@
 
             <Button text="Tela Principal" onAction="#abrirTelaPrincipal" prefWidth="160" />
             <Button text="Visitas" onAction="#abrirVisitas" prefWidth="160" />
-            <Button text="Relatórios" onAction="#abrirRelatorios" prefWidth="160" />
-            <Button text="Resumo do Mês" onAction="#abrirResumoMes" prefWidth="160" />
+            <Button text="Relatórios dos Dias" onAction="#abrirRelatorios" prefWidth="160" />
+            <Button text="Relatório do Mês" onAction="#abrirResumoMes" prefWidth="160" />
+            <Button text="Despesas" onAction="#abrirDespesas" prefWidth="160" />
             <Button text="Funcionários" onAction="#abrirFuncionarios" prefWidth="160" />
             <Button text="Configuração" onAction="#abrirConfiguracao" prefWidth="160" />
 

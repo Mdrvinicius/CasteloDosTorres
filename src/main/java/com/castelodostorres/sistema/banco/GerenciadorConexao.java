@@ -7,11 +7,24 @@ import java.sql.Statement;
 
 public class GerenciadorConexao {
 
-    private static final String URL_BANCO = "jdbc:sqlite:castelodostorres.db";
+
     private static Connection conexao;
+    private static final String URL_BANCO = montarUrlBanco(); // ATRIBUTO
 
     private GerenciadorConexao(){
 
+    }
+
+    private static String montarUrlBanco() { // MÉTODO: monta o caminho do banco numa pasta segura do usuário
+        String pastaUsuario = System.getProperty("user.home"); // ex: C:\Users\Fulano
+        java.io.File pastaApp = new java.io.File(pastaUsuario, "CasteloDosTorres"); // C:\Users\Fulano\CasteloDosTorres
+
+        if (!pastaApp.exists()) {
+            pastaApp.mkdirs(); // cria a pasta se não existir
+        }
+
+        java.io.File arquivoBanco = new java.io.File(pastaApp, "castelodostorres.db");
+        return "jdbc:sqlite:" + arquivoBanco.getAbsolutePath();
     }
 
     public static Connection getConexao() throws SQLException {

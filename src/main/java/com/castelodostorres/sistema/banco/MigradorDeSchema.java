@@ -14,10 +14,13 @@ public class MigradorDeSchema {
         criarTabelaDeControle(conexao); // garante que schema_migrations existe, antes de qualquer coisa
         int versaoAtual = buscarVersaoAtual(conexao); // descobre até onde esse banco específico já foi atualizado
 
+        System.out.println("VERSAO ATUAL DO BANCO: " + versaoAtual);
         aplicarSeNecessario(conexao, versaoAtual, 1, MigradorDeSchema::migracaoVersao1);
         aplicarSeNecessario(conexao, versaoAtual, 2, MigradorDeSchema::migracaoVersao2);
         aplicarSeNecessario(conexao, versaoAtual, 3, MigradorDeSchema::migracaoVersao3);
         aplicarSeNecessario(conexao, versaoAtual, 4, MigradorDeSchema::migracaoVersao4);
+        aplicarSeNecessario(conexao, versaoAtual, 5, MigradorDeSchema::migracaoVersao5);
+        aplicarSeNecessario(conexao, versaoAtual, 6, MigradorDeSchema::migracaoVersao6);
         // no futuro, cada mudança nova de schema vira mais uma linha aqui, com número seguinte (3, 4, 5...)
     }
 
@@ -138,6 +141,7 @@ public class MigradorDeSchema {
             comando.execute("ALTER TABLE visita ADD COLUMN valor_dinheiro REAL NOT NULL DEFAULT 0");
             comando.execute("ALTER TABLE visita ADD COLUMN valor_pix REAL NOT NULL DEFAULT 0");
             comando.execute("ALTER TABLE visita ADD COLUMN valor_debito REAL NOT NULL DEFAULT 0");
+
         }
     }
 
@@ -147,6 +151,35 @@ public class MigradorDeSchema {
             CREATE TABLE IF NOT EXISTS fundo_troco (
                 data TEXT PRIMARY KEY,
                 valor REAL NOT NULL
+            )
+            """);
+        }
+    }
+
+    private static void migracaoVersao5(Connection conexao) throws SQLException { // soft delete de funcionário
+        try (Statement comando = conexao.createStatement()) {
+            comando.execute("ALTER TABLE funcionario ADD COLUMN ativo INTEGER NOT NULL DEFAULT 1");
+        }
+    }
+
+    private static void migracaoVersao6(Connection conexao) throws SQLException { // cria tabelas de despesas
+        try (Statement comando = conexao.createStatement()) {
+            comando.execute("""
+            CREATE TABLE IF NOT EXISTS despesa (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                nome TEXT NOT NULL,
+                valor REAL NOT NULL,
+                tipo TEXT NOT NULL CHECK (tipo IN ('AVULSA', 'RECORRENTE')),
+                data_hora_cadastro TEXT NOT NULL
+            )
+            """);
+
+            comando.execute("""
+            CREATE TABLE IF NOT EXISTS despesa_mensal (
+                despesa_id INTEGER NOT NULL REFERENCES despesa(id),
+                mes TEXT NOT NULL,
+                valor REAL NOT NULL,
+                PRIMARY KEY (despesa_id, mes)
             )
             """);
         }

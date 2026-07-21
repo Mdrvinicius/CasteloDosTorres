@@ -5,11 +5,13 @@ import com.castelodostorres.sistema.repositorio.FuncionarioRepositorio;
 import javafx.collections.FXCollections;
 import javafx.fxml.FXML;
 import javafx.scene.control.Alert;
+import javafx.scene.control.ButtonType;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.TextField;
 import javafx.util.StringConverter;
 
 import java.sql.SQLException;
+import java.util.Optional;
 
 public class ControladorTelaDetalhesFuncionario implements PrecisaDaTelaRaiz {
 
@@ -117,5 +119,29 @@ public class ControladorTelaDetalhesFuncionario implements PrecisaDaTelaRaiz {
         alerta.setHeaderText(null);
         alerta.setContentText(mensagem);
         alerta.showAndWait();
+    }
+
+    @FXML
+    public void excluirFuncionario() { // MÉTODO: soft delete com confirmação
+        Alert confirmacao = new Alert(Alert.AlertType.CONFIRMATION);
+        confirmacao.setTitle("Excluir Funcionário");
+        confirmacao.setHeaderText(null);
+        confirmacao.setContentText("Tem certeza que deseja excluir " + funcionario.getNome() +
+                "? Ele deixará de aparecer nas listas, mas o histórico de visitas será preservado.");
+
+        Optional<ButtonType> resposta = confirmacao.showAndWait();
+        if (resposta.isEmpty() || resposta.get() != ButtonType.OK) {
+            return; // cancelou
+        }
+
+        try {
+            repositorio.desativar(funcionario.getId());
+            mostrarAviso("Funcionário excluído com sucesso.");
+            if (telaRaiz != null) {
+                telaRaiz.abrirFuncionarios(); // volta pra lista (que já não vai mostrar ele)
+            }
+        } catch (SQLException e) {
+            mostrarAviso("Erro ao excluir: " + e.getMessage());
+        }
     }
 }

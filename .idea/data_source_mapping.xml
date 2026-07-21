@@ -2,5 +2,6 @@
 <project version="4">
   <component name="DataSourcePerFileMappings">
     <file url="file://$PROJECT_DIR$/src/main/java/com/castelodostorres/sistema/banco/MigradorDeSchema.java" value="e7100334-fbc9-4359-9944-8dd3fa2c10ed" />
+    <file url="file://$PROJECT_DIR$/src/main/java/com/castelodostorres/sistema/repositorio/FundoTrocoRepositorio.java" value="e7100334-fbc9-4359-9944-8dd3fa2c10ed" />
   </component>
 </project>
