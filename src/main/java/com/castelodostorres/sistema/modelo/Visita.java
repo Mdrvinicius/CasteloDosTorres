@@ -33,6 +33,8 @@ public class Visita {
 
     private String motivoCancelamento;
 
+    private boolean agendada; // ATRIBUTO: true = paga antecipada ao dono, fora da conferência de caixa
+
     public Visita() { // CONSTRUTOR vazio
     }
 
@@ -110,6 +112,8 @@ public class Visita {
     public String getMotivoCancelamento() { return motivoCancelamento; }
     public void setMotivoCancelamento(String motivoCancelamento) { this.motivoCancelamento = motivoCancelamento; }
 
+    public boolean isAgendada() { return agendada; }
+    public void setAgendada(boolean agendada) { this.agendada = agendada; }
 
 
 

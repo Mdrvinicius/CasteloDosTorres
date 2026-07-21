@@ -9,11 +9,13 @@
 <?import javafx.scene.control.TextField?>
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.VBox?>
+<?import javafx.scene.control.ScrollPane?>
 
-<VBox xmlns="http://javafx.com/javafx"
-      xmlns:fx="http://javafx.com/fxml"
-      fx:controller="com.castelodostorres.sistema.controlador.ControladorTelaResumoMes"
-      spacing="15">
+<ScrollPane xmlns="http://javafx.com/javafx"
+            xmlns:fx="http://javafx.com/fxml"
+            fx:controller="com.castelodostorres.sistema.controlador.ControladorTelaResumoMes" >
+
+<VBox spacing="15">
 
     <padding>
         <Insets top="15" right="15" bottom="15" left="15" />
@@ -56,4 +58,21 @@
     <Label fx:id="labelTotalDespesas" text="Total de Despesas: R$ 0,00" styleClass="valor-negativo" />
 
     <Label fx:id="labelLiquidoFinal" text="Valor Líquido Final: R$ 0,00" style="-fx-font-size: 16px; -fx-font-weight: bold; -fx-text-fill: #1a7a1a;" />
+    <Label text="Fechamentos de Caixa do Mês" styleClass="subtitulo" />
+
+    <TableView fx:id="tabelaFechamentos" prefHeight="250">
+        <columns>
+            <TableColumn fx:id="colFechData" text="Data" prefWidth="100" />
+            <TableColumn fx:id="colFechFunc" text="Fechou" prefWidth="130" />
+            <TableColumn fx:id="colFechDinEsp" text="Dinh. Esperado" prefWidth="110" />
+            <TableColumn fx:id="colFechDinCont" text="Dinh. Contado" prefWidth="110" />
+            <TableColumn fx:id="colFechDinDiv" text="Div. Dinheiro" prefWidth="110" />
+            <TableColumn fx:id="colFechPixEsp" text="Pix+Déb Esperado" prefWidth="120" />
+            <TableColumn fx:id="colFechPixCont" text="Pix+Déb Contado" prefWidth="120" />
+            <TableColumn fx:id="colFechPixDiv" text="Div. Pix+Déb" prefWidth="110" />
+            <TableColumn fx:id="colFechStatus" text="Status" prefWidth="90" />
+        </columns>
+    </TableView>
+
 </VBox>
+</ScrollPane>

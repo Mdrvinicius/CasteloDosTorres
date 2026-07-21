@@ -36,6 +36,7 @@ public class ControladorTelaResumoDia implements Initializable {
     @FXML private Label labelTotalReembolsos;
     @FXML private Label labelValorFinal;
     @FXML private TextField campoFundoTroco;
+    @FXML private Label labelAgendadosDia;
 
     private final VisitaRepositorio repositorio = new VisitaRepositorio();
     private final CalculadoraComissao calculadoraComissao = new CalculadoraComissao();
@@ -82,6 +83,12 @@ public class ControladorTelaResumoDia implements Initializable {
             List<ComissaoFuncionario> comissoes = calculadoraComissao.calcular(visitasDoDia);
             tabelaComissao.setItems(FXCollections.observableArrayList(comissoes));
 
+            double[] agendados = repositorio.calcularAgendadosDoDia(dataTexto);
+            labelAgendadosDia.setText("Valor de agendados: dinheiro R$ " + String.format("%.2f", agendados[0]) +
+                    " | pix R$ " + String.format("%.2f", agendados[1]) +
+                    " | débito R$ " + String.format("%.2f", agendados[2]));
+
+
             double totalComissao = 0;
             for (ComissaoFuncionario c : comissoes) {
                 totalComissao += c.getValor();
@@ -104,6 +111,7 @@ public class ControladorTelaResumoDia implements Initializable {
         } catch (SQLException e) {
             labelTotal.setText("Erro ao gerar resumo: " + e.getMessage());
         }
+
     }
 
     @FXML

@@ -101,4 +101,9 @@ public class ControladorTelaRaiz {
     public void abrirDespesas() {
         trocarConteudo("/com/castelodostorres/sistema/TelaDespesas.fxml");
     }
+
+    @FXML
+    public void abrirCaixa() {
+        trocarConteudo("/com/castelodostorres/sistema/TelaCaixa.fxml");
+    }
 }

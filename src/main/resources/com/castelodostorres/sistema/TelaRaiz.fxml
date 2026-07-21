@@ -20,6 +20,7 @@
             <Label text="CASTELO DOS TORRES" style="-fx-text-fill: white; -fx-font-size: 14px; -fx-font-weight: bold;" />
 
             <Button text="Tela Principal" onAction="#abrirTelaPrincipal" prefWidth="160" />
+            <Button text="Caixa" onAction="#abrirCaixa" prefWidth="160" />
             <Button text="Visitas" onAction="#abrirVisitas" prefWidth="160" />
             <Button text="Relatórios dos Dias" onAction="#abrirRelatorios" prefWidth="160" />
             <Button text="Relatório do Mês" onAction="#abrirResumoMes" prefWidth="160" />

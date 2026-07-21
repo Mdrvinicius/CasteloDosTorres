@@ -57,8 +57,8 @@ public class VisitaRepositorio {
                 quantidade_inteira, quantidade_meia, quantidade_nao_pagante,
                 valor_unitario_inteira, valor_unitario_meia, valor_total,
                 observacoes, data_hora_inicio, status,
-                valor_dinheiro, valor_pix, valor_debito
-            ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+                valor_dinheiro, valor_pix, valor_debito, agendada
+            ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
             """;
 
         Connection conexao = GerenciadorConexao.getConexao();
@@ -95,6 +95,7 @@ public class VisitaRepositorio {
             comando.setDouble(16, visita.getValorDinheiro());
             comando.setDouble(17, visita.getValorPix());
             comando.setDouble(18, visita.getValorDebito());
+            comando.setInt(19, visita.isAgendada() ? 1 : 0);
 
             comando.executeUpdate();
 
@@ -139,6 +140,7 @@ public class VisitaRepositorio {
                 visita.setValorDinheiro(resultado.getDouble("valor_dinheiro"));
                 visita.setValorPix(resultado.getDouble("valor_pix"));
                 visita.setValorDebito(resultado.getDouble("valor_debito"));
+                visita.setAgendada(resultado.getInt("agendada") == 1);
                 lista.add(visita);
             }
         }
@@ -274,6 +276,7 @@ public class VisitaRepositorio {
                     visita.setRecepcionistaTipoRemuneracao(resultado.getString("recepcionista_tipo_remuneracao"));
                     Object recepValor = resultado.getObject("recepcionista_valor_remuneracao");
                     visita.setRecepcionistaValorRemuneracao(recepValor == null ? null : ((Number) recepValor).doubleValue());
+                    visita.setAgendada(resultado.getInt("agendada") == 1);
                     lista.add(visita);
                 }
             }
@@ -364,6 +367,7 @@ public class VisitaRepositorio {
                     visita.setRecepcionistaTipoRemuneracao(resultado.getString("recepcionista_tipo_remuneracao"));
                     Object recepValor = resultado.getObject("recepcionista_valor_remuneracao");
                     visita.setRecepcionistaValorRemuneracao(recepValor == null ? null : ((Number) recepValor).doubleValue());
+                    visita.setAgendada(resultado.getInt("agendada") == 1);
                     lista.add(visita);
                 }
             }
@@ -413,11 +417,73 @@ public class VisitaRepositorio {
                     visita.setValorReembolsado(resultado.getDouble("valor_reembolsado"));
                     visita.setStatus(resultado.getString("status"));
                     visita.setDataHoraInicio(resultado.getString("data_hora_inicio"));
+                    visita.setAgendada(resultado.getInt("agendada") == 1);
                     lista.add(visita);
                 }
             }
         }
 
         return lista;
+    }
+
+    public double[] calcularEsperadoNaoAgendadas(String data) throws SQLException { // [dinheiro, pixdebito] das NÃO-agendadas
+        String sql = """
+        SELECT
+            COALESCE(SUM(valor_dinheiro), 0) AS dinheiro,
+            COALESCE(SUM(valor_pix + valor_debito), 0) AS pixdebito
+        FROM visita
+        WHERE date(data_hora_inicio) = ?
+          AND status != 'CANCELADA'
+          AND agendada = 0
+        """;
+        Connection conexao = GerenciadorConexao.getConexao();
+        try (PreparedStatement comando = conexao.prepareStatement(sql)) {
+            comando.setString(1, data);
+            try (ResultSet r = comando.executeQuery()) {
+                if (r.next()) {
+                    return new double[] { r.getDouble("dinheiro"), r.getDouble("pixdebito") };
+                }
+            }
+        }
+        return new double[] { 0, 0 };
+    }
+
+    public double[] calcularAgendadosDoDia(String data) throws SQLException { // [dinheiro, pix, debito] das AGENDADAS
+        String sql = """
+        SELECT
+            COALESCE(SUM(valor_dinheiro), 0) AS dinheiro,
+            COALESCE(SUM(valor_pix), 0) AS pix,
+            COALESCE(SUM(valor_debito), 0) AS debito
+        FROM visita
+        WHERE date(data_hora_inicio) = ?
+          AND status != 'CANCELADA'
+          AND agendada = 1
+        """;
+        Connection conexao = GerenciadorConexao.getConexao();
+        try (PreparedStatement comando = conexao.prepareStatement(sql)) {
+            comando.setString(1, data);
+            try (ResultSet r = comando.executeQuery()) {
+                if (r.next()) {
+                    return new double[] { r.getDouble("dinheiro"), r.getDouble("pix"), r.getDouble("debito") };
+                }
+            }
+        }
+        return new double[] { 0, 0, 0 };
+    }
+
+    public double calcularReembolsosDoDia(String data) throws SQLException {
+        String sql = """
+        SELECT COALESCE(SUM(valor_reembolsado), 0) AS total
+        FROM visita
+        WHERE date(data_hora_inicio) = ? AND status != 'CANCELADA'
+        """;
+        Connection conexao = GerenciadorConexao.getConexao();
+        try (PreparedStatement comando = conexao.prepareStatement(sql)) {
+            comando.setString(1, data);
+            try (ResultSet r = comando.executeQuery()) {
+                if (r.next()) return r.getDouble("total");
+            }
+        }
+        return 0.0;
     }
 }

@@ -21,6 +21,8 @@ public class MigradorDeSchema {
         aplicarSeNecessario(conexao, versaoAtual, 4, MigradorDeSchema::migracaoVersao4);
         aplicarSeNecessario(conexao, versaoAtual, 5, MigradorDeSchema::migracaoVersao5);
         aplicarSeNecessario(conexao, versaoAtual, 6, MigradorDeSchema::migracaoVersao6);
+        aplicarSeNecessario(conexao, versaoAtual, 7, MigradorDeSchema::migracaoVersao7);
+        aplicarSeNecessario(conexao, versaoAtual, 8, MigradorDeSchema::migracaoVersao8);
         // no futuro, cada mudança nova de schema vira mais uma linha aqui, com número seguinte (3, 4, 5...)
     }
 
@@ -180,6 +182,39 @@ public class MigradorDeSchema {
                 mes TEXT NOT NULL,
                 valor REAL NOT NULL,
                 PRIMARY KEY (despesa_id, mes)
+            )
+            """);
+        }
+    }
+
+    private static void migracaoVersao7(Connection conexao) throws SQLException { // marca visitas agendadas (pagas ao dono)
+        try (Statement comando = conexao.createStatement()) {
+            comando.execute("ALTER TABLE visita ADD COLUMN agendada INTEGER NOT NULL DEFAULT 0");
+        }
+    }
+
+    private static void migracaoVersao8(Connection conexao) throws SQLException { // saída de caixa + fechamento de caixa
+        try (Statement comando = conexao.createStatement()) {
+            comando.execute("""
+            CREATE TABLE IF NOT EXISTS saida_caixa (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                data TEXT NOT NULL,
+                valor REAL NOT NULL,
+                motivo TEXT NOT NULL
+            )
+            """);
+
+            comando.execute("""
+            CREATE TABLE IF NOT EXISTS fechamento_caixa (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                data TEXT NOT NULL,
+                data_hora_fechamento TEXT NOT NULL,
+                funcionario_id INTEGER REFERENCES funcionario(id),
+                nome_funcionario TEXT NOT NULL,
+                dinheiro_esperado REAL NOT NULL,
+                dinheiro_contado REAL NOT NULL,
+                pixdebito_esperado REAL NOT NULL,
+                pixdebito_contado REAL NOT NULL
             )
             """);
         }

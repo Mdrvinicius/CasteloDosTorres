@@ -58,6 +58,7 @@
 
     <HBox spacing="10">
         <Button fx:id="botaoApagar" text="Apagar Selecionada" onAction="#apagar" styleClass="botao-perigo" />
+        <Button fx:id="botaoAjustarMes" text="Ajustar Valor do Mês" onAction="#ajustarValorMes" styleClass="botao-secundario" />
     </HBox>
 
 </VBox>

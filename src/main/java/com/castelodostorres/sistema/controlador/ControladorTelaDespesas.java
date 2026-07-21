@@ -8,6 +8,10 @@ import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
+import javafx.scene.control.Dialog;
+import javafx.scene.control.ButtonBar;
+import javafx.scene.control.ButtonType;
+import javafx.scene.layout.VBox;
 import javafx.util.StringConverter;
 
 import java.net.URL;
@@ -138,6 +142,7 @@ public class ControladorTelaDespesas implements Initializable {
         if (resposta.isEmpty() || resposta.get() != ButtonType.OK) return;
 
         try {
+            repositorio.apagarAjustesDaDespesa(selecionada.getId());
             repositorio.apagar(selecionada.getId());
             mostrarAviso("Despesa apagada.");
             carregarDespesas();
@@ -161,5 +166,70 @@ public class ControladorTelaDespesas implements Initializable {
         alerta.setHeaderText(null);
         alerta.setContentText(mensagem);
         alerta.showAndWait();
+    }
+
+    @FXML
+    public void ajustarValorMes() { // MÉTODO: abre diálogo pra ajustar valor de uma recorrente num mês
+        Despesa selecionada = tabelaDespesas.getSelectionModel().getSelectedItem();
+        if (selecionada == null) {
+            mostrarAviso("Selecione uma despesa recorrente para ajustar.");
+            return;
+        }
+        if (!"RECORRENTE".equals(selecionada.getTipo())) {
+            mostrarAviso("Só despesas recorrentes têm ajuste mensal. Avulsas têm valor único.");
+            return;
+        }
+
+        Dialog<ButtonType> dialogo = new Dialog<>();
+        dialogo.setTitle("Ajustar Valor do Mês");
+        dialogo.setHeaderText("Ajustar \"" + selecionada.getNome() + "\" a partir de um mês.\n"
+                + "O valor vale desse mês em diante, até um novo ajuste.");
+
+        ButtonType botaoConfirmar = new ButtonType("Salvar", ButtonBar.ButtonData.OK_DONE);
+        dialogo.getDialogPane().getButtonTypes().addAll(botaoConfirmar, ButtonType.CANCEL);
+
+        ComboBox<Integer> comboMes = new ComboBox<>();
+        for (int m = 1; m <= 12; m++) comboMes.getItems().add(m);
+        comboMes.setValue(LocalDateTime.now().getMonthValue());
+
+        TextField campoAno = new TextField(String.valueOf(LocalDateTime.now().getYear()));
+        campoAno.setPrefWidth(80);
+
+        TextField campoValorAjuste = new TextField();
+        campoValorAjuste.setPromptText("Ex: 350,00");
+
+        VBox conteudo = new VBox(10,
+                new Label("Mês:"), comboMes,
+                new Label("Ano:"), campoAno,
+                new Label("Novo valor (R$):"), campoValorAjuste
+        );
+        dialogo.getDialogPane().setContent(conteudo);
+
+        Optional<ButtonType> resposta = dialogo.showAndWait();
+        if (resposta.isEmpty() || resposta.get() != botaoConfirmar) return;
+
+        Integer mes = comboMes.getValue();
+        if (mes == null) { mostrarAviso("Selecione o mês."); return; }
+
+        int ano;
+        try {
+            ano = Integer.parseInt(campoAno.getText().trim());
+        } catch (NumberFormatException e) { mostrarAviso("Ano inválido."); return; }
+
+        double valor;
+        try {
+            valor = Double.parseDouble(campoValorAjuste.getText().replace(",", ".").trim());
+        } catch (NumberFormatException e) { mostrarAviso("Valor inválido."); return; }
+        if (valor <= 0) { mostrarAviso("O valor deve ser maior que zero."); return; }
+
+        String mesTexto = String.format("%04d-%02d", ano, mes);
+
+        try {
+            repositorio.salvarAjusteMensal(selecionada.getId(), mesTexto, valor);
+            mostrarAviso("Ajuste salvo. \"" + selecionada.getNome() + "\" passa a valer R$ "
+                    + String.format("%.2f", valor) + " a partir de " + mesTexto + ".");
+        } catch (SQLException e) {
+            mostrarAviso("Erro ao salvar ajuste: " + e.getMessage());
+        }
     }
 }

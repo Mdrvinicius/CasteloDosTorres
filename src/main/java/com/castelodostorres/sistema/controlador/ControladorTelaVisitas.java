@@ -30,6 +30,7 @@ public class ControladorTelaVisitas implements Initializable, PrecisaDaTelaRaiz 
     @FXML private TableColumn<Visita, Integer> colunaNaoPagantes;
     @FXML private TableColumn<Visita, Double> colunaTotal;
     @FXML private TableColumn<Visita, String> colunaStatus;
+    @FXML private Label labelResumoGuia;
 
     private final VisitaRepositorio repositorio = new VisitaRepositorio();
 
@@ -83,7 +84,7 @@ public class ControladorTelaVisitas implements Initializable, PrecisaDaTelaRaiz 
 
 
     @FXML
-    public void buscar() { // MÉTODO: filtra as visitas por guia e/ou data
+    public void buscar() {
         Funcionario guiaSelecionada = comboGuiaBusca.getValue();
         Integer guiaId = (guiaSelecionada == null) ? null : guiaSelecionada.getId();
 
@@ -93,15 +94,45 @@ public class ControladorTelaVisitas implements Initializable, PrecisaDaTelaRaiz 
         try {
             List<Visita> resultado = repositorio.buscar(guiaId, dataTexto);
             tabelaVisitas.setItems(FXCollections.observableArrayList(resultado));
+            atualizarResumoGuia(guiaSelecionada, resultado);
         } catch (SQLException e) {
             System.out.println("Erro na busca: " + e.getMessage());
         }
+    }
+
+    private void atualizarResumoGuia(Funcionario guia, List<Visita> visitas) { // MÉTODO: mostra total de inteiras/meias da guia filtrada
+        if (guia == null) { // sem filtro de guia, não mostra resumo
+            labelResumoGuia.setText("");
+            return;
+        }
+
+        int totalInteiras = 0;
+        int totalMeias = 0;
+        for (Visita v : visitas) {
+            if (!"CANCELADA".equals(v.getStatus())) { // canceladas não contam
+                totalInteiras += v.getQuantidadeInteira();
+                totalMeias += v.getQuantidadeMeia();
+            }
+        }
+
+        int totalPessoas = totalInteiras + totalMeias;
+
+        LocalDate data = seletorDataBusca.getValue();
+        String textoData = (data == null) ? "Todas as visitas" : data.toString();
+
+        labelResumoGuia.setText(
+                guia.getNome() + " | Data: " + textoData +
+                        " | Total Inteiras: " + totalInteiras +
+                        " | Total Meias: " + totalMeias +
+                        " | Total Pessoas: " + totalPessoas
+        );
     }
 
     @FXML
     public void limpar() {
         comboGuiaBusca.getSelectionModel().clearSelection();
         seletorDataBusca.setValue(null);
+        labelResumoGuia.setText("");
         carregarTodas();
     }
 

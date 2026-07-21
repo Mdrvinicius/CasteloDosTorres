@@ -44,4 +44,6 @@
         </columns>
     </TableView>
 
+    <Label fx:id="labelResumoGuia" text="" styleClass="subtitulo" />
+
 </VBox>

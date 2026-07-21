@@ -89,6 +89,7 @@
                 <Label fx:id="labelSomaPagamento" text="Soma: R$ 0,00" />
 
                 <Button text="Iniciar Visita" onAction="#iniciarVisita" />
+                <Button text="Visita Agendada" onAction="#iniciarVisitaAgendada" styleClass="botao-secundario" />
             </VBox>
 
             <VBox spacing="8" prefWidth="350">

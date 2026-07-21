@@ -212,7 +212,16 @@ public class ControladorTelaPrincipal implements Initializable, PrecisaDaTelaRai
     }
 
     @FXML
-    public void iniciarVisita() {
+    public void iniciarVisita() { // botão "Iniciar Visita" (normal)
+        salvarVisita(false);
+    }
+
+    @FXML
+    public void iniciarVisitaAgendada() { // botão "Visita Agendada" (paga antecipada ao dono)
+        salvarVisita(true);
+    }
+
+    private void salvarVisita(boolean agendada) { // MÉTODO: lógica comum aos dois botões
         Funcionario guia = comboGuia.getValue();
         Funcionario recepcionista = comboRecepcionista.getValue();
 
@@ -272,6 +281,7 @@ public class ControladorTelaPrincipal implements Initializable, PrecisaDaTelaRai
         visita.setValorDinheiro(dinheiro);
         visita.setValorPix(pix);
         visita.setValorDebito(debito);
+        visita.setAgendada(agendada); // NOVA linha: marca se é agendada
 
         VisitaRepositorio repositorio = new VisitaRepositorio();
         try {
@@ -317,4 +327,6 @@ public class ControladorTelaPrincipal implements Initializable, PrecisaDaTelaRai
             return 0.0; // se digitou algo inválido, considera 0 (a validação final barra depois)
         }
     }
+
+
 }

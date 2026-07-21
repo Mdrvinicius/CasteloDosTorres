@@ -47,6 +47,7 @@
     <Label fx:id="labelDinheiro" text="Dinheiro: R$ 0,00" />
     <Label fx:id="labelPix" text="Pix: R$ 0,00" />
     <Label fx:id="labelDebito" text="Débito: R$ 0,00" />
+    <Label fx:id="labelAgendadosDia" text="Valor de agendados: —" styleClass="texto-suave" />
 
     <Label text="Pagamento aos Funcionários:" style="-fx-font-weight: bold;" />
 

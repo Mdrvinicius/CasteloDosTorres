@@ -18,7 +18,7 @@ public class Main extends Application {
         FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/castelodostorres/sistema/TelaRaiz.fxml"));
         Parent raiz = loader.load();
 
-        stage.setTitle("Castelo dos Torres - Cadastro de Funcionário");
+        stage.setTitle("Castelo dos Torres ");
 
         Scene scene = new Scene(raiz, 1220, 700);
         stage.setScene(scene);

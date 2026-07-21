@@ -1,9 +1,11 @@
 package com.castelodostorres.sistema.controlador;
 
 import com.castelodostorres.sistema.modelo.Despesa;
+import com.castelodostorres.sistema.modelo.FechamentoCaixa;
 import com.castelodostorres.sistema.modelo.Visita;
 import com.castelodostorres.sistema.modelo.dto.ComissaoFuncionario;
 import com.castelodostorres.sistema.repositorio.DespesaRepositorio;
+import com.castelodostorres.sistema.repositorio.FechamentoCaixaRepositorio;
 import com.castelodostorres.sistema.repositorio.VisitaRepositorio;
 import com.castelodostorres.sistema.servico.CalculadoraComissao;
 import com.castelodostorres.sistema.util.FormatadorData;
@@ -40,11 +42,22 @@ public class ControladorTelaResumoMes implements Initializable {
     @FXML private TableColumn<Despesa, String> colunaTipoDespesa;
     @FXML private TableColumn<Despesa, Double> colunaValorDespesa;
     @FXML private Label labelTotalDespesas;
+    @FXML private TableView<FechamentoCaixa> tabelaFechamentos;
+    @FXML private TableColumn<FechamentoCaixa, String> colFechData;
+    @FXML private TableColumn<FechamentoCaixa, String> colFechFunc;
+    @FXML private TableColumn<FechamentoCaixa, String> colFechDinEsp;
+    @FXML private TableColumn<FechamentoCaixa, String> colFechDinCont;
+    @FXML private TableColumn<FechamentoCaixa, String> colFechDinDiv;
+    @FXML private TableColumn<FechamentoCaixa, String> colFechPixEsp;
+    @FXML private TableColumn<FechamentoCaixa, String> colFechPixCont;
+    @FXML private TableColumn<FechamentoCaixa, String> colFechPixDiv;
+    @FXML private TableColumn<FechamentoCaixa, String> colFechStatus;
 
     private final DespesaRepositorio despesaRepositorio = new DespesaRepositorio();
 
     private final VisitaRepositorio repositorio = new VisitaRepositorio();
     private final CalculadoraComissao calculadoraComissao = new CalculadoraComissao();
+    private final FechamentoCaixaRepositorio fechamentoRepositorio = new FechamentoCaixaRepositorio();
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
@@ -67,6 +80,24 @@ public class ControladorTelaResumoMes implements Initializable {
         colunaTipoDespesa.setCellValueFactory(dados ->
                 new javafx.beans.property.SimpleStringProperty(
                         "RECORRENTE".equals(dados.getValue().getTipo()) ? "Recorrente" : "Avulsa"));
+
+        colFechData.setCellValueFactory(d -> new javafx.beans.property.SimpleStringProperty(
+                FormatadorData.formatar(d.getValue().getDataHoraFechamento())));
+        colFechFunc.setCellValueFactory(new PropertyValueFactory<>("nomeFuncionario"));
+        colFechDinEsp.setCellValueFactory(d -> new javafx.beans.property.SimpleStringProperty(
+                "R$ " + String.format("%.2f", d.getValue().getDinheiroEsperado())));
+        colFechDinCont.setCellValueFactory(d -> new javafx.beans.property.SimpleStringProperty(
+                "R$ " + String.format("%.2f", d.getValue().getDinheiroContado())));
+        colFechDinDiv.setCellValueFactory(d -> new javafx.beans.property.SimpleStringProperty(
+                "R$ " + String.format("%.2f", d.getValue().getDivergenciaDinheiro())));
+        colFechPixEsp.setCellValueFactory(d -> new javafx.beans.property.SimpleStringProperty(
+                "R$ " + String.format("%.2f", d.getValue().getPixdebitoEsperado())));
+        colFechPixCont.setCellValueFactory(d -> new javafx.beans.property.SimpleStringProperty(
+                "R$ " + String.format("%.2f", d.getValue().getPixdebitoContado())));
+        colFechPixDiv.setCellValueFactory(d -> new javafx.beans.property.SimpleStringProperty(
+                "R$ " + String.format("%.2f", d.getValue().getDivergenciaPixdebito())));
+        colFechStatus.setCellValueFactory(d -> new javafx.beans.property.SimpleStringProperty(
+                statusFechamento(d.getValue())));
 
         gerar();
     }
@@ -111,6 +142,8 @@ public class ControladorTelaResumoMes implements Initializable {
             }
             tabelaDespesas.setItems(FXCollections.observableArrayList(despesas));
             labelTotalDespesas.setText("Total de Despesas: R$ " + String.format("%.2f", totalDespesas));
+            List<FechamentoCaixa> fechamentos = fechamentoRepositorio.listarDoMes(mesTexto);
+            tabelaFechamentos.setItems(FXCollections.observableArrayList(fechamentos));
 
             double liquidoFinal = arrecadado - totalPago - totalDespesas;
 
@@ -120,5 +153,14 @@ public class ControladorTelaResumoMes implements Initializable {
         } catch (SQLException e) {
             labelArrecadado.setText("Erro ao gerar resumo: " + e.getMessage());
         }
+
+    }
+    private String statusFechamento(FechamentoCaixa f) {
+        boolean dinBate = Math.abs(f.getDivergenciaDinheiro()) < 0.001;
+        boolean pixBate = Math.abs(f.getDivergenciaPixdebito()) < 0.001;
+        if (dinBate && pixBate) return "Bateu";
+        // se algum não bateu, indica faltou/sobrou pelo total
+        double totalDiv = f.getDivergenciaDinheiro() + f.getDivergenciaPixdebito();
+        return totalDiv < 0 ? "Faltou" : "Sobrou";
     }
 }
