@@ -2,48 +2,60 @@
 
 <?import javafx.geometry.Insets?>
 <?import javafx.scene.control.Button?>
+<?import javafx.scene.control.ComboBox?>
+<?import javafx.scene.control.DatePicker?>
 <?import javafx.scene.control.Label?>
+<?import javafx.scene.control.ScrollPane?>
 <?import javafx.scene.control.TableColumn?>
 <?import javafx.scene.control.TableView?>
-<?import javafx.scene.control.TextField?>
 <?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.Region?>
 <?import javafx.scene.layout.VBox?>
 
-<?import javafx.scene.control.DatePicker?>
-<?import javafx.scene.control.ComboBox?>
-<VBox xmlns="http://javafx.com/javafx"
-      xmlns:fx="http://javafx.com/fxml"
-      fx:controller="com.castelodostorres.sistema.controlador.ControladorTelaVisitas"
-      spacing="10">
+<ScrollPane xmlns="http://javafx.com/javafx" xmlns:fx="http://javafx.com/fxml"
+            fx:controller="com.castelodostorres.sistema.controlador.ControladorTelaVisitas"
+            fitToWidth="true" styleClass="painel-conteudo">
 
-    <padding>
-        <Insets top="15" right="15" bottom="15" left="15" />
-    </padding>
+    <VBox spacing="16">
+        <padding><Insets top="20" right="20" bottom="20" left="20" /></padding>
 
-    <Label text="Visitas" style="-fx-font-size: 18px; -fx-font-weight: bold;" />
+        <VBox spacing="2">
+            <Label text="Visitas" styleClass="titulo-tela" />
+            <Label text="Consulte e acompanhe todas as visitas registradas." styleClass="texto-suave" />
+        </VBox>
 
-    <HBox spacing="10">
-        <Label text="Guia:" />
-        <ComboBox fx:id="comboGuiaBusca" prefWidth="200" />
-        <Label text="Data:" />
-        <DatePicker fx:id="seletorDataBusca" />
-        <Button text="Buscar" onAction="#buscar" />
-        <Button text="Limpar" onAction="#limpar" />
-    </HBox>
+        <!-- CARD: filtros -->
+        <VBox styleClass="card" spacing="10">
+            <HBox spacing="12" alignment="CENTER_LEFT">
+                <Label text="Guia:" styleClass="form-label" />
+                <ComboBox fx:id="comboGuiaBusca" prefWidth="200" />
+                <Label text="Data:" styleClass="form-label" />
+                <DatePicker fx:id="seletorDataBusca" />
+                <Region HBox.hgrow="ALWAYS" />
+                <Button text="Buscar" onAction="#buscar" />
+                <Button text="Limpar" onAction="#limpar" styleClass="botao-secundario" />
+            </HBox>
+        </VBox>
 
-    <TableView fx:id="tabelaVisitas">
-        <columns>
-            <TableColumn fx:id="colunaData" text="Data/Hora" prefWidth="140" />
-            <TableColumn fx:id="colunaGuia" text="Guia" prefWidth="130" />
-            <TableColumn fx:id="colunaRecepcionista" text="Recepcionista" prefWidth="130" />
-            <TableColumn fx:id="colunaInteiras" text="Inteiras" prefWidth="70" />
-            <TableColumn fx:id="colunaMeias" text="Meias" prefWidth="60" />
-            <TableColumn fx:id="colunaNaoPagantes" text="Não Pag." prefWidth="70" />
-            <TableColumn fx:id="colunaTotal" text="Total (R$)" prefWidth="90" />
-            <TableColumn fx:id="colunaStatus" text="Status" prefWidth="90" />
-        </columns>
-    </TableView>
+        <!-- CARD: tabela de visitas -->
+        <VBox styleClass="card" spacing="10">
+            <TableView fx:id="tabelaVisitas" prefHeight="640">
+                <columns>
+                    <TableColumn fx:id="colunaData" text="Data/Hora" prefWidth="150" />
+                    <TableColumn fx:id="colunaGuia" text="Guia" prefWidth="120" />
+                    <TableColumn fx:id="colunaRecepcionista" text="Recepcionista" prefWidth="130" />
+                    <TableColumn fx:id="colunaInteiras" text="Inteiras" prefWidth="80" />
+                    <TableColumn fx:id="colunaMeias" text="Meias" prefWidth="70" />
+                    <TableColumn fx:id="colunaNaoPagantes" text="Não Pag." prefWidth="80" />
+                    <TableColumn fx:id="colunaTotal" text="Total (R$)" prefWidth="100" />
+                    <TableColumn fx:id="colunaStatus" text="Status" prefWidth="100" />
+                </columns>
+            </TableView>
 
-    <Label fx:id="labelResumoGuia" text="" styleClass="subtitulo" />
+            <HBox alignment="CENTER_LEFT">
+                <Label fx:id="labelResumoGuia" text="" styleClass="resumo-guia" />
+            </HBox>
+        </VBox>
 
-</VBox>
+    </VBox>
+</ScrollPane>

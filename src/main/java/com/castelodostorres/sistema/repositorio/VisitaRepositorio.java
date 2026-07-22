@@ -41,6 +41,9 @@ public class VisitaRepositorio {
                 visita.setValorReembolsado(resultado.getDouble("valor_reembolsado"));
                 visita.setDataHoraInicio(resultado.getString("data_hora_inicio"));
                 visita.setStatus(resultado.getString("status"));
+                visita.setDinheiroBruto(resultado.getDouble("dinheiro_bruto"));
+                visita.setPixBruto(resultado.getDouble("pix_bruto"));
+                visita.setDebitoBruto(resultado.getDouble("debito_bruto"));
                 visita.setObservacoes(resultado.getString("observacoes"));
                 return visita;
             }
@@ -57,8 +60,9 @@ public class VisitaRepositorio {
                 quantidade_inteira, quantidade_meia, quantidade_nao_pagante,
                 valor_unitario_inteira, valor_unitario_meia, valor_total,
                 observacoes, data_hora_inicio, status,
-                valor_dinheiro, valor_pix, valor_debito, agendada
-            ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+                valor_dinheiro, valor_pix, valor_debito, agendada,
+                dinheiro_bruto, pix_bruto, debito_bruto
+            ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
             """;
 
         Connection conexao = GerenciadorConexao.getConexao();
@@ -96,6 +100,9 @@ public class VisitaRepositorio {
             comando.setDouble(17, visita.getValorPix());
             comando.setDouble(18, visita.getValorDebito());
             comando.setInt(19, visita.isAgendada() ? 1 : 0);
+            comando.setDouble(20, visita.getValorDinheiro()); // bruto = atual na criação
+            comando.setDouble(21, visita.getValorPix());
+            comando.setDouble(22, visita.getValorDebito());
 
             comando.executeUpdate();
 
@@ -225,6 +232,7 @@ public class VisitaRepositorio {
         FROM visita
         WHERE date(data_hora_inicio) = ?
           AND status != 'CANCELADA'
+            AND agendada = 0
         """;
 
         Connection conexao = GerenciadorConexao.getConexao();
@@ -418,6 +426,9 @@ public class VisitaRepositorio {
                     visita.setStatus(resultado.getString("status"));
                     visita.setDataHoraInicio(resultado.getString("data_hora_inicio"));
                     visita.setAgendada(resultado.getInt("agendada") == 1);
+                    visita.setDinheiroBruto(resultado.getDouble("dinheiro_bruto"));
+                    visita.setPixBruto(resultado.getDouble("pix_bruto"));
+                    visita.setDebitoBruto(resultado.getDouble("debito_bruto"));
                     lista.add(visita);
                 }
             }

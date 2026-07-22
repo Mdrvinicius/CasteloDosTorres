@@ -21,6 +21,7 @@ public class Main extends Application {
         stage.setTitle("Castelo dos Torres ");
 
         Scene scene = new Scene(raiz, 1220, 700);
+        scene.getStylesheets().add(getClass().getResource("/com/castelodostorres/sistema/css/styles.css").toExternalForm());
         stage.setScene(scene);
         stage.setMaximized(true);
         stage.show();

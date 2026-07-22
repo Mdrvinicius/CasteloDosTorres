@@ -2,7 +2,6 @@ package com.castelodostorres.sistema.controlador;
 
 import com.castelodostorres.sistema.modelo.Visita;
 import com.castelodostorres.sistema.modelo.dto.ComissaoFuncionario;
-import com.castelodostorres.sistema.repositorio.FundoTrocoRepositorio;
 import com.castelodostorres.sistema.repositorio.VisitaRepositorio;
 import com.castelodostorres.sistema.servico.CalculadoraComissao;
 import javafx.collections.FXCollections;
@@ -35,12 +34,10 @@ public class ControladorTelaResumoDia implements Initializable {
     @FXML private Label labelTotalNaoPagantes;
     @FXML private Label labelTotalReembolsos;
     @FXML private Label labelValorFinal;
-    @FXML private TextField campoFundoTroco;
     @FXML private Label labelAgendadosDia;
 
     private final VisitaRepositorio repositorio = new VisitaRepositorio();
     private final CalculadoraComissao calculadoraComissao = new CalculadoraComissao();
-    private final FundoTrocoRepositorio fundoTrocoRepositorio = new FundoTrocoRepositorio();
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
@@ -62,22 +59,14 @@ public class ControladorTelaResumoDia implements Initializable {
 
         String dataTexto = data.toString(); // LocalDate.toString() já dá "aaaa-mm-dd"
 
-
-        try {
-            double fundo = fundoTrocoRepositorio.buscar(dataTexto);
-            campoFundoTroco.setText(String.format("%.2f", fundo));
-        } catch (SQLException e) {
-            campoFundoTroco.setText("0,00");
-        }
-
         try {
             double total = repositorio.calcularTotalArrecadadoDoDia(dataTexto);
-            labelTotal.setText("Total Arrecadado: R$ " + String.format("%.2f", total));
+            labelTotal.setText("R$ " + String.format("%.2f", total));
 
             double[] formas = repositorio.calcularFormasPagamentoDoDia(dataTexto);
-            labelDinheiro.setText("Dinheiro: R$ " + String.format("%.2f", formas[0]));
-            labelPix.setText("Pix: R$ " + String.format("%.2f", formas[1]));
-            labelDebito.setText("Débito: R$ " + String.format("%.2f", formas[2]));
+            labelDinheiro.setText("R$ " + String.format("%.2f", formas[0]));
+            labelPix.setText("R$ " + String.format("%.2f", formas[1]));
+            labelDebito.setText("R$ " + String.format("%.2f", formas[2]));
 
             List<Visita> visitasDoDia = repositorio.listarDoDia(dataTexto);
             List<ComissaoFuncionario> comissoes = calculadoraComissao.calcular(visitasDoDia);
@@ -88,58 +77,28 @@ public class ControladorTelaResumoDia implements Initializable {
                     " | pix R$ " + String.format("%.2f", agendados[1]) +
                     " | débito R$ " + String.format("%.2f", agendados[2]));
 
-
             double totalComissao = 0;
             for (ComissaoFuncionario c : comissoes) {
                 totalComissao += c.getValor();
-
-                double[] est = repositorio.calcularEstatisticasDoDia(dataTexto);
-                labelQtdVisitas.setText("Visitas: " + (int) est[0]);
-                labelTotalInteiras.setText("Inteiras: " + (int) est[1]);
-                labelTotalMeias.setText("Meias: " + (int) est[2]);
-                labelTotalNaoPagantes.setText("Não Pagantes: " + (int) est[3]);
-
-                double totalReembolsos = est[5];
-                labelTotalReembolsos.setText("Total de Reembolsos: R$ " + String.format("%.2f", totalReembolsos));
-
-                // valor final = arrecadado líquido - comissão
-                // (o 'total' já é líquido: valor_total - valor_reembolsado; então não subtrai reembolso de novo)
-                double valorFinal = total - totalComissao;
-                labelValorFinal.setText("Valor Final do Dia: R$ " + String.format("%.2f", valorFinal));
             }
-            labelTotalComissao.setText("Total a Pagar: R$ " + String.format("%.2f", totalComissao));
+            labelTotalComissao.setText("R$ " + String.format("%.2f", totalComissao));
+
+            double[] est = repositorio.calcularEstatisticasDoDia(dataTexto);
+            labelQtdVisitas.setText(String.valueOf((int) est[0]));
+            labelTotalInteiras.setText(String.valueOf((int) est[1]));
+            labelTotalMeias.setText(String.valueOf((int) est[2]));
+            labelTotalNaoPagantes.setText(String.valueOf((int) est[3]));
+
+            double totalReembolsos = est[5];
+            labelTotalReembolsos.setText("R$ " + String.format("%.2f", totalReembolsos));
+
+            // valor final = arrecadado líquido - comissão
+            // (o 'total' já é líquido: valor_total - valor_reembolsado; então não subtrai reembolso de novo)
+            double valorFinal = total - totalComissao;
+            labelValorFinal.setText("R$ " + String.format("%.2f", valorFinal));
+
         } catch (SQLException e) {
             labelTotal.setText("Erro ao gerar resumo: " + e.getMessage());
-        }
-
-    }
-
-    @FXML
-    public void salvarFundo() { // MÉTODO: salva o fundo de troco do dia selecionado
-        LocalDate data = seletorData.getValue();
-        if (data == null) {
-            mostrarAviso("Selecione uma data.");
-            return;
-        }
-
-        double valor;
-        try {
-            valor = Double.parseDouble(campoFundoTroco.getText().replace(",", ".").trim());
-        } catch (NumberFormatException e) {
-            mostrarAviso("Valor de fundo de troco inválido.");
-            return;
-        }
-
-        if (valor < 0) {
-            mostrarAviso("O fundo de troco não pode ser negativo.");
-            return;
-        }
-
-        try {
-            fundoTrocoRepositorio.salvar(data.toString(), valor);
-            mostrarAviso("Fundo de troco salvo com sucesso.");
-        } catch (SQLException e) {
-            mostrarAviso("Erro ao salvar fundo de troco: " + e.getMessage());
         }
     }
 
@@ -150,8 +109,4 @@ public class ControladorTelaResumoDia implements Initializable {
         alerta.setContentText(mensagem);
         alerta.showAndWait();
     }
-
-
-
-
 }

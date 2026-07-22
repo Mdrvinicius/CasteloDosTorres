@@ -23,6 +23,7 @@ public class MigradorDeSchema {
         aplicarSeNecessario(conexao, versaoAtual, 6, MigradorDeSchema::migracaoVersao6);
         aplicarSeNecessario(conexao, versaoAtual, 7, MigradorDeSchema::migracaoVersao7);
         aplicarSeNecessario(conexao, versaoAtual, 8, MigradorDeSchema::migracaoVersao8);
+        aplicarSeNecessario(conexao, versaoAtual, 9, MigradorDeSchema::migracaoVersao9);
         // no futuro, cada mudança nova de schema vira mais uma linha aqui, com número seguinte (3, 4, 5...)
     }
 
@@ -219,4 +220,16 @@ public class MigradorDeSchema {
             """);
         }
     }
+    private static void migracaoVersao9(Connection conexao) throws SQLException { // guarda o pagamento BRUTO original por forma (não muda com reembolso)
+        try (Statement comando = conexao.createStatement()) {
+            comando.execute("ALTER TABLE visita ADD COLUMN dinheiro_bruto REAL NOT NULL DEFAULT 0");
+            comando.execute("ALTER TABLE visita ADD COLUMN pix_bruto REAL NOT NULL DEFAULT 0");
+            comando.execute("ALTER TABLE visita ADD COLUMN debito_bruto REAL NOT NULL DEFAULT 0");
+
+            // visitas já existentes: copia o valor atual pro bruto.
+            // (as SEM reembolso ficam corretas; as COM reembolso já tinham perdido o original — é o passado, sem recuperação possível)
+            comando.execute("UPDATE visita SET dinheiro_bruto = valor_dinheiro, pix_bruto = valor_pix, debito_bruto = valor_debito");
+        }
+    }
+
 }

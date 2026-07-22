@@ -4,61 +4,73 @@
 <?import javafx.scene.control.Button?>
 <?import javafx.scene.control.ComboBox?>
 <?import javafx.scene.control.Label?>
+<?import javafx.scene.control.ScrollPane?>
 <?import javafx.scene.control.TableColumn?>
 <?import javafx.scene.control.TableView?>
 <?import javafx.scene.control.TextField?>
-<?import javafx.scene.layout.GridPane?>
 <?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.Region?>
 <?import javafx.scene.layout.VBox?>
 
-<VBox xmlns="http://javafx.com/javafx"
-      xmlns:fx="http://javafx.com/fxml"
-      fx:controller="com.castelodostorres.sistema.controlador.ControladorTelaDespesas"
-      styleClass="painel-conteudo" spacing="15">
+<ScrollPane xmlns="http://javafx.com/javafx" xmlns:fx="http://javafx.com/fxml"
+            fx:controller="com.castelodostorres.sistema.controlador.ControladorTelaDespesas"
+            fitToWidth="true" styleClass="painel-conteudo">
 
-    <padding>
-        <Insets top="15" right="15" bottom="15" left="15" />
-    </padding>
+    <VBox spacing="16">
+        <padding><Insets top="20" right="20" bottom="20" left="20" /></padding>
 
-    <Label text="Despesas" styleClass="titulo-tela" />
+        <VBox spacing="2">
+            <Label text="Despesas" styleClass="titulo-tela" />
+            <Label text="Registre e acompanhe todas as despesas do Castelo dos Torres." styleClass="texto-suave" />
+        </VBox>
 
-    <!-- BLOCO 1: Formulário de cadastro/edição (card) -->
-    <VBox fx:id="cardFormulario" styleClass="card" spacing="10">
-        <Label fx:id="labelFormulario" text="Nova Despesa" styleClass="subtitulo" />
+        <!-- CARD: formulário de cadastro/edição -->
+        <VBox fx:id="cardFormulario" styleClass="card" spacing="12">
+            <Label fx:id="labelFormulario" text="Nova Despesa" styleClass="subtitulo" />
 
-        <GridPane hgap="10" vgap="8">
-            <Label text="Nome/Razão:" styleClass="form-label" GridPane.rowIndex="0" GridPane.columnIndex="0" />
-            <TextField fx:id="campoNome" GridPane.rowIndex="0" GridPane.columnIndex="1" />
+            <HBox spacing="14" alignment="BOTTOM_LEFT">
+                <VBox spacing="4" HBox.hgrow="ALWAYS" maxWidth="Infinity">
+                    <Label text="Nome/Razão" styleClass="form-label" />
+                    <TextField fx:id="campoNome" promptText="Ex.: Conta de luz" maxWidth="Infinity" />
+                </VBox>
+                <VBox spacing="4" prefWidth="140">
+                    <Label text="Valor (R$)" styleClass="form-label" />
+                    <TextField fx:id="campoValor" promptText="0,00" />
+                </VBox>
+                <VBox spacing="4" prefWidth="180">
+                    <Label text="Tipo" styleClass="form-label" />
+                    <ComboBox fx:id="comboTipo" maxWidth="Infinity" />
+                </VBox>
+                <Button fx:id="botaoSalvar" text="Salvar Despesa" onAction="#salvar" />
+            </HBox>
 
-            <Label text="Valor (R$):" styleClass="form-label" GridPane.rowIndex="1" GridPane.columnIndex="0" />
-            <TextField fx:id="campoValor" GridPane.rowIndex="1" GridPane.columnIndex="1" />
+            <HBox spacing="10">
+                <Button fx:id="botaoCancelarEdicao" text="Cancelar Edição" onAction="#cancelarEdicao" styleClass="botao-secundario" />
+            </HBox>
+        </VBox>
 
-            <Label text="Tipo:" styleClass="form-label" GridPane.rowIndex="2" GridPane.columnIndex="0" />
-            <ComboBox fx:id="comboTipo" GridPane.rowIndex="2" GridPane.columnIndex="1" />
-        </GridPane>
+        <!-- CARD: lista de despesas -->
+        <VBox styleClass="card" spacing="10">
+            <Label text="Despesas Cadastradas" styleClass="subtitulo" />
+            <Label text="Recorrentes aparecem primeiro. Dê duplo-clique para editar." styleClass="texto-suave" />
 
-        <HBox spacing="10">
-            <Button fx:id="botaoSalvar" text="Salvar" onAction="#salvar" />
-            <Button fx:id="botaoCancelarEdicao" text="Cancelar Edição" onAction="#cancelarEdicao" styleClass="botao-secundario" />
-        </HBox>
+            <TableView fx:id="tabelaDespesas" prefHeight="320">
+                <columns>
+                    <TableColumn fx:id="colunaNome" text="Nome/Razão" prefWidth="240" />
+                    <TableColumn fx:id="colunaTipo" text="Tipo" prefWidth="140" />
+                    <TableColumn fx:id="colunaValor" text="Valor (R$)" prefWidth="140" />
+                    <TableColumn fx:id="colunaData" text="Cadastrada em" prefWidth="170" />
+                </columns>
+            </TableView>
+
+            <!-- Barra inferior: contagem à esquerda, ações à direita -->
+            <HBox spacing="10" alignment="CENTER_LEFT">
+                <Label text="Total de despesas cadastradas" styleClass="texto-suave" />
+                <Region HBox.hgrow="ALWAYS" />
+                <Button fx:id="botaoApagar" text="Apagar Selecionada" onAction="#apagar" styleClass="botao-perigo" />
+                <Button fx:id="botaoAjustarMes" text="Ajustar Valor do Mês" onAction="#ajustarValorMes" styleClass="botao-secundario" />
+            </HBox>
+        </VBox>
+
     </VBox>
-
-    <!-- BLOCO 2: Lista de despesas -->
-    <Label text="Despesas Cadastradas" styleClass="subtitulo" />
-    <Label text="Recorrentes aparecem primeiro. Dê duplo-clique para editar." styleClass="texto-suave" />
-
-    <TableView fx:id="tabelaDespesas" prefHeight="300">
-        <columns>
-            <TableColumn fx:id="colunaNome" text="Nome/Razão" prefWidth="220" />
-            <TableColumn fx:id="colunaTipo" text="Tipo" prefWidth="120" />
-            <TableColumn fx:id="colunaValor" text="Valor (R$)" prefWidth="120" />
-            <TableColumn fx:id="colunaData" text="Cadastrada em" prefWidth="150" />
-        </columns>
-    </TableView>
-
-    <HBox spacing="10">
-        <Button fx:id="botaoApagar" text="Apagar Selecionada" onAction="#apagar" styleClass="botao-perigo" />
-        <Button fx:id="botaoAjustarMes" text="Ajustar Valor do Mês" onAction="#ajustarValorMes" styleClass="botao-secundario" />
-    </HBox>
-
-</VBox>
+</ScrollPane>

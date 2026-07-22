@@ -2,107 +2,133 @@
 
 <?import javafx.geometry.Insets?>
 <?import javafx.scene.control.Button?>
+<?import javafx.scene.control.ComboBox?>
 <?import javafx.scene.control.Label?>
-<?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.control.ScrollPane?>
+<?import javafx.scene.control.TextArea?>
+<?import javafx.scene.control.TextField?>
 <?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.Region?>
 <?import javafx.scene.layout.VBox?>
 
-
-<?import javafx.scene.control.TextArea?>
-<?import javafx.scene.control.ComboBox?>
-<?import javafx.scene.control.TextField?>
-<BorderPane xmlns="http://javafx.com/javafx"
+<ScrollPane xmlns="http://javafx.com/javafx" xmlns:fx="http://javafx.com/fxml"
             fx:controller="com.castelodostorres.sistema.controlador.ControladorTelaPrincipal"
-            xmlns:fx="http://javafx.com/fxml">
+            fitToWidth="true" styleClass="painel-conteudo">
 
-    <top>
+    <VBox spacing="16">
+        <padding><Insets top="20" right="20" bottom="20" left="20" /></padding>
+
+        <!-- Cabeçalho: título + ações de catraca -->
+        <!-- Cabeçalho: título + ações de catraca abaixo -->
         <VBox spacing="10">
-            <padding>
-                <Insets top="15" right="15" bottom="10" left="15" />
-            </padding>
-            <Label text="Castelo dos Torres - Recepção" style="-fx-font-size: 18px; -fx-font-weight: bold;" />
-            <HBox spacing="10">
-                <Button text="Liberar Entrada" fx:id="botaoLiberarEntrada" onAction="#liberarEntrada" />
-                <Button text="Liberar Saída" fx:id="botaoLiberarSaida" onAction="#liberarSaida" />
+            <Label text="Castelo dos Torres - Recepção" styleClass="titulo-tela" />
+            <HBox spacing="12" alignment="CENTER_LEFT">
+                <Button text="Liberar Entrada" fx:id="botaoLiberarEntrada" onAction="#liberarEntrada" styleClass="botao-sucesso" />
+                <Button text="Liberar Saída" fx:id="botaoLiberarSaida" onAction="#liberarSaida" styleClass="botao-perigo" />
             </HBox>
         </VBox>
-    </top>
 
-    <center>
-        <HBox spacing="15">
-            <padding>
-                <Insets top="10" right="15" bottom="15" left="15" />
-            </padding>
+        <!-- Conteúdo: nova visita (esquerda) + última visita (direita) -->
+        <HBox spacing="16" alignment="TOP_LEFT">
 
-            <VBox spacing="10" prefWidth="350" fx:id="painelNovaVisita">
-                <Label text="Novo Grupo / Visita" style="-fx-font-size: 14px; -fx-font-weight: bold;" />
+            <!-- CARD: Novo Grupo / Visita (campos empilhados) -->
+            <VBox styleClass="card" spacing="10" fx:id="painelNovaVisita" prefWidth="560" HBox.hgrow="ALWAYS" maxWidth="Infinity">
+                <Label text="Novo Grupo / Visita" styleClass="subtitulo" />
 
-                <Label text="Guia:" />
-                <ComboBox fx:id="comboGuia" prefWidth="300" />
+                <Label text="Guia:" styleClass="form-label" />
+                <ComboBox fx:id="comboGuia" maxWidth="Infinity" />
 
-                <Label text="Recepcionista:" />
-                <ComboBox fx:id="comboRecepcionista" prefWidth="300" />
+                <Label text="Recepcionista:" styleClass="form-label" />
+                <ComboBox fx:id="comboRecepcionista" maxWidth="Infinity" />
 
                 <HBox spacing="10" alignment="CENTER_LEFT">
-                    <Label text="Inteiras:" prefWidth="80" />
-                    <Button text="-" onAction="#decrementarInteira" />
-                    <Label fx:id="labelInteira" text="0" prefWidth="30" alignment="CENTER" />
-                    <Button text="+" onAction="#incrementarInteira" />
+                    <Label text="Inteiras:" prefWidth="100" styleClass="form-label" />
+                    <Button text="-" onAction="#decrementarInteira" styleClass="botao-contador" />
+                    <Label fx:id="labelInteira" text="0" prefWidth="30" alignment="CENTER" styleClass="valor-destaque" />
+                    <Button text="+" onAction="#incrementarInteira" styleClass="botao-contador" />
                 </HBox>
 
                 <HBox spacing="10" alignment="CENTER_LEFT">
-                    <Label text="Meias:" prefWidth="80" />
-                    <Button text="-" onAction="#decrementarMeia" />
-                    <Label fx:id="labelMeia" text="0" prefWidth="30" alignment="CENTER" />
-                    <Button text="+" onAction="#incrementarMeia" />
+                    <Label text="Meias:" prefWidth="100" styleClass="form-label" />
+                    <Button text="-" onAction="#decrementarMeia" styleClass="botao-contador" />
+                    <Label fx:id="labelMeia" text="0" prefWidth="30" alignment="CENTER" styleClass="valor-destaque" />
+                    <Button text="+" onAction="#incrementarMeia" styleClass="botao-contador" />
                 </HBox>
 
                 <HBox spacing="10" alignment="CENTER_LEFT">
-                    <Label text="Não Pagantes:" prefWidth="80" />
-                    <Button text="-" onAction="#decrementarNaoPagante" />
-                    <Label fx:id="labelNaoPagante" text="0" prefWidth="30" alignment="CENTER" />
-                    <Button text="+" onAction="#incrementarNaoPagante" />
+                    <Label text="Não Pagantes:" prefWidth="100" styleClass="form-label" />
+                    <Button text="-" onAction="#decrementarNaoPagante" styleClass="botao-contador" />
+                    <Label fx:id="labelNaoPagante" text="0" prefWidth="30" alignment="CENTER" styleClass="valor-destaque" />
+                    <Button text="+" onAction="#incrementarNaoPagante" styleClass="botao-contador" />
                 </HBox>
 
-                <Label text="Observações sobre a visita:" />
+                <Label text="Observações sobre a visita" styleClass="form-label" />
                 <TextArea fx:id="campoObservacoes" prefRowCount="3" wrapText="true" />
 
-                <Label fx:id="labelValorTotal" text="Valor Total: R$ 0,00" style="-fx-font-size: 14px; -fx-font-weight: bold;" />
+                <Label fx:id="labelValorTotal" text="Valor Total: R$ 0,00" styleClass="valor-destaque" />
 
-                <Label text="Forma de pagamento:" style="-fx-font-weight: bold;" />
+                <!-- Sub-card: forma de pagamento -->
+                <!-- Sub-card: forma de pagamento (empilhado) -->
+                <VBox styleClass="card-interno" spacing="10">
+                    <Label text="Forma de pagamento" styleClass="subtitulo" />
 
-                <HBox spacing="10" alignment="CENTER_LEFT">
-                    <Label text="Dinheiro:" prefWidth="80" />
-                    <TextField fx:id="campoDinheiro" text="0" prefWidth="90" />
+                    <HBox spacing="10" alignment="CENTER_LEFT">
+                        <Label text="Dinheiro:" prefWidth="100" styleClass="form-label" />
+                        <TextField fx:id="campoDinheiro" text="0" prefWidth="120" />
+                    </HBox>
+
+                    <HBox spacing="10" alignment="CENTER_LEFT">
+                        <Label text="Pix:" prefWidth="100" styleClass="form-label" />
+                        <TextField fx:id="campoPix" text="0" prefWidth="120" />
+                    </HBox>
+
+                    <HBox spacing="10" alignment="CENTER_LEFT">
+                        <Label text="Débito:" prefWidth="100" styleClass="form-label" />
+                        <TextField fx:id="campoDebito" text="0" prefWidth="120" />
+                    </HBox>
+
+                    <Label fx:id="labelSomaPagamento" text="Soma: R$ 0,00" styleClass="valor-destaque" />
+                </VBox>
+
+                <!-- Botões no canto esquerdo -->
+                <HBox spacing="12" alignment="CENTER_LEFT">
+                    <Button text="Iniciar Visita" onAction="#iniciarVisita" />
+                    <Button text="Visita Agendada" onAction="#iniciarVisitaAgendada" styleClass="botao-secundario" />
                 </HBox>
-
-                <HBox spacing="10" alignment="CENTER_LEFT">
-                    <Label text="Pix:" prefWidth="80" />
-                    <TextField fx:id="campoPix" text="0" prefWidth="90" />
-                </HBox>
-
-                <HBox spacing="10" alignment="CENTER_LEFT">
-                    <Label text="Débito:" prefWidth="80" />
-                    <TextField fx:id="campoDebito" text="0" prefWidth="90" />
-                </HBox>
-
-                <Label fx:id="labelSomaPagamento" text="Soma: R$ 0,00" />
-
-                <Button text="Iniciar Visita" onAction="#iniciarVisita" />
-                <Button text="Visita Agendada" onAction="#iniciarVisitaAgendada" styleClass="botao-secundario" />
             </VBox>
 
-            <VBox spacing="8" prefWidth="350">
-                <Label text="Última Visita" style="-fx-font-size: 14px; -fx-font-weight: bold;" />
-                <Label fx:id="labelUltimaGuia" text="Guia: -" />
-                <Label fx:id="labelUltimaDataHora" text="Data/Hora: -" />
-                <Label fx:id="labelUltimaInteiras" text="Inteiras: -" />
-                <Label fx:id="labelUltimaMeias" text="Meias: -" />
-                <Label fx:id="labelUltimaNaoPagantes" text="Não Pagantes: -" />
-                <Button fx:id="botaoDetalhesUltima" text="Detalhes da Visita" onAction="#abrirDetalhesUltima" />
+            <!-- CARD: Última Visita -->
+            <VBox styleClass="card" spacing="16" prefWidth="520">
+                <Label text="Última Visita" styleClass="subtitulo" />
+
+                <VBox spacing="2">
+                    <Label text="Guia" styleClass="form-label" />
+                    <Label fx:id="labelUltimaGuia" text="-" styleClass="ultima-visita-valor" />
+                </VBox>
+
+                <VBox spacing="2">
+                    <Label text="Data / Hora" styleClass="form-label" />
+                    <Label fx:id="labelUltimaDataHora" text="-" styleClass="ultima-visita-valor" />
+                </VBox>
+
+                <VBox spacing="2">
+                    <Label text="Inteiras" styleClass="form-label" />
+                    <Label fx:id="labelUltimaInteiras" text="-" styleClass="ultima-visita-valor" />
+                </VBox>
+
+                <VBox spacing="2">
+                    <Label text="Meias" styleClass="form-label" />
+                    <Label fx:id="labelUltimaMeias" text="-" styleClass="ultima-visita-valor" />
+                </VBox>
+
+                <VBox spacing="2">
+                    <Label text="Não Pagantes" styleClass="form-label" />
+                    <Label fx:id="labelUltimaNaoPagantes" text="-" styleClass="ultima-visita-valor" />
+                </VBox>
+
+                <Button fx:id="botaoDetalhesUltima" text="Detalhes da Visita" onAction="#abrirDetalhesUltima" styleClass="botao-secundario" maxWidth="Infinity" />
             </VBox>
 
         </HBox>
-    </center>
-
-</BorderPane>
+    </VBox>
+</ScrollPane>

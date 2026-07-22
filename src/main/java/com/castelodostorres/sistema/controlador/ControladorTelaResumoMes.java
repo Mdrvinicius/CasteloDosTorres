@@ -52,6 +52,9 @@ public class ControladorTelaResumoMes implements Initializable {
     @FXML private TableColumn<FechamentoCaixa, String> colFechPixCont;
     @FXML private TableColumn<FechamentoCaixa, String> colFechPixDiv;
     @FXML private TableColumn<FechamentoCaixa, String> colFechStatus;
+    @FXML private Label labelArrecadadoTopo;
+    @FXML private Label labelTotalPagoTabela;
+    @FXML private Label labelTotalDespesasTabela;
 
     private final DespesaRepositorio despesaRepositorio = new DespesaRepositorio();
 
@@ -133,7 +136,6 @@ public class ControladorTelaResumoMes implements Initializable {
             }
 
             // despesas do mês
-
             List<Despesa> despesas = despesaRepositorio.listarDoMes(mesTexto);
 
             double totalDespesas = 0;
@@ -141,19 +143,29 @@ public class ControladorTelaResumoMes implements Initializable {
                 totalDespesas += d.getValor();
             }
             tabelaDespesas.setItems(FXCollections.observableArrayList(despesas));
-            labelTotalDespesas.setText("Total de Despesas: R$ " + String.format("%.2f", totalDespesas));
+
             List<FechamentoCaixa> fechamentos = fechamentoRepositorio.listarDoMes(mesTexto);
             tabelaFechamentos.setItems(FXCollections.observableArrayList(fechamentos));
 
             double liquidoFinal = arrecadado - totalPago - totalDespesas;
 
-            labelArrecadado.setText("Valor Total Arrecadado: R$ " + String.format("%.2f", arrecadado));
-            labelTotalPago.setText("Total Pago aos Funcionários: R$ " + String.format("%.2f", totalPago));
-            labelLiquidoFinal.setText("Valor Líquido Final: R$ " + String.format("%.2f", liquidoFinal));
+            String arrecadadoTexto = "R$ " + String.format("%.2f", arrecadado);
+            String pagoTexto = "R$ " + String.format("%.2f", totalPago);
+            String despesasTexto = "R$ " + String.format("%.2f", totalDespesas);
+
+            // cards da direita
+            labelArrecadado.setText(arrecadadoTexto);
+            labelTotalPago.setText(pagoTexto);
+            labelTotalDespesas.setText(despesasTexto);
+            labelLiquidoFinal.setText("R$ " + String.format("%.2f", liquidoFinal));
+
+            // repetições na coluna esquerda
+            labelArrecadadoTopo.setText(arrecadadoTexto);
+            labelTotalPagoTabela.setText(pagoTexto);
+            labelTotalDespesasTabela.setText(despesasTexto);
         } catch (SQLException e) {
             labelArrecadado.setText("Erro ao gerar resumo: " + e.getMessage());
         }
-
     }
     private String statusFechamento(FechamentoCaixa f) {
         boolean dinBate = Math.abs(f.getDivergenciaDinheiro()) < 0.001;

@@ -4,63 +4,114 @@
 <?import javafx.scene.control.Button?>
 <?import javafx.scene.control.DatePicker?>
 <?import javafx.scene.control.Label?>
+<?import javafx.scene.control.ScrollPane?>
+<?import javafx.scene.control.TableColumn?>
+<?import javafx.scene.control.TableView?>
 <?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.Region?>
 <?import javafx.scene.layout.VBox?>
 
-<?import javafx.scene.control.TableView?>
-<?import javafx.scene.control.TableColumn?>
-<?import javafx.scene.control.TextField?>
-<VBox xmlns="http://javafx.com/javafx"
-      xmlns:fx="http://javafx.com/fxml"
-      fx:controller="com.castelodostorres.sistema.controlador.ControladorTelaResumoDia"
-      spacing="15">
+<ScrollPane xmlns="http://javafx.com/javafx" xmlns:fx="http://javafx.com/fxml"
+            fx:controller="com.castelodostorres.sistema.controlador.ControladorTelaResumoDia"
+            fitToWidth="true" styleClass="painel-conteudo">
 
-    <padding>
-        <Insets top="15" right="15" bottom="15" left="15" />
-    </padding>
+    <VBox spacing="16">
+        <padding><Insets top="20" right="20" bottom="20" left="20" /></padding>
 
-    <Label text="Resumo do Dia" style="-fx-font-size: 18px; -fx-font-weight: bold;" />
+        <!-- Cabeçalho -->
+        <HBox spacing="12" alignment="CENTER_LEFT">
+            <VBox spacing="2">
+                <Label text="Resumo do Dia" styleClass="titulo-tela" />
+                <Label text="Visão geral de todas as atividades e valores do dia selecionado." styleClass="texto-suave" />
+            </VBox>
+            <Region HBox.hgrow="ALWAYS" />
+            <Label text="Data:" styleClass="form-label" />
+            <DatePicker fx:id="seletorData" />
+            <Button text="Gerar" onAction="#gerar" />
+        </HBox>
 
-    <HBox spacing="10" alignment="CENTER_LEFT">
-        <Label text="Data:" />
-        <DatePicker fx:id="seletorData" />
-        <Button text="Gerar" onAction="#gerar" />
-    </HBox>
+        <!-- Métricas do topo -->
+        <HBox spacing="14">
+            <VBox styleClass="card-metrica" spacing="4" alignment="CENTER" HBox.hgrow="ALWAYS" maxWidth="Infinity">
+                <Label text="Visitas" styleClass="form-label" />
+                <Label fx:id="labelQtdVisitas" text="0" styleClass="metrica-valor" />
+            </VBox>
+            <VBox styleClass="card-metrica" spacing="4" alignment="CENTER" HBox.hgrow="ALWAYS" maxWidth="Infinity">
+                <Label text="Inteiras" styleClass="form-label" />
+                <Label fx:id="labelTotalInteiras" text="0" styleClass="metrica-valor" />
+            </VBox>
+            <VBox styleClass="card-metrica" spacing="4" alignment="CENTER" HBox.hgrow="ALWAYS" maxWidth="Infinity">
+                <Label text="Meias" styleClass="form-label" />
+                <Label fx:id="labelTotalMeias" text="0" styleClass="metrica-valor" />
+            </VBox>
+            <VBox styleClass="card-metrica" spacing="4" alignment="CENTER" HBox.hgrow="ALWAYS" maxWidth="Infinity">
+                <Label text="Não Pagantes" styleClass="form-label" />
+                <Label fx:id="labelTotalNaoPagantes" text="0" styleClass="metrica-valor" />
+            </VBox>
+            <VBox styleClass="card-metrica-destaque" spacing="4" alignment="CENTER" HBox.hgrow="ALWAYS" maxWidth="Infinity">
+                <Label text="Total Arrecadado" styleClass="form-label" />
+                <Label fx:id="labelTotal" text="R$ 0,00" styleClass="metrica-valor-verde" />
+            </VBox>
+        </HBox>
 
-    <HBox spacing="10" alignment="CENTER_LEFT">
-        <Label text="Fundo de Troco (R$):" />
-        <TextField fx:id="campoFundoTroco" prefWidth="100" />
-        <Button text="Salvar Fundo" onAction="#salvarFundo" />
-    </HBox>
+        <!-- Corpo -->
+        <HBox spacing="16" alignment="TOP_LEFT">
 
-    <Label text="Resumo Geral do Dia:" style="-fx-font-weight: bold;" />
-    <HBox spacing="20">
-        <Label fx:id="labelQtdVisitas" text="Visitas: 0" />
-        <Label fx:id="labelTotalInteiras" text="Inteiras: 0" />
-        <Label fx:id="labelTotalMeias" text="Meias: 0" />
-        <Label fx:id="labelTotalNaoPagantes" text="Não Pagantes: 0" />
-    </HBox>
+            <VBox spacing="16" prefWidth="620" HBox.hgrow="ALWAYS" maxWidth="Infinity">
 
-    <Label fx:id="labelTotal" text="Total Arrecadado: R$ 0,00" style="-fx-font-size: 16px; -fx-font-weight: bold;" />
+                <!-- formas de pagamento -->
+                <VBox styleClass="card" spacing="12">
+                    <Label text="Detalhamento por forma de pagamento" styleClass="subtitulo" />
+                    <HBox spacing="12">
+                        <VBox styleClass="card-interno" spacing="4" alignment="CENTER" HBox.hgrow="ALWAYS" maxWidth="Infinity">
+                            <Label text="Dinheiro" styleClass="form-label" />
+                            <Label fx:id="labelDinheiro" text="R$ 0,00" styleClass="valor-positivo" />
+                        </VBox>
+                        <VBox styleClass="card-interno" spacing="4" alignment="CENTER" HBox.hgrow="ALWAYS" maxWidth="Infinity">
+                            <Label text="Pix" styleClass="form-label" />
+                            <Label fx:id="labelPix" text="R$ 0,00" styleClass="valor-roxo" />
+                        </VBox>
+                        <VBox styleClass="card-interno" spacing="4" alignment="CENTER" HBox.hgrow="ALWAYS" maxWidth="Infinity">
+                            <Label text="Débito" styleClass="form-label" />
+                            <Label fx:id="labelDebito" text="R$ 0,00" styleClass="valor-azul" />
+                        </VBox>
+                    </HBox>
+                    <HBox styleClass="faixa-info" spacing="8" alignment="CENTER_LEFT">
+                        <Label fx:id="labelAgendadosDia" text="Valor de agendados: —" styleClass="texto-suave" />
+                    </HBox>
+                </VBox>
 
-    <Label text="Detalhamento por forma de pagamento:" style="-fx-font-weight: bold;" />
-    <Label fx:id="labelDinheiro" text="Dinheiro: R$ 0,00" />
-    <Label fx:id="labelPix" text="Pix: R$ 0,00" />
-    <Label fx:id="labelDebito" text="Débito: R$ 0,00" />
-    <Label fx:id="labelAgendadosDia" text="Valor de agendados: —" styleClass="texto-suave" />
+                <!-- reembolsos + valor final -->
+                <HBox spacing="16">
+                    <VBox styleClass="card" spacing="4" HBox.hgrow="ALWAYS" maxWidth="Infinity">
+                        <Label text="Total de Reembolsos" styleClass="form-label" />
+                        <Label fx:id="labelTotalReembolsos" text="R$ 0,00" styleClass="metrica-valor-vermelho" />
+                    </VBox>
+                    <VBox styleClass="card" spacing="4" HBox.hgrow="ALWAYS" maxWidth="Infinity">
+                        <Label text="Valor Final do Dia" styleClass="form-label" />
+                        <Label fx:id="labelValorFinal" text="R$ 0,00" styleClass="metrica-valor-verde" />
+                    </VBox>
+                </HBox>
 
-    <Label text="Pagamento aos Funcionários:" style="-fx-font-weight: bold;" />
+            </VBox>
 
-    <TableView fx:id="tabelaComissao" prefHeight="200">
-        <columns>
-            <TableColumn fx:id="colunaNome" text="Funcionário" prefWidth="200" />
-            <TableColumn fx:id="colunaPapel" text="Função" prefWidth="130" />
-            <TableColumn fx:id="colunaValor" text="A Receber (R$)" prefWidth="120" />
-        </columns>
-    </TableView>
+            <!-- comissões -->
+            <VBox styleClass="card" spacing="10" prefWidth="500" HBox.hgrow="ALWAYS" maxWidth="Infinity">
+                <Label text="Pagamento aos Funcionários" styleClass="subtitulo" />
+                <TableView fx:id="tabelaComissao" prefHeight="260">
+                    <columns>
+                        <TableColumn fx:id="colunaNome" text="Funcionário" prefWidth="200" />
+                        <TableColumn fx:id="colunaPapel" text="Função" prefWidth="130" />
+                        <TableColumn fx:id="colunaValor" text="A Receber (R$)" prefWidth="120" />
+                    </columns>
+                </TableView>
+                <HBox alignment="CENTER_LEFT" spacing="8">
+                    <Label text="Total a Pagar aos Funcionários" styleClass="form-label" />
+                    <Region HBox.hgrow="ALWAYS" />
+                    <Label fx:id="labelTotalComissao" text="R$ 0,00" styleClass="valor-destaque" />
+                </HBox>
+            </VBox>
 
-    <Label fx:id="labelTotalComissao" text="Total a Pagar: R$ 0,00" style="-fx-font-weight: bold;" />
-
-    <Label fx:id="labelTotalReembolsos" text="Total de Reembolsos: R$ 0,00" style="-fx-text-fill: #b00020;" />
-    <Label fx:id="labelValorFinal" text="Valor Final do Dia: R$ 0,00" style="-fx-font-size: 16px; -fx-font-weight: bold; -fx-text-fill: #1a7a1a;" />
-</VBox>
+        </HBox>
+    </VBox>
+</ScrollPane>

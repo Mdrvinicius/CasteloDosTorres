@@ -4,37 +4,38 @@
 <?import javafx.scene.control.Button?>
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.layout.StackPane?>
 <?import javafx.scene.layout.VBox?>
 
-<BorderPane xmlns="http://javafx.com.javafx"
-            xmlns:fx="http://javafx.com.javafx"
+<BorderPane xmlns="http://javafx.com/javafx"
+            xmlns:fx="http://javafx.com/fxml"
             fx:controller="com.castelodostorres.sistema.controlador.ControladorTelaRaiz"
-            fx:id="painelRaiz">
+            fx:id="painelRaiz"
+            styleClass="janela-raiz">
 
     <left>
-        <VBox spacing="8" style="-fx-background-color: #1e2a3a;" prefWidth="180">
-            <padding>
-                <Insets top="20" right="10" bottom="20" left="10" />
-            </padding>
+        <VBox styleClass="sidebar" spacing="6" prefWidth="210">
+            <padding><Insets top="18" right="12" bottom="18" left="12" /></padding>
 
-            <Label text="CASTELO DOS TORRES" style="-fx-text-fill: white; -fx-font-size: 14px; -fx-font-weight: bold;" />
+            <VBox styleClass="sidebar-cabecalho">
+                <Label text="CASTELO DOS TORRES" styleClass="sidebar-logo" wrapText="true" />
+            </VBox>
 
-            <Button text="Tela Principal" onAction="#abrirTelaPrincipal" prefWidth="160" />
-            <Button text="Caixa" onAction="#abrirCaixa" prefWidth="160" />
-            <Button text="Visitas" onAction="#abrirVisitas" prefWidth="160" />
-            <Button text="Relatórios dos Dias" onAction="#abrirRelatorios" prefWidth="160" />
-            <Button text="Relatório do Mês" onAction="#abrirResumoMes" prefWidth="160" />
-            <Button text="Despesas" onAction="#abrirDespesas" prefWidth="160" />
-            <Button text="Funcionários" onAction="#abrirFuncionarios" prefWidth="160" />
-            <Button text="Configuração" onAction="#abrirConfiguracao" prefWidth="160" />
-
+            <Button fx:id="botaoTelaPrincipal" text="Tela Principal" onAction="#abrirTelaPrincipal" styleClass="nav-botao" maxWidth="Infinity" />
+            <Button fx:id="botaoCaixa" text="Caixa" onAction="#abrirCaixa" styleClass="nav-botao" maxWidth="Infinity" />
+            <Button fx:id="botaoVisitas" text="Visitas" onAction="#abrirVisitas" styleClass="nav-botao" maxWidth="Infinity" />
+            <Button fx:id="botaoRelatorios" text="Relatórios dos Dias" onAction="#abrirRelatorios" styleClass="nav-botao" maxWidth="Infinity" />
+            <Button fx:id="botaoResumoMes" text="Relatório do Mês" onAction="#abrirResumoMes" styleClass="nav-botao" maxWidth="Infinity" />
+            <Button fx:id="botaoDespesas" text="Despesas" onAction="#abrirDespesas" styleClass="nav-botao" maxWidth="Infinity" />
+            <Button fx:id="botaoFuncionarios" text="Funcionários" onAction="#abrirFuncionarios" styleClass="nav-botao" maxWidth="Infinity" />
+            <Button fx:id="botaoConfiguracao" text="Configuração" onAction="#abrirConfiguracao" styleClass="nav-botao" maxWidth="Infinity" />
         </VBox>
     </left>
 
     <center>
-        <Label text="Selecione uma opção no menu." />
+        <StackPane styleClass="centro-vazio">
+            <Label text="Selecione uma opção no menu." styleClass="texto-suave" />
+        </StackPane>
     </center>
 
 </BorderPane>
-
-

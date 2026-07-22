@@ -22,6 +22,7 @@ import java.net.URL;
 import java.sql.SQLException;
 import java.util.List;
 import java.util.ResourceBundle;
+import com.castelodostorres.sistema.util.FormatadorData;
 
 
 
@@ -44,6 +45,7 @@ public class ControladorTelaPrincipal implements Initializable, PrecisaDaTelaRai
     @FXML private Label labelUltimaMeias;
     @FXML private Label labelUltimaNaoPagantes;
     @FXML private Button botaoDetalhesUltima;
+
 
     private int quantidadeInteira = 0; // ATRIBUTO: guarda o estado atual do contador
     private int quantidadeMeia = 0;
@@ -73,14 +75,18 @@ public class ControladorTelaPrincipal implements Initializable, PrecisaDaTelaRai
         try {
             ultimaVisita = visitaRepositorio.buscarUltima();
             if (ultimaVisita != null) {
-                labelUltimaGuia.setText("Guia: " + ultimaVisita.getNomeGuia());
-                labelUltimaDataHora.setText("Data/Hora: " + ultimaVisita.getDataHoraInicio());
-                labelUltimaInteiras.setText("Inteiras: " + ultimaVisita.getQuantidadeInteira());
-                labelUltimaMeias.setText("Meias: " + ultimaVisita.getQuantidadeMeia());
-                labelUltimaNaoPagantes.setText("Não Pagantes: " + ultimaVisita.getQuantidadeNaoPagante());
+                labelUltimaGuia.setText(ultimaVisita.getNomeGuia());
+                labelUltimaDataHora.setText(FormatadorData.formatar(ultimaVisita.getDataHoraInicio()));
+                labelUltimaInteiras.setText(String.valueOf(ultimaVisita.getQuantidadeInteira()));
+                labelUltimaMeias.setText(String.valueOf(ultimaVisita.getQuantidadeMeia()));
+                labelUltimaNaoPagantes.setText(String.valueOf(ultimaVisita.getQuantidadeNaoPagante()));
                 botaoDetalhesUltima.setDisable(false);
             } else {
                 labelUltimaGuia.setText("Nenhuma visita registrada ainda.");
+                labelUltimaDataHora.setText("-");
+                labelUltimaInteiras.setText("-");
+                labelUltimaMeias.setText("-");
+                labelUltimaNaoPagantes.setText("-");
                 botaoDetalhesUltima.setDisable(true); // desabilita o botão se não há visita
             }
         } catch (SQLException e) {

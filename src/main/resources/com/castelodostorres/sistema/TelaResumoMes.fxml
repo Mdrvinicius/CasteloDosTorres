@@ -4,75 +4,117 @@
 <?import javafx.scene.control.Button?>
 <?import javafx.scene.control.ComboBox?>
 <?import javafx.scene.control.Label?>
+<?import javafx.scene.control.ScrollPane?>
 <?import javafx.scene.control.TableColumn?>
 <?import javafx.scene.control.TableView?>
 <?import javafx.scene.control.TextField?>
 <?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.Region?>
 <?import javafx.scene.layout.VBox?>
-<?import javafx.scene.control.ScrollPane?>
 
-<ScrollPane xmlns="http://javafx.com/javafx"
-            xmlns:fx="http://javafx.com/fxml"
-            fx:controller="com.castelodostorres.sistema.controlador.ControladorTelaResumoMes" >
+<ScrollPane xmlns="http://javafx.com/javafx" xmlns:fx="http://javafx.com/fxml"
+            fx:controller="com.castelodostorres.sistema.controlador.ControladorTelaResumoMes"
+            fitToWidth="true" styleClass="painel-conteudo">
 
-<VBox spacing="15">
+    <VBox spacing="16">
+        <padding><Insets top="20" right="20" bottom="20" left="20" /></padding>
 
-    <padding>
-        <Insets top="15" right="15" bottom="15" left="15" />
-    </padding>
+        <!-- Cabeçalho -->
+        <HBox spacing="12" alignment="CENTER_LEFT">
+            <VBox spacing="2">
+                <Label text="Resumo do Mês" styleClass="titulo-tela" />
+                <Label text="Visão geral consolidada do mês selecionado." styleClass="texto-suave" />
+            </VBox>
+            <Region HBox.hgrow="ALWAYS" />
+            <Label text="Mês:" styleClass="form-label" />
+            <ComboBox fx:id="comboMes" prefWidth="120" />
+            <Label text="Ano:" styleClass="form-label" />
+            <TextField fx:id="campoAno" prefWidth="80" />
+            <Button text="Gerar" onAction="#gerar" />
+        </HBox>
 
-    <Label text="Resumo do Mês" style="-fx-font-size: 18px; -fx-font-weight: bold;" />
+        <HBox spacing="16" alignment="TOP_LEFT">
 
-    <HBox spacing="10">
-        <Label text="Mês:" />
-        <ComboBox fx:id="comboMes" prefWidth="120" />
-        <Label text="Ano:" />
-        <TextField fx:id="campoAno" prefWidth="80" />
-        <Button text="Gerar" onAction="#gerar" />
-    </HBox>
+            <!-- Coluna esquerda -->
+            <VBox spacing="16" prefWidth="900" HBox.hgrow="ALWAYS" maxWidth="Infinity">
 
-    <Label fx:id="labelArrecadado" text="Valor Total Arrecadado: R$ 0,00" style="-fx-font-size: 15px; -fx-font-weight: bold;" />
+                <VBox styleClass="card-metrica-destaque" spacing="4">
+                    <Label text="Valor Total Arrecadado" styleClass="form-label" />
+                    <Label fx:id="labelArrecadadoTopo" text="R$ 0,00" styleClass="metrica-valor-verde" />
+                </VBox>
 
-    <Label text="Detalhamento de Pagamentos aos Funcionários:" style="-fx-font-weight: bold;" />
+                <VBox styleClass="card" spacing="10">
+                    <Label text="Detalhamento de Pagamentos aos Funcionários" styleClass="subtitulo" />
+                    <TableView fx:id="tabelaComissao" prefHeight="250">
+                        <columns>
+                            <TableColumn fx:id="colunaNome" text="Funcionário" prefWidth="220" />
+                            <TableColumn fx:id="colunaPapel" text="Função" prefWidth="130" />
+                            <TableColumn fx:id="colunaValor" text="Total Pago no Mês (R$)" prefWidth="160" />
+                        </columns>
+                    </TableView>
+                    <HBox alignment="CENTER_LEFT" spacing="8">
+                        <Label text="Total Pago aos Funcionários" styleClass="form-label" />
+                        <Region HBox.hgrow="ALWAYS" />
+                        <Label fx:id="labelTotalPagoTabela" text="R$ 0,00" styleClass="valor-destaque" />
+                    </HBox>
+                </VBox>
 
-    <TableView fx:id="tabelaComissao" prefHeight="250">
-        <columns>
-            <TableColumn fx:id="colunaNome" text="Funcionário" prefWidth="220" />
-            <TableColumn fx:id="colunaPapel" text="Função" prefWidth="130" />
-            <TableColumn fx:id="colunaValor" text="Total Pago no Mês (R$)" prefWidth="160" />
-        </columns>
-    </TableView>
-    <Label fx:id="labelTotalPago" text="Total Pago aos Funcionários: R$ 0,00" style="-fx-font-size: 15px;" />
+                <VBox styleClass="card" spacing="10">
+                    <Label text="Detalhamento de Despesas" styleClass="subtitulo" />
+                    <TableView fx:id="tabelaDespesas" prefHeight="200">
+                        <columns>
+                            <TableColumn fx:id="colunaDataDespesa" text="Data" prefWidth="140" />
+                            <TableColumn fx:id="colunaRazaoDespesa" text="Razão" prefWidth="220" />
+                            <TableColumn fx:id="colunaTipoDespesa" text="Tipo" prefWidth="120" />
+                            <TableColumn fx:id="colunaValorDespesa" text="Valor (R$)" prefWidth="120" />
+                        </columns>
+                    </TableView>
+                    <HBox alignment="CENTER_LEFT" spacing="8">
+                        <Label text="Total de Despesas" styleClass="form-label" />
+                        <Region HBox.hgrow="ALWAYS" />
+                        <Label fx:id="labelTotalDespesasTabela" text="R$ 0,00" styleClass="valor-negativo" />
+                    </HBox>
+                </VBox>
 
-    <Label text="Detalhamento de Despesas" styleClass="subtitulo" />
+                <VBox styleClass="card" spacing="10">
+                    <Label text="Fechamentos de Caixa do Mês" styleClass="subtitulo" />
+                    <TableView fx:id="tabelaFechamentos" prefHeight="250">
+                        <columns>
+                            <TableColumn fx:id="colFechData" text="Data" prefWidth="100" />
+                            <TableColumn fx:id="colFechFunc" text="Fechou" prefWidth="130" />
+                            <TableColumn fx:id="colFechDinEsp" text="Dinh. Esperado" prefWidth="110" />
+                            <TableColumn fx:id="colFechDinCont" text="Dinh. Contado" prefWidth="110" />
+                            <TableColumn fx:id="colFechDinDiv" text="Div. Dinheiro" prefWidth="110" />
+                            <TableColumn fx:id="colFechPixEsp" text="Pix+Déb Esperado" prefWidth="120" />
+                            <TableColumn fx:id="colFechPixCont" text="Pix+Déb Contado" prefWidth="120" />
+                            <TableColumn fx:id="colFechPixDiv" text="Div. Pix+Déb" prefWidth="110" />
+                            <TableColumn fx:id="colFechStatus" text="Status" prefWidth="90" />
+                        </columns>
+                    </TableView>
+                </VBox>
 
-    <TableView fx:id="tabelaDespesas" prefHeight="200">
-        <columns>
-            <TableColumn fx:id="colunaDataDespesa" text="Data" prefWidth="140" />
-            <TableColumn fx:id="colunaRazaoDespesa" text="Razão" prefWidth="220" />
-            <TableColumn fx:id="colunaTipoDespesa" text="Tipo" prefWidth="120" />
-            <TableColumn fx:id="colunaValorDespesa" text="Valor (R$)" prefWidth="120" />
-        </columns>
-    </TableView>
+            </VBox>
 
-    <Label fx:id="labelTotalDespesas" text="Total de Despesas: R$ 0,00" styleClass="valor-negativo" />
+            <!-- Coluna direita: cards de resumo -->
+            <VBox spacing="14" prefWidth="280">
+                <VBox styleClass="card-metrica-destaque" spacing="4">
+                    <Label text="Valor Total Arrecadado" styleClass="form-label" />
+                    <Label fx:id="labelArrecadado" text="R$ 0,00" styleClass="metrica-valor-verde" />
+                </VBox>
+                <VBox styleClass="card-metrica-azul" spacing="4">
+                    <Label text="Total Pago aos Funcionários" styleClass="form-label" />
+                    <Label fx:id="labelTotalPago" text="R$ 0,00" styleClass="metrica-valor-azul" />
+                </VBox>
+                <VBox styleClass="card-metrica-vermelho" spacing="4">
+                    <Label text="Total de Despesas" styleClass="form-label" />
+                    <Label fx:id="labelTotalDespesas" text="R$ 0,00" styleClass="metrica-valor-vermelho" />
+                </VBox>
+                <VBox styleClass="card-metrica-destaque" spacing="4">
+                    <Label text="Valor Líquido Final" styleClass="form-label" />
+                    <Label fx:id="labelLiquidoFinal" text="R$ 0,00" styleClass="metrica-valor-verde" />
+                </VBox>
+            </VBox>
 
-    <Label fx:id="labelLiquidoFinal" text="Valor Líquido Final: R$ 0,00" style="-fx-font-size: 16px; -fx-font-weight: bold; -fx-text-fill: #1a7a1a;" />
-    <Label text="Fechamentos de Caixa do Mês" styleClass="subtitulo" />
-
-    <TableView fx:id="tabelaFechamentos" prefHeight="250">
-        <columns>
-            <TableColumn fx:id="colFechData" text="Data" prefWidth="100" />
-            <TableColumn fx:id="colFechFunc" text="Fechou" prefWidth="130" />
-            <TableColumn fx:id="colFechDinEsp" text="Dinh. Esperado" prefWidth="110" />
-            <TableColumn fx:id="colFechDinCont" text="Dinh. Contado" prefWidth="110" />
-            <TableColumn fx:id="colFechDinDiv" text="Div. Dinheiro" prefWidth="110" />
-            <TableColumn fx:id="colFechPixEsp" text="Pix+Déb Esperado" prefWidth="120" />
-            <TableColumn fx:id="colFechPixCont" text="Pix+Déb Contado" prefWidth="120" />
-            <TableColumn fx:id="colFechPixDiv" text="Div. Pix+Déb" prefWidth="110" />
-            <TableColumn fx:id="colFechStatus" text="Status" prefWidth="90" />
-        </columns>
-    </TableView>
-
-</VBox>
+        </HBox>
+    </VBox>
 </ScrollPane>

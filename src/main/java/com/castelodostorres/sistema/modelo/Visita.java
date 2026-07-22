@@ -33,6 +33,10 @@ public class Visita {
 
     private String motivoCancelamento;
 
+    private double dinheiroBruto;      // ATRIBUTO: dinheiro da venda ORIGINAL (não muda com reembolso)
+    private double pixBruto;           // ATRIBUTO: pix da venda original
+    private double debitoBruto;        // ATRIBUTO: débito da venda original
+
     private boolean agendada; // ATRIBUTO: true = paga antecipada ao dono, fora da conferência de caixa
 
     public Visita() { // CONSTRUTOR vazio
@@ -114,6 +118,15 @@ public class Visita {
 
     public boolean isAgendada() { return agendada; }
     public void setAgendada(boolean agendada) { this.agendada = agendada; }
+
+    public double getDinheiroBruto() { return dinheiroBruto; }
+    public void setDinheiroBruto(double dinheiroBruto) { this.dinheiroBruto = dinheiroBruto; }
+
+    public double getPixBruto() { return pixBruto; }
+    public void setPixBruto(double pixBruto) { this.pixBruto = pixBruto; }
+
+    public double getDebitoBruto() { return debitoBruto; }
+    public void setDebitoBruto(double debitoBruto) { this.debitoBruto = debitoBruto; }
 
 
 

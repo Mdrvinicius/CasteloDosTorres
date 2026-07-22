@@ -7,7 +7,6 @@
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.control.ScrollPane?>
 <?import javafx.scene.control.TextField?>
-<?import javafx.scene.layout.GridPane?>
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.VBox?>
 
@@ -15,80 +14,75 @@
             fx:controller="com.castelodostorres.sistema.controlador.ControladorTelaCaixa"
             fitToWidth="true" styleClass="painel-conteudo">
 
-    <VBox spacing="15">
-        <padding><Insets top="15" right="15" bottom="15" left="15" /></padding>
+    <VBox spacing="16">
+        <padding><Insets top="20" right="20" bottom="20" left="20" /></padding>
 
         <Label text="Caixa" styleClass="titulo-tela" />
 
-        <!-- Seletor de data -->
-        <HBox spacing="10" alignment="CENTER_LEFT">
-            <Label text="Data:" styleClass="form-label" />
-            <DatePicker fx:id="seletorData" />
-            <Button text="Gerar" onAction="#gerar" />
-        </HBox>
-
-        <!-- CARD: Fundo de troco -->
-        <VBox styleClass="card" spacing="8">
-            <Label text="Fundo de Troco" styleClass="subtitulo" />
+        <!-- CARD: controle (data + fundo de troco) -->
+        <VBox styleClass="card" spacing="12">
             <HBox spacing="10" alignment="CENTER_LEFT">
-                <Label text="Valor (R$):" />
+                <Label text="Data:" styleClass="form-label" />
+                <DatePicker fx:id="seletorData" />
+                <Button text="Gerar" onAction="#gerar" />
+            </HBox>
+            <HBox spacing="10" alignment="CENTER_LEFT">
+                <Label text="Fundo de Troco (R$):" styleClass="form-label" />
                 <TextField fx:id="campoFundoTroco" prefWidth="120" />
                 <Button text="Salvar Fundo" onAction="#salvarFundo" styleClass="botao-secundario" />
             </HBox>
         </VBox>
 
-        <!-- CARD: Conferência de Dinheiro -->
-        <VBox styleClass="card" spacing="8">
-            <Label text="Conferência de Dinheiro (espécie)" styleClass="subtitulo" />
-            <Label fx:id="labelDinheiroEsperado" text="Esperado: R$ 0,00" />
-            <Label fx:id="labelDetalheDinheiro" text="" styleClass="texto-suave" />
-            <HBox spacing="10" alignment="CENTER_LEFT">
-                <Label text="Contado na gaveta (R$):" />
-                <TextField fx:id="campoDinheiroContado" prefWidth="120" />
-            </HBox>
-            <Label fx:id="labelDiferencaDinheiro" text="Diferença: R$ 0,00" styleClass="valor-destaque" />
-        </VBox>
+        <!-- Conferências lado a lado -->
+        <HBox spacing="16">
+            <VBox styleClass="card" spacing="8" HBox.hgrow="ALWAYS" maxWidth="Infinity">
+                <Label text="Conferência de Dinheiro (espécie)" styleClass="subtitulo" />
+                <Label fx:id="labelDinheiroEsperado" text="Esperado: R$ 0,00" />
+                <Label fx:id="labelDetalheDinheiro" text="" styleClass="texto-suave" />
+                <Label text="Contado na gaveta (R$):" styleClass="form-label" />
+                <TextField fx:id="campoDinheiroContado" maxWidth="Infinity" />
+                <Label fx:id="labelDiferencaDinheiro" text="Diferença: R$ 0,00" styleClass="valor-destaque" />
+            </VBox>
 
-        <!-- CARD: Conferência de Pix + Débito -->
-        <VBox styleClass="card" spacing="8">
-            <Label text="Conferência de Pix + Débito (maquineta)" styleClass="subtitulo" />
-            <Label fx:id="labelPixDebitoEsperado" text="Esperado: R$ 0,00" />
-            <HBox spacing="10" alignment="CENTER_LEFT">
-                <Label text="Extrato da maquineta (R$):" />
-                <TextField fx:id="campoPixDebitoContado" prefWidth="120" />
-            </HBox>
-            <Label fx:id="labelDiferencaPixDebito" text="Diferença: R$ 0,00" styleClass="valor-destaque" />
-        </VBox>
+            <VBox styleClass="card" spacing="8" HBox.hgrow="ALWAYS" maxWidth="Infinity">
+                <Label text="Conferência de Pix + Débito (maquineta)" styleClass="subtitulo" />
+                <Label fx:id="labelPixDebitoEsperado" text="Esperado: R$ 0,00" />
+                <Label text="Extrato da maquineta (R$):" styleClass="form-label" />
+                <TextField fx:id="campoPixDebitoContado" maxWidth="Infinity" />
+                <Label fx:id="labelDiferencaPixDebito" text="Diferença: R$ 0,00" styleClass="valor-destaque" />
+            </VBox>
+        </HBox>
 
-        <!-- CARD: Saída de Caixa -->
-        <VBox styleClass="card" spacing="8">
+        <!-- CARD: Saída de Caixa (linha única) -->
+        <VBox styleClass="card" spacing="10">
             <Label text="Saída de Caixa (dinheiro retirado da gaveta)" styleClass="subtitulo" />
             <Label fx:id="labelTotalSaidas" text="Total de saídas do dia: R$ 0,00" styleClass="valor-negativo" />
-            <GridPane hgap="10" vgap="8">
-                <Label text="Valor (R$):" GridPane.rowIndex="0" GridPane.columnIndex="0" />
-                <TextField fx:id="campoValorSaida" GridPane.rowIndex="0" GridPane.columnIndex="1" prefWidth="120" />
-                <Label text="Motivo:" GridPane.rowIndex="1" GridPane.columnIndex="0" />
-                <TextField fx:id="campoMotivoSaida" GridPane.rowIndex="1" GridPane.columnIndex="1" prefWidth="250" />
-            </GridPane>
-            <Button text="Registrar Saída" onAction="#registrarSaida" styleClass="botao-secundario" />
-        </VBox>
-
-        <!-- CARD: Informativos (agendados + reembolsos) -->
-        <VBox styleClass="card" spacing="6">
-            <Label text="Informativo" styleClass="subtitulo" />
-            <Label fx:id="labelAgendados" text="Valor de agendados: —" styleClass="texto-suave" />
-            <Label fx:id="labelReembolsos" text="Reembolsos do dia: R$ 0,00" styleClass="texto-suave" />
-        </VBox>
-
-        <!-- CARD: Fechar caixa -->
-        <VBox styleClass="card" spacing="8">
-            <Label text="Fechar Caixa" styleClass="subtitulo" />
-            <HBox spacing="10" alignment="CENTER_LEFT">
-                <Label text="Quem está fechando:" />
-                <ComboBox fx:id="comboFuncionario" prefWidth="200" />
+            <HBox spacing="12" alignment="CENTER_LEFT">
+                <Label text="Valor (R$):" styleClass="form-label" />
+                <TextField fx:id="campoValorSaida" prefWidth="120" />
+                <Label text="Motivo:" styleClass="form-label" />
+                <TextField fx:id="campoMotivoSaida" HBox.hgrow="ALWAYS" maxWidth="Infinity" />
+                <Button text="Registrar Saída" onAction="#registrarSaida" styleClass="botao-secundario" />
             </HBox>
-            <Button text="Salvar Fechamento" onAction="#salvarFechamento" />
         </VBox>
+
+        <!-- Informativo + Fechar Caixa lado a lado -->
+        <HBox spacing="16">
+            <VBox styleClass="card" spacing="6" HBox.hgrow="ALWAYS" maxWidth="Infinity">
+                <Label text="Informativo" styleClass="subtitulo" />
+                <Label fx:id="labelAgendados" text="Valor de agendados: —" styleClass="texto-suave" />
+                <Label fx:id="labelReembolsos" text="Reembolsos do dia: R$ 0,00" styleClass="texto-suave" />
+            </VBox>
+
+            <VBox styleClass="card" spacing="10" HBox.hgrow="ALWAYS" maxWidth="Infinity">
+                <Label text="Fechar Caixa" styleClass="subtitulo" />
+                <HBox spacing="10" alignment="CENTER_LEFT">
+                    <Label text="Quem está fechando:" styleClass="form-label" />
+                    <ComboBox fx:id="comboFuncionario" prefWidth="200" />
+                </HBox>
+                <Button text="Salvar Fechamento" onAction="#salvarFechamento" />
+            </VBox>
+        </HBox>
 
     </VBox>
 </ScrollPane>

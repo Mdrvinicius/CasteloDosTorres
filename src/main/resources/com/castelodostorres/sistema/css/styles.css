@@ -1,0 +1,283 @@
+/* ==================== BASE ==================== */
+.root {
+    -fx-font-family: "Segoe UI", "Roboto", "Arial", sans-serif;
+    -fx-font-size: 13px;
+}
+
+.janela-raiz {
+    -fx-background-color: #eef2f7;
+}
+
+/* ==================== SIDEBAR ==================== */
+.sidebar {
+    -fx-background-color: #1b2a41;
+}
+
+.sidebar-cabecalho {
+    -fx-padding: 6 8 22 8;
+}
+
+.sidebar-logo {
+    -fx-text-fill: white;
+    -fx-font-size: 15px;
+    -fx-font-weight: bold;
+}
+
+/* botões de navegação (escopo .sidebar vence o .button base) */
+.sidebar .nav-botao {
+    -fx-background-color: transparent;
+    -fx-text-fill: #c7d2e0;
+    -fx-font-size: 14px;
+    -fx-font-weight: normal;
+    -fx-alignment: CENTER_LEFT;
+    -fx-padding: 10 14 10 14;
+    -fx-background-radius: 8;
+    -fx-cursor: hand;
+}
+.sidebar .nav-botao:hover {
+    -fx-background-color: #26374f;
+    -fx-text-fill: white;
+}
+/* classe pronta pro item ativo (precisa o controlador aplicar - ver nota) */
+/* item ativo: especificidade dobrada (.nav-botao.nav-botao-ativo) vence o .nav-botao */
+.sidebar .nav-botao.nav-botao-ativo {
+    -fx-background-color: #2563eb;
+    -fx-text-fill: white;
+}
+.sidebar .nav-botao.nav-botao-ativo:hover {
+    -fx-background-color: #1d4ed8;
+    -fx-text-fill: white;
+}
+.centro-vazio {
+    -fx-background-color: #eef2f7;
+}
+
+/* ==================== CONTEÚDO / SCROLL ==================== */
+.painel-conteudo {
+    -fx-background-color: transparent;
+    -fx-background-insets: 0;
+    -fx-padding: 0;
+}
+.painel-conteudo > .viewport {
+    -fx-background-color: #eef2f7;
+}
+.painel-conteudo:focused {
+    -fx-background-insets: 0;
+    -fx-faint-focus-color: transparent;
+    -fx-focus-color: transparent;
+}
+
+/* ==================== TÍTULOS / TEXTO ==================== */
+.titulo-tela {
+    -fx-font-size: 24px;
+    -fx-font-weight: bold;
+    -fx-text-fill: #1e293b;
+}
+.subtitulo {
+    -fx-font-size: 15px;
+    -fx-font-weight: bold;
+    -fx-text-fill: #1e293b;
+}
+.form-label {
+    -fx-text-fill: #475569;
+}
+.texto-suave {
+    -fx-text-fill: #64748b;
+}
+
+/* ==================== CARDS ==================== */
+.card {
+    -fx-background-color: white;
+    -fx-background-radius: 12;
+    -fx-border-color: #e2e8f0;
+    -fx-border-radius: 12;
+    -fx-padding: 16;
+    -fx-effect: dropshadow(gaussian, rgba(15,23,42,0.06), 10, 0, 0, 2);
+}
+/* card de métrica do topo (pronto pra telas futuras) */
+.card-metrica {
+    -fx-background-color: white;
+    -fx-background-radius: 12;
+    -fx-border-color: #e2e8f0;
+    -fx-border-radius: 12;
+    -fx-padding: 14 18 14 18;
+    -fx-effect: dropshadow(gaussian, rgba(15,23,42,0.06), 10, 0, 0, 2);
+}
+
+/* ==================== VALORES ==================== */
+.valor-destaque {
+    -fx-font-size: 15px;
+    -fx-font-weight: bold;
+    -fx-text-fill: #1e293b;
+}
+.valor-positivo {
+    -fx-font-weight: bold;
+    -fx-text-fill: #15803d;
+}
+.valor-negativo {
+    -fx-font-weight: bold;
+    -fx-text-fill: #dc2626;
+}
+
+/* ==================== BOTÕES ==================== */
+.button {
+    -fx-background-color: #2563eb;
+    -fx-text-fill: white;
+    -fx-font-weight: bold;
+    -fx-background-radius: 8;
+    -fx-padding: 8 16 8 16;
+    -fx-cursor: hand;
+}
+.button:hover {
+    -fx-background-color: #1d4ed8;
+}
+.botao-secundario {
+    -fx-background-color: white;
+    -fx-text-fill: #2563eb;
+    -fx-border-color: #2563eb;
+    -fx-border-radius: 8;
+    -fx-background-radius: 8;
+}
+.botao-secundario:hover {
+    -fx-background-color: #eff6ff;
+}
+
+/* ==================== CAMPOS ==================== */
+.text-field, .date-picker, .combo-box {
+    -fx-background-radius: 8;
+    -fx-border-color: #cbd5e1;
+    -fx-border-radius: 8;
+}
+.text-field:focused {
+    -fx-border-color: #2563eb;
+}
+
+/* ==================== BOTÕES DE AÇÃO (entrada/saída) ==================== */
+.botao-sucesso {
+    -fx-background-color: white;
+    -fx-text-fill: #15803d;
+    -fx-border-color: #86efac;
+    -fx-border-radius: 8;
+    -fx-background-radius: 8;
+}
+.botao-sucesso:hover {
+    -fx-background-color: #f0fdf4;
+}
+.botao-perigo {
+    -fx-background-color: white;
+    -fx-text-fill: #dc2626;
+    -fx-border-color: #fca5a5;
+    -fx-border-radius: 8;
+    -fx-background-radius: 8;
+}
+.botao-perigo:hover {
+    -fx-background-color: #fef2f2;
+}
+
+/* valores grandes do card Última Visita */
+.ultima-visita-valor {
+    -fx-font-size: 16px;
+    -fx-font-weight: bold;
+    -fx-text-fill: #1e293b;
+}
+
+/* ==================== MÉTRICAS (cards do topo) ==================== */
+.metrica-valor {
+    -fx-font-size: 26px;
+    -fx-font-weight: bold;
+    -fx-text-fill: #1e3a8a;
+}
+.metrica-valor-verde {
+    -fx-font-size: 24px;
+    -fx-font-weight: bold;
+    -fx-text-fill: #15803d;
+}
+.metrica-valor-vermelho {
+    -fx-font-size: 24px;
+    -fx-font-weight: bold;
+    -fx-text-fill: #dc2626;
+}
+.card-metrica-destaque {
+    -fx-background-color: #f0fdf4;
+    -fx-background-radius: 12;
+    -fx-border-color: #bbf7d0;
+    -fx-border-radius: 12;
+    -fx-padding: 14 18 14 18;
+}
+
+/* cores das formas de pagamento */
+.valor-roxo {
+    -fx-font-size: 16px;
+    -fx-font-weight: bold;
+    -fx-text-fill: #7c3aed;
+}
+.valor-azul {
+    -fx-font-size: 16px;
+    -fx-font-weight: bold;
+    -fx-text-fill: #2563eb;
+}
+
+/* faixa informativa (agendados) */
+.faixa-info {
+    -fx-background-color: #eff6ff;
+    -fx-background-radius: 8;
+    -fx-padding: 10 12 10 12;
+}
+
+/* cards de métrica coloridos (coluna direita do Resumo do Mês) */
+.card-metrica-azul {
+    -fx-background-color: #eff6ff;
+    -fx-background-radius: 12;
+    -fx-border-color: #bfdbfe;
+    -fx-border-radius: 12;
+    -fx-padding: 14 18 14 18;
+}
+.card-metrica-vermelho {
+    -fx-background-color: #fef2f2;
+    -fx-background-radius: 12;
+    -fx-border-color: #fecaca;
+    -fx-border-radius: 12;
+    -fx-padding: 14 18 14 18;
+}
+.metrica-valor-azul {
+    -fx-font-size: 24px;
+    -fx-font-weight: bold;
+    -fx-text-fill: #2563eb;
+}
+
+/* resumo do filtro por guia (tela Visitas) */
+.resumo-guia {
+    -fx-font-size: 15px;
+    -fx-font-weight: bold;
+    -fx-text-fill: #1e293b;
+}
+
+/* valores da tela de detalhes da visita */
+.detalhe-valor {
+    -fx-font-size: 15px;
+    -fx-font-weight: bold;
+    -fx-text-fill: #1e293b;
+}
+.valor-amarelo {
+    -fx-font-size: 16px;
+    -fx-font-weight: bold;
+    -fx-text-fill: #d97706;
+}
+
+/* badges de status */
+.badge-ativa {
+    -fx-font-size: 13px;
+    -fx-font-weight: bold;
+    -fx-text-fill: #15803d;
+    -fx-background-color: #dcfce7;
+    -fx-background-radius: 6;
+    -fx-padding: 3 10 3 10;
+}
+.badge-cancelada {
+    -fx-font-size: 13px;
+    -fx-font-weight: bold;
+    -fx-text-fill: #c2410c;
+    -fx-background-color: #ffedd5;
+    -fx-background-radius: 6;
+    -fx-padding: 3 10 3 10;
+}

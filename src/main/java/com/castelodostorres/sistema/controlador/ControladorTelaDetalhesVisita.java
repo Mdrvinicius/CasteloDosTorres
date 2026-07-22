@@ -25,6 +25,7 @@ public class ControladorTelaDetalhesVisita implements PrecisaDaTelaRaiz{
     @FXML private Label labelObservacoes;
     @FXML private Label labelMotivoCancelamento;
     @FXML private Label labelMotivoReembolso;
+    @FXML private javafx.scene.layout.VBox caixaFormasPagamento;
 
     private Visita visita; // ATRIBUTO: a visita que esta tela está mostrando
 
@@ -41,20 +42,29 @@ public class ControladorTelaDetalhesVisita implements PrecisaDaTelaRaiz{
     }
 
     private void preencherCampos() { // MÉTODO: joga os dados da visita nos labels da tela
-        labelGuia.setText("Guia: " + visita.getNomeGuia());
-        labelRecepcionista.setText("Recepcionista: " + (visita.getNomeRecepcionista() == null ? "Nenhuma" : visita.getNomeRecepcionista()));
-        labelDataHora.setText("Data/Hora: " + visita.getDataHoraInicio());
-        labelInteiras.setText("Inteiras: " + visita.getQuantidadeInteira());
-        labelMeias.setText("Meias: " + visita.getQuantidadeMeia());
-        labelNaoPagantes.setText("Não Pagantes: " + visita.getQuantidadeNaoPagante());
-        labelValorTotal.setText("Valor Total: R$ " + String.format("%.2f", visita.getValorTotal()));
-        labelReembolso.setText("Reembolsado: R$ " + String.format("%.2f", visita.getValorReembolsado()));
+        labelGuia.setText(visita.getNomeGuia());
+        labelRecepcionista.setText(visita.getNomeRecepcionista() == null ? "Nenhuma" : visita.getNomeRecepcionista());
+        labelDataHora.setText(com.castelodostorres.sistema.util.FormatadorData.formatar(visita.getDataHoraInicio()));
+        labelInteiras.setText(String.valueOf(visita.getQuantidadeInteira()));
+        labelMeias.setText(String.valueOf(visita.getQuantidadeMeia()));
+        labelNaoPagantes.setText(String.valueOf(visita.getQuantidadeNaoPagante()));
+        labelValorTotal.setText("R$ " + String.format("%.2f", visita.getValorTotal()));
+        labelReembolso.setText("R$ " + String.format("%.2f", visita.getValorReembolsado()));
+
 
         double liquido = visita.getValorTotal() - visita.getValorReembolsado();
-        labelValorLiquido.setText("Valor Líquido: R$ " + String.format("%.2f", liquido));
+        labelValorLiquido.setText("R$ " + String.format("%.2f", liquido));
 
-        labelStatus.setText("Status: " + visita.getStatus());
-        labelObservacoes.setText("Observações: " + (visita.getObservacoes() == null || visita.getObservacoes().isBlank() ? "-" : visita.getObservacoes()));
+        labelStatus.setText(visita.getStatus());
+        // cor do status: verde pra ATIVA, laranja pra CANCELADA
+        labelStatus.getStyleClass().removeAll("badge-ativa", "badge-cancelada");
+        if ("CANCELADA".equals(visita.getStatus())) {
+            labelStatus.getStyleClass().add("badge-cancelada");
+        } else {
+            labelStatus.getStyleClass().add("badge-ativa");
+        }
+
+        labelObservacoes.setText(visita.getObservacoes() == null || visita.getObservacoes().isBlank() ? "-" : visita.getObservacoes());
 
         // Motivo do cancelamento: só aparece se a visita foi cancelada
         if ("CANCELADA".equals(visita.getStatus()) && visita.getMotivoCancelamento() != null) {
@@ -66,7 +76,7 @@ public class ControladorTelaDetalhesVisita implements PrecisaDaTelaRaiz{
             labelMotivoCancelamento.setManaged(false);
         }
 
-// Motivo do reembolso: só aparece se houve reembolso
+        // Motivo do reembolso: só aparece se houve reembolso
         if (visita.getValorReembolsado() > 0 && visita.getMotivoReembolso() != null) {
             labelMotivoReembolso.setText("Motivo do reembolso: " + visita.getMotivoReembolso());
             labelMotivoReembolso.setVisible(true);
@@ -75,6 +85,16 @@ public class ControladorTelaDetalhesVisita implements PrecisaDaTelaRaiz{
             labelMotivoReembolso.setVisible(false);
             labelMotivoReembolso.setManaged(false);
         }
+        caixaFormasPagamento.getChildren().clear();
+        adicionarFormaSePresente("Dinheiro", visita.getDinheiroBruto());
+        adicionarFormaSePresente("Pix", visita.getPixBruto());
+        adicionarFormaSePresente("Débito", visita.getDebitoBruto());
+        if (caixaFormasPagamento.getChildren().isEmpty()) {
+            Label vazio = new Label("-");
+            vazio.getStyleClass().add("detalhe-valor");
+            caixaFormasPagamento.getChildren().add(vazio);
+        }
+
     }
 
     @FXML
@@ -211,6 +231,13 @@ public class ControladorTelaDetalhesVisita implements PrecisaDaTelaRaiz{
             mostrarAviso("Reembolso registrado com sucesso.");
         } catch (SQLException e) {
             mostrarAviso("Erro ao registrar reembolso: " + e.getMessage());
+        }
+    }
+    private void adicionarFormaSePresente(String nome, double valor) { // MÉTODO: cria uma linha da forma só se valor > 0
+        if (valor > 0) {
+            Label linha = new Label(nome + ": R$ " + String.format("%.2f", valor));
+            linha.getStyleClass().add("detalhe-valor");
+            caixaFormasPagamento.getChildren().add(linha);
         }
     }
 }
