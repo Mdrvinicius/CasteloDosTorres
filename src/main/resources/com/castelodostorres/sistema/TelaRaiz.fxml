@@ -6,7 +6,10 @@
 <?import javafx.scene.layout.BorderPane?>
 <?import javafx.scene.layout.StackPane?>
 <?import javafx.scene.layout.VBox?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.image.Image?>
 
+<?import javafx.scene.layout.HBox?>
 <BorderPane xmlns="http://javafx.com/javafx"
             xmlns:fx="http://javafx.com/fxml"
             fx:controller="com.castelodostorres.sistema.controlador.ControladorTelaRaiz"
@@ -17,9 +20,14 @@
         <VBox styleClass="sidebar" spacing="6" prefWidth="210">
             <padding><Insets top="18" right="12" bottom="18" left="12" /></padding>
 
-            <VBox styleClass="sidebar-cabecalho">
+            <HBox styleClass="sidebar-cabecalho" spacing="10" alignment="CENTER_LEFT">
+                <ImageView fitWidth="60" fitHeight="60" preserveRatio="true">
+                    <image>
+                        <Image url="@/com/castelodostorres/sistema/imagens/logo3.png"/>
+                    </image>
+                </ImageView>
                 <Label text="CASTELO DOS TORRES" styleClass="sidebar-logo" wrapText="true" />
-            </VBox>
+            </HBox>
 
             <Button fx:id="botaoTelaPrincipal" text="Tela Principal" onAction="#abrirTelaPrincipal" styleClass="nav-botao" maxWidth="Infinity" />
             <Button fx:id="botaoCaixa" text="Caixa" onAction="#abrirCaixa" styleClass="nav-botao" maxWidth="Infinity" />

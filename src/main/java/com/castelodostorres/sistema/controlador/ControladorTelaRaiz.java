@@ -123,18 +123,18 @@ public class ControladorTelaRaiz {
         marcarAtivo(botaoCaixa);
     }
 
-    private void marcarAtivo(javafx.scene.control.Button ativo) {
-        System.out.println("marcarAtivo chamado com: " + (ativo == null ? "NULL" : ativo.getText()));
+    private void marcarAtivo(javafx.scene.control.Button ativo) { // MÉTODO: destaca só o botão da tela aberta
         javafx.scene.control.Button[] todos = {
                 botaoTelaPrincipal, botaoCaixa, botaoVisitas, botaoRelatorios,
                 botaoResumoMes, botaoDespesas, botaoFuncionarios, botaoConfiguracao
         };
         for (javafx.scene.control.Button b : todos) {
-            System.out.println("  botao no array: " + (b == null ? "NULL" : b.getText()));
             if (b != null) {
                 b.getStyleClass().remove("nav-botao-ativo");
             }
         }
-
+        if (ativo != null && !ativo.getStyleClass().contains("nav-botao-ativo")) {
+            ativo.getStyleClass().add("nav-botao-ativo");
+        }
     }
 }

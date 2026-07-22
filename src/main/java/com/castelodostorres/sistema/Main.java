@@ -24,6 +24,7 @@ public class Main extends Application {
         scene.getStylesheets().add(getClass().getResource("/com/castelodostorres/sistema/css/styles.css").toExternalForm());
         stage.setScene(scene);
         stage.setMaximized(true);
+        stage.getIcons().add(new javafx.scene.image.Image(getClass().getResourceAsStream("/com/castelodostorres/sistema/imagens/logo5.png")));
         stage.show();
     }
 
