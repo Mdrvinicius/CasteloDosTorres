@@ -62,7 +62,9 @@ public class ControladorTelaVisitas implements Initializable, PrecisaDaTelaRaiz 
 
 
         private void configurarColunas() { // MÉTODO: diz a cada coluna qual atributo da Visita ela exibe
-        colunaData.setCellValueFactory(new PropertyValueFactory<>("dataHoraInicio"));
+            colunaData.setCellValueFactory(dados ->
+                    new javafx.beans.property.SimpleStringProperty(
+                            com.castelodostorres.sistema.util.FormatadorData.formatar(dados.getValue().getDataHoraInicio())));
         colunaGuia.setCellValueFactory(new PropertyValueFactory<>("nomeGuia"));
         colunaRecepcionista.setCellValueFactory(new PropertyValueFactory<>("nomeRecepcionista"));
         colunaInteiras.setCellValueFactory(new PropertyValueFactory<>("quantidadeInteira"));
@@ -118,7 +120,8 @@ public class ControladorTelaVisitas implements Initializable, PrecisaDaTelaRaiz 
         int totalPessoas = totalInteiras + totalMeias;
 
         LocalDate data = seletorDataBusca.getValue();
-        String textoData = (data == null) ? "Todas as visitas" : data.toString();
+        String textoData = (data == null) ? "Todas as visitas"
+                : data.format(java.time.format.DateTimeFormatter.ofPattern("dd/MM/yyyy"));
 
         labelResumoGuia.setText(
                 guia.getNome() + " | Data: " + textoData +

@@ -148,6 +148,9 @@ public class VisitaRepositorio {
                 visita.setValorPix(resultado.getDouble("valor_pix"));
                 visita.setValorDebito(resultado.getDouble("valor_debito"));
                 visita.setAgendada(resultado.getInt("agendada") == 1);
+                visita.setDinheiroBruto(resultado.getDouble("dinheiro_bruto"));
+                visita.setPixBruto(resultado.getDouble("pix_bruto"));
+                visita.setDebitoBruto(resultado.getDouble("debito_bruto"));
                 lista.add(visita);
             }
         }

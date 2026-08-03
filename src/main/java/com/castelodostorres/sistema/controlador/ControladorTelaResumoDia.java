@@ -81,6 +81,7 @@ public class ControladorTelaResumoDia implements Initializable {
             for (ComissaoFuncionario c : comissoes) {
                 totalComissao += c.getValor();
             }
+            totalComissao = Math.round(totalComissao * 100.0) / 100.0; // limpa a dízima da soma
             labelTotalComissao.setText("R$ " + String.format("%.2f", totalComissao));
 
             double[] est = repositorio.calcularEstatisticasDoDia(dataTexto);

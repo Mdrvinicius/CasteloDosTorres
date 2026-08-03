@@ -9,12 +9,21 @@ public class ComissaoFuncionario {
     public ComissaoFuncionario(String nome, String papel, double valor) { // CONSTRUTOR
         this.nome = nome;
         this.papel = papel;
-        this.valor = valor;
+        this.valor = Math.round(valor * 100.0) / 100.0;
     }
 
-    public String getNome() { return nome; }
-    public String getPapel() { return papel; }
-    public double getValor() { return valor; }
-    public void setValor(double valor) { this.valor = valor; }
-    public void adicionar(double valor) { this.valor += valor; } // MÉTODO: soma ao acumulado
+    public String getNome()
+    { return nome; }
+
+    public String getPapel()
+    { return papel; }
+
+    public double getValor()
+    { return valor; }
+
+    public void setValor(double valor)
+    { this.valor = valor; }
+
+    public void adicionar(double valor) {
+        this.valor = Math.round((this.valor + valor) * 100.0) / 100.0; } // MÉTODO: soma ao acumulado
 }

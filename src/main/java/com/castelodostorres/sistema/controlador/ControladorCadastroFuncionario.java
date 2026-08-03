@@ -144,14 +144,12 @@ public class ControladorCadastroFuncionario implements Initializable, PrecisaDaT
         }
     }
 
-    private void configurarCliqueDuplo() { // MÉTODO: duplo-clique num funcionário pede senha e abre detalhes
+    private void configurarCliqueDuplo() { // MÉTODO: duplo-clique num funcionário abre os detalhes
         tabelaFuncionarios.setOnMouseClicked(evento -> {
             if (evento.getClickCount() == 2) {
                 Funcionario selecionado = tabelaFuncionarios.getSelectionModel().getSelectedItem();
                 if (selecionado != null && telaRaiz != null) {
-                    if (VerificadorSenha.verificar()) { // pede a senha ANTES de abrir os detalhes
-                        telaRaiz.abrirDetalhesFuncionario(selecionado);
-                    }
+                    telaRaiz.abrirDetalhesFuncionario(selecionado);
                 }
             }
         });

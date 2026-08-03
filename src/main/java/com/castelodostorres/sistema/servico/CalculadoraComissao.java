@@ -37,13 +37,15 @@ public class CalculadoraComissao {
     }
 
     private double calcularValor(String tipo, double valorRemuneracao, Visita visita) { // MÉTODO: aplica a fórmula certa
+        double resultado;
         if ("PERCENTUAL".equals(tipo)) {
             double liquido = visita.getValorTotal() - visita.getValorReembolsado();
-            return liquido * (valorRemuneracao / 100.0);
+            resultado = liquido * (valorRemuneracao / 100.0);
         } else { // FIXO_POR_PESSOA
             int pagantes = visita.getQuantidadeInteira() + visita.getQuantidadeMeia();
-            return pagantes * valorRemuneracao;
+            resultado = pagantes * valorRemuneracao;
         }
+        return Math.round(resultado * 100.0) / 100.0; // arredonda pra 2 casas, mata a dízima
     }
 
     private void acumular(Map<String, ComissaoFuncionario> mapa, String nome, String papel, double valor) { // MÉTODO: soma no acumulado

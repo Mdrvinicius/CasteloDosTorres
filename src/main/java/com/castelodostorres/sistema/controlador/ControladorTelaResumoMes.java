@@ -134,6 +134,7 @@ public class ControladorTelaResumoMes implements Initializable {
             for (ComissaoFuncionario c : comissoes) {
                 totalPago += c.getValor();
             }
+            totalPago = Math.round(totalPago * 100.0) / 100.0; // limpa a dízima da soma
 
             // despesas do mês
             List<Despesa> despesas = despesaRepositorio.listarDoMes(mesTexto);

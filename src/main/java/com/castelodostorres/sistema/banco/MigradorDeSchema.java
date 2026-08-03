@@ -24,6 +24,7 @@ public class MigradorDeSchema {
         aplicarSeNecessario(conexao, versaoAtual, 7, MigradorDeSchema::migracaoVersao7);
         aplicarSeNecessario(conexao, versaoAtual, 8, MigradorDeSchema::migracaoVersao8);
         aplicarSeNecessario(conexao, versaoAtual, 9, MigradorDeSchema::migracaoVersao9);
+        aplicarSeNecessario(conexao, versaoAtual, 10, MigradorDeSchema::migracaoVersao10);
         // no futuro, cada mudança nova de schema vira mais uma linha aqui, com número seguinte (3, 4, 5...)
     }
 
@@ -229,6 +230,16 @@ public class MigradorDeSchema {
             // visitas já existentes: copia o valor atual pro bruto.
             // (as SEM reembolso ficam corretas; as COM reembolso já tinham perdido o original — é o passado, sem recuperação possível)
             comando.execute("UPDATE visita SET dinheiro_bruto = valor_dinheiro, pix_bruto = valor_pix, debito_bruto = valor_debito");
+        }
+    }
+
+    private static void migracaoVersao10(Connection conexao) throws SQLException { // fechamento: entregue/em caixa + herança do fundo
+        try (Statement comando = conexao.createStatement()) {
+            comando.execute("ALTER TABLE fechamento_caixa ADD COLUMN entregue REAL NOT NULL DEFAULT 0");
+            comando.execute("ALTER TABLE fechamento_caixa ADD COLUMN em_caixa REAL NOT NULL DEFAULT 0");
+            comando.execute("ALTER TABLE fechamento_caixa ADD COLUMN fundo_herdado REAL NOT NULL DEFAULT 0");
+            comando.execute("ALTER TABLE fechamento_caixa ADD COLUMN fundo_real REAL NOT NULL DEFAULT 0");
+            comando.execute("ALTER TABLE fechamento_caixa ADD COLUMN tem_fundo_herdado INTEGER NOT NULL DEFAULT 0");
         }
     }
 
