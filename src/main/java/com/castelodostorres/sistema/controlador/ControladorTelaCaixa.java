@@ -32,6 +32,8 @@ public class ControladorTelaCaixa implements Initializable {
     @FXML private Label labelAgendados;
     @FXML private Label labelReembolsos;
     @FXML private ComboBox<Funcionario> comboFuncionario;
+    @FXML private TextField campoEntregue;
+    @FXML private TextField campoEmCaixa;
 
     private final VisitaRepositorio visitaRepositorio = new VisitaRepositorio();
     private final FundoTrocoRepositorio fundoTrocoRepositorio = new FundoTrocoRepositorio();
@@ -75,7 +77,16 @@ public class ControladorTelaCaixa implements Initializable {
         String dataTexto = data.toString();
 
         try {
-            double fundo = fundoTrocoRepositorio.buscar(dataTexto);
+            // fundo: se JÁ FOI SALVO hoje (mesmo que 0), respeita o salvo; só herda se não há registro nenhum
+            Double fundoSalvo = fundoTrocoRepositorio.buscarOuNulo(dataTexto);
+            double fundo;
+            if (fundoSalvo != null) {
+                fundo = fundoSalvo; // ela já salvou hoje — respeita, inclusive 0 intencional
+            } else {
+                String ontem = data.minusDays(1).toString();
+                Double emCaixaOntem = fechamentoRepositorio.buscarEmCaixaDoDia(ontem);
+                fundo = (emCaixaOntem != null) ? emCaixaOntem : 0.0;
+            }
             campoFundoTroco.setText(String.format("%.2f", fundo));
 
             double[] esperadoNaoAgendadas = visitaRepositorio.calcularEsperadoNaoAgendadas(dataTexto);
@@ -172,24 +183,60 @@ public class ControladorTelaCaixa implements Initializable {
 
         double dinheiroContado = lerCampo(campoDinheiroContado);
         double pixDebitoContado = lerCampo(campoPixDebitoContado);
+        double entregue = lerCampo(campoEntregue);
+        double emCaixa = lerCampo(campoEmCaixa);
+
+        // validação: entregue + em caixa tem que bater com o dinheiro CONTADO
+        if (Math.abs((entregue + emCaixa) - dinheiroContado) > 0.001) {
+            mostrarAviso("A soma de Entregue (R$ " + String.format("%.2f", entregue) +
+                    ") + Em caixa (R$ " + String.format("%.2f", emCaixa) +
+                    ") = R$ " + String.format("%.2f", entregue + emCaixa) +
+                    " não bate com o Dinheiro contado (R$ " + String.format("%.2f", dinheiroContado) + ").");
+            return;
+        }
 
         try {
+            // fundo real de hoje = o que está salvo na fundo_troco (o que ela confirmou na abertura)
+            double fundoReal = fundoTrocoRepositorio.buscar(data.toString());
+
+            // fundo herdado = em caixa do último fechamento de ONTEM (null se ontem não fechou)
+            String ontem = data.minusDays(1).toString();
+            Double emCaixaOntem = fechamentoRepositorio.buscarEmCaixaDoDia(ontem);
+            boolean temFundoHerdado = (emCaixaOntem != null);
+            double fundoHerdado = temFundoHerdado ? emCaixaOntem : 0.0;
+
             fechamentoRepositorio.salvar(
                     data.toString(),
                     LocalDateTime.now().toString(),
                     func.getId(),
                     func.getNome(),
                     dinheiroEsperado, dinheiroContado,
-                    pixDebitoEsperado, pixDebitoContado
+                    pixDebitoEsperado, pixDebitoContado,
+                    entregue, emCaixa,
+                    fundoHerdado, fundoReal, temFundoHerdado
             );
+
             double difD = dinheiroContado - dinheiroEsperado;
             double difP = pixDebitoContado - pixDebitoEsperado;
-            mostrarAviso("Fechamento salvo.\nDivergência dinheiro: R$ " + String.format("%.2f", difD) + statusDif(difD) +
-                    "\nDivergência pix+débito: R$ " + String.format("%.2f", difP) + statusDif(difP));
+            StringBuilder aviso = new StringBuilder("Fechamento salvo.\n");
+            aviso.append("Divergência dinheiro: R$ ").append(String.format("%.2f", difD)).append(statusDif(difD)).append("\n");
+            aviso.append("Divergência pix+débito: R$ ").append(String.format("%.2f", difP)).append(statusDif(difP)).append("\n");
+            if (temFundoHerdado) {
+                double difFundo = fundoReal - fundoHerdado;
+                aviso.append("Fundo: esperado R$ ").append(String.format("%.2f", fundoHerdado))
+                        .append(", abriu com R$ ").append(String.format("%.2f", fundoReal))
+                        .append(Math.abs(difFundo) < 0.001 ? " (correto)" : (difFundo < 0 ? " (faltou)" : " (sobrou)"));
+            } else {
+                aviso.append("Fundo iniciado manualmente.");
+            }
+            mostrarAviso(aviso.toString());
+
             // limpa a tela após fechar
             campoDinheiroContado.clear();
             campoPixDebitoContado.clear();
             campoFundoTroco.clear();
+            campoEntregue.clear();
+            campoEmCaixa.clear();
             comboFuncionario.getSelectionModel().clearSelection();
             labelDinheiroEsperado.setText("Esperado: R$ 0,00");
             labelDetalheDinheiro.setText("");

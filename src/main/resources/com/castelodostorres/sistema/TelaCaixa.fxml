@@ -80,6 +80,17 @@
                     <Label text="Quem está fechando:" styleClass="form-label" />
                     <ComboBox fx:id="comboFuncionario" prefWidth="200" />
                 </HBox>
+                <HBox spacing="14">
+                    <VBox spacing="4" HBox.hgrow="ALWAYS" maxWidth="Infinity">
+                        <Label text="Entregue (R$):" styleClass="form-label" />
+                        <TextField fx:id="campoEntregue" text="0" maxWidth="Infinity" />
+                    </VBox>
+                    <VBox spacing="4" HBox.hgrow="ALWAYS" maxWidth="Infinity">
+                        <Label text="Em caixa (R$):" styleClass="form-label" />
+                        <TextField fx:id="campoEmCaixa" text="0" maxWidth="Infinity" />
+                    </VBox>
+                </HBox>
+                <Label text="Entregue + Em caixa deve somar o dinheiro contado." styleClass="texto-suave" />
                 <Button text="Salvar Fechamento" onAction="#salvarFechamento" />
             </VBox>
         </HBox>

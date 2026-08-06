@@ -89,6 +89,9 @@
                             <TableColumn fx:id="colFechPixCont" text="Pix+Déb Contado" prefWidth="120" />
                             <TableColumn fx:id="colFechPixDiv" text="Div. Pix+Déb" prefWidth="110" />
                             <TableColumn fx:id="colFechStatus" text="Status" prefWidth="90" />
+                            <TableColumn fx:id="colFechFundoEsp" text="Fundo Esperado" prefWidth="120" />
+                            <TableColumn fx:id="colFechFundoReal" text="Fundo Real" prefWidth="110" />
+                            <TableColumn fx:id="colFechStatusFundo" text="Status Fundo" prefWidth="180" />
                         </columns>
                     </TableView>
                 </VBox>

@@ -37,3 +37,9 @@ build/
 
 ### Mac OS ###
 .DS_Store
+
+castelodostorres.db
+dependency-reduced-pom.xml
+entrega/
+instalador/
+icon4.ico

@@ -149,7 +149,9 @@ public class ControladorCadastroFuncionario implements Initializable, PrecisaDaT
             if (evento.getClickCount() == 2) {
                 Funcionario selecionado = tabelaFuncionarios.getSelectionModel().getSelectedItem();
                 if (selecionado != null && telaRaiz != null) {
-                    telaRaiz.abrirDetalhesFuncionario(selecionado);
+                    if (VerificadorSenha.verificar()) {
+                        telaRaiz.abrirDetalhesFuncionario(selecionado);
+                    }
                 }
             }
         });

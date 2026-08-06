@@ -38,4 +38,17 @@ public class FundoTrocoRepositorio {
         }
         return 0.0; // dia sem fundo registrado
     }
+    public Double buscarOuNulo(String data) throws SQLException { // MÉTODO: fundo do dia, ou null se NÃO há registro salvo
+        String sql = "SELECT valor FROM fundo_troco WHERE data = ?";
+        Connection conexao = GerenciadorConexao.getConexao();
+        try (PreparedStatement comando = conexao.prepareStatement(sql)) {
+            comando.setString(1, data);
+            try (ResultSet r = comando.executeQuery()) {
+                if (r.next()) {
+                    return r.getDouble("valor");
+                }
+            }
+        }
+        return null; // não há registro -> pode herdar
+    }
 }

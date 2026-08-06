@@ -55,6 +55,9 @@ public class ControladorTelaResumoMes implements Initializable {
     @FXML private Label labelArrecadadoTopo;
     @FXML private Label labelTotalPagoTabela;
     @FXML private Label labelTotalDespesasTabela;
+    @FXML private TableColumn<FechamentoCaixa, String> colFechFundoEsp;
+    @FXML private TableColumn<FechamentoCaixa, String> colFechFundoReal;
+    @FXML private TableColumn<FechamentoCaixa, String> colFechStatusFundo;
 
     private final DespesaRepositorio despesaRepositorio = new DespesaRepositorio();
 
@@ -101,6 +104,12 @@ public class ControladorTelaResumoMes implements Initializable {
                 "R$ " + String.format("%.2f", d.getValue().getDivergenciaPixdebito())));
         colFechStatus.setCellValueFactory(d -> new javafx.beans.property.SimpleStringProperty(
                 statusFechamento(d.getValue())));
+        colFechFundoEsp.setCellValueFactory(d -> new javafx.beans.property.SimpleStringProperty(
+                d.getValue().isTemFundoHerdado() ? "R$ " + String.format("%.2f", d.getValue().getFundoHerdado()) : "—"));
+        colFechFundoReal.setCellValueFactory(d -> new javafx.beans.property.SimpleStringProperty(
+                "R$ " + String.format("%.2f", d.getValue().getFundoReal())));
+        colFechStatusFundo.setCellValueFactory(d -> new javafx.beans.property.SimpleStringProperty(
+                d.getValue().getStatusFundo()));
 
         gerar();
     }
