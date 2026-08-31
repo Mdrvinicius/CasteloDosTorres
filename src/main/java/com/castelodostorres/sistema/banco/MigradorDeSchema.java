@@ -25,6 +25,7 @@ public class MigradorDeSchema {
         aplicarSeNecessario(conexao, versaoAtual, 8, MigradorDeSchema::migracaoVersao8);
         aplicarSeNecessario(conexao, versaoAtual, 9, MigradorDeSchema::migracaoVersao9);
         aplicarSeNecessario(conexao, versaoAtual, 10, MigradorDeSchema::migracaoVersao10);
+        aplicarSeNecessario(conexao, versaoAtual, 11, MigradorDeSchema::migracaoVersao11);
         // no futuro, cada mudança nova de schema vira mais uma linha aqui, com número seguinte (3, 4, 5...)
     }
 
@@ -240,6 +241,49 @@ public class MigradorDeSchema {
             comando.execute("ALTER TABLE fechamento_caixa ADD COLUMN fundo_herdado REAL NOT NULL DEFAULT 0");
             comando.execute("ALTER TABLE fechamento_caixa ADD COLUMN fundo_real REAL NOT NULL DEFAULT 0");
             comando.execute("ALTER TABLE fechamento_caixa ADD COLUMN tem_fundo_herdado INTEGER NOT NULL DEFAULT 0");
+        }
+    }
+
+    private static void migracaoVersao11(Connection conexao) throws SQLException { // loja: produtos, vendas e itens de venda
+        try (Statement comando = conexao.createStatement()) {
+            comando.execute("""
+            CREATE TABLE IF NOT EXISTS produto (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                nome TEXT NOT NULL,
+                categoria TEXT,
+                preco_venda REAL NOT NULL,
+                preco_custo REAL NOT NULL DEFAULT 0,
+                estoque INTEGER NOT NULL DEFAULT 0,
+                imagem TEXT,
+                ativo INTEGER NOT NULL DEFAULT 1
+            )
+            """);
+
+            comando.execute("""
+            CREATE TABLE IF NOT EXISTS venda (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                data_hora TEXT NOT NULL,
+                valor_total REAL NOT NULL,
+                valor_dinheiro REAL NOT NULL DEFAULT 0,
+                valor_pix REAL NOT NULL DEFAULT 0,
+                valor_debito REAL NOT NULL DEFAULT 0,
+                status TEXT NOT NULL CHECK (status IN ('ATIVA', 'CANCELADA')) DEFAULT 'ATIVA',
+                motivo_cancelamento TEXT,
+                data_hora_cancelamento TEXT
+            )
+            """);
+
+            comando.execute("""
+            CREATE TABLE IF NOT EXISTS item_venda (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                venda_id INTEGER NOT NULL REFERENCES venda(id),
+                produto_id INTEGER NOT NULL REFERENCES produto(id),
+                nome_produto TEXT NOT NULL,
+                quantidade INTEGER NOT NULL,
+                preco_venda_unitario REAL NOT NULL,
+                preco_custo_unitario REAL NOT NULL
+            )
+            """);
         }
     }
 

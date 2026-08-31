@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.ScrollPane?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.Region?>
+<?import javafx.scene.layout.VBox?>
+
+<ScrollPane xmlns="http://javafx.com/javafx" xmlns:fx="http://javafx.com/fxml"
+            fx:controller="com.castelodostorres.sistema.controlador.ControladorCadastroProduto"
+            fitToWidth="true" styleClass="painel-conteudo">
+
+    <VBox spacing="16">
+        <padding><Insets top="20" right="20" bottom="20" left="20" /></padding>
+
+        <HBox alignment="CENTER_LEFT">
+            <Button text="← Voltar" onAction="#voltar" styleClass="botao-secundario" />
+        </HBox>
+
+        <VBox spacing="2">
+            <Label fx:id="labelTitulo" text="Novo Produto" styleClass="titulo-tela" />
+            <Label text="Cadastre um produto da loja de souvenir." styleClass="texto-suave" />
+        </VBox>
+
+        <!-- CARD: formulário -->
+        <HBox spacing="16" alignment="TOP_LEFT">
+
+            <!-- Coluna esquerda: dados -->
+            <VBox styleClass="card" spacing="12" prefWidth="500" HBox.hgrow="ALWAYS" maxWidth="Infinity">
+                <Label text="Dados do Produto" styleClass="subtitulo" />
+
+                <Label text="Nome" styleClass="form-label" />
+                <TextField fx:id="campoNome" promptText="Ex.: Caneca Castelo" maxWidth="Infinity" />
+
+                <Label text="Categoria" styleClass="form-label" />
+                <TextField fx:id="campoCategoria" promptText="Ex.: Canecas" maxWidth="Infinity" />
+
+                <HBox spacing="14">
+                    <VBox spacing="4" HBox.hgrow="ALWAYS" maxWidth="Infinity">
+                        <Label text="Preço de Custo (R$)" styleClass="form-label" />
+                        <TextField fx:id="campoCusto" promptText="0,00" />
+                    </VBox>
+                    <VBox spacing="4" HBox.hgrow="ALWAYS" maxWidth="Infinity">
+                        <Label text="Preço de Venda (R$)" styleClass="form-label" />
+                        <TextField fx:id="campoVenda" promptText="0,00" />
+                    </VBox>
+                    <VBox spacing="4" HBox.hgrow="ALWAYS" maxWidth="Infinity">
+                        <Label text="Estoque" styleClass="form-label" />
+                        <TextField fx:id="campoEstoque" promptText="0" />
+                    </VBox>
+                </HBox>
+
+                <HBox spacing="12" alignment="CENTER_LEFT">
+                    <Button fx:id="botaoSalvar" text="Salvar Produto" onAction="#salvar" />
+                    <Button fx:id="botaoCancelarEdicao" text="Cancelar Edição" onAction="#cancelarEdicao" styleClass="botao-secundario" />
+                </HBox>
+            </VBox>
+
+            <!-- Coluna direita: imagem -->
+            <VBox styleClass="card" spacing="12" prefWidth="300">
+                <Label text="Imagem (opcional)" styleClass="subtitulo" />
+                <VBox styleClass="card-interno" alignment="CENTER" prefHeight="200">
+                    <ImageView fx:id="previewImagem" fitWidth="240" fitHeight="180" preserveRatio="true" />
+                    <Label fx:id="labelSemImagem" text="Sem imagem" styleClass="texto-suave" />
+                </VBox>
+                <Button text="Escolher Imagem" onAction="#escolherImagem" styleClass="botao-secundario" maxWidth="Infinity" />
+                <Button fx:id="botaoRemoverImagem" text="Remover Imagem" onAction="#removerImagem" styleClass="botao-perigo" maxWidth="Infinity" />
+            </VBox>
+
+        </HBox>
+    </VBox>
+</ScrollPane>

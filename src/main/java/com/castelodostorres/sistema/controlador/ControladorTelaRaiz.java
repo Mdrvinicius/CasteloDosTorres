@@ -13,6 +13,7 @@ public class ControladorTelaRaiz {
 
     @FXML private BorderPane painelRaiz; // ATRIBUTO: o BorderPane inteiro, pra podermos trocar o center dele
     @FXML private javafx.scene.control.Button botaoTelaPrincipal;
+    @FXML private javafx.scene.control.Button botaoLoja;
     @FXML private javafx.scene.control.Button botaoCaixa;
     @FXML private javafx.scene.control.Button botaoVisitas;
     @FXML private javafx.scene.control.Button botaoRelatorios;
@@ -25,6 +26,12 @@ public class ControladorTelaRaiz {
     public void abrirTelaPrincipal() { // MÉTODO: chamado pelo botão "Tela Principal"
         trocarConteudo("/com/castelodostorres/sistema/TelaPrincipal.fxml");
         marcarAtivo(botaoTelaPrincipal);
+    }
+
+    @FXML
+    public void abrirLoja() {
+        trocarConteudo("/com/castelodostorres/sistema/TelaLoja.fxml");
+        marcarAtivo(botaoLoja);
     }
 
     @FXML
@@ -123,9 +130,35 @@ public class ControladorTelaRaiz {
         marcarAtivo(botaoCaixa);
     }
 
+    public void abrirCadastroProduto() { // MÉTODO: abre cadastro de produto novo
+        trocarConteudo("/com/castelodostorres/sistema/TelaCadastroProduto.fxml");
+    }
+
+    public void abrirCadastroProdutoParaEditar(com.castelodostorres.sistema.modelo.Produto produto) { // MÉTODO: abre cadastro em modo edição
+        try {
+            javafx.fxml.FXMLLoader loader = new javafx.fxml.FXMLLoader(
+                    getClass().getResource("/com/castelodostorres/sistema/TelaCadastroProduto.fxml"));
+            javafx.scene.Parent tela = loader.load();
+            ControladorCadastroProduto controlador = loader.getController();
+            controlador.setTelaRaiz(this);
+            controlador.setProdutoParaEditar(produto);
+            painelRaiz.setCenter(tela);
+        } catch (java.io.IOException e) {
+            System.out.println("Erro ao abrir edição de produto: " + e.getMessage());
+        }
+    }
+
+    public void abrirListaProdutos() { // MÉTODO: abre a lista de produtos (gerenciar)
+        trocarConteudo("/com/castelodostorres/sistema/TelaListaProdutos.fxml");
+    }
+
+    public void abrirRelatorioVendas() { // MÉTODO: abre o relatório de vendas da loja
+        trocarConteudo("/com/castelodostorres/sistema/TelaRelatorioVendas.fxml");
+    }
+
     private void marcarAtivo(javafx.scene.control.Button ativo) { // MÉTODO: destaca só o botão da tela aberta
         javafx.scene.control.Button[] todos = {
-                botaoTelaPrincipal, botaoCaixa, botaoVisitas, botaoRelatorios,
+                botaoTelaPrincipal, botaoLoja, botaoCaixa, botaoVisitas, botaoRelatorios,
                 botaoResumoMes, botaoDespesas, botaoFuncionarios, botaoConfiguracao
         };
         for (javafx.scene.control.Button b : todos) {

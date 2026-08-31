@@ -1,0 +1,97 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.ComboBox?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.ScrollPane?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.layout.FlowPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.Region?>
+<?import javafx.scene.layout.VBox?>
+
+<VBox xmlns="http://javafx.com/javafx" xmlns:fx="http://javafx.com/fxml"
+      fx:controller="com.castelodostorres.sistema.controlador.ControladorTelaLoja"
+      styleClass="janela-raiz">
+
+    <!-- Cabeçalho fixo: título + 3 botões -->
+    <VBox spacing="16">
+        <padding><Insets top="20" right="20" bottom="10" left="20" /></padding>
+
+        <HBox spacing="12" alignment="CENTER_LEFT">
+            <VBox spacing="2">
+                <Label text="Loja de Souvenir" styleClass="titulo-tela" />
+                <Label text="Gerencie os produtos da loja e acompanhe as vendas." styleClass="texto-suave" />
+            </VBox>
+            <Region HBox.hgrow="ALWAYS" />
+            <Button text="Relatório de Vendas" onAction="#abrirRelatorioVendas" styleClass="botao-secundario" />
+            <Button text="Produtos" onAction="#abrirListaProdutos" styleClass="botao-secundario" />
+            <Button text="Novo Produto" onAction="#abrirCadastroProduto" />
+        </HBox>
+
+        <!-- Filtro -->
+        <HBox styleClass="card" spacing="12" alignment="CENTER_LEFT">
+            <Label text="Buscar:" styleClass="form-label" />
+            <TextField fx:id="campoBusca" promptText="Buscar produto..." prefWidth="260" />
+            <Label text="Categoria:" styleClass="form-label" />
+            <ComboBox fx:id="comboCategoria" prefWidth="200" />
+            <Region HBox.hgrow="ALWAYS" />
+            <Button text="Buscar" onAction="#buscar" />
+            <Button text="Limpar Filtros" onAction="#limparFiltros" styleClass="botao-secundario" />
+        </HBox>
+    </VBox>
+
+    <!-- Vitrine: rola só ela -->
+    <ScrollPane fitToWidth="true" styleClass="painel-conteudo" VBox.vgrow="ALWAYS">
+        <FlowPane fx:id="vitrine" hgap="16" vgap="16">
+            <padding><Insets top="10" right="20" bottom="20" left="20" /></padding>
+        </FlowPane>
+    </ScrollPane>
+
+    <!-- Painel expansível do carrinho (escondido por padrão) -->
+    <VBox fx:id="painelCarrinho" styleClass="painel-carrinho" spacing="8" visible="false" managed="false">
+        <padding><Insets top="14" right="20" bottom="14" left="20" /></padding>
+        <HBox alignment="CENTER_LEFT">
+            <Label text="Itens do Carrinho" styleClass="subtitulo" />
+            <Region HBox.hgrow="ALWAYS" />
+            <Label fx:id="labelTotalPainel" text="Total: R$ 0,00" styleClass="produto-preco" />
+        </HBox>
+        <ScrollPane fitToWidth="true" styleClass="painel-conteudo" prefHeight="220">
+            <VBox fx:id="listaCarrinho" spacing="8" />
+        </ScrollPane>
+    </VBox>
+
+    <!-- Barra do carrinho fixa no rodapé -->
+    <HBox styleClass="barra-carrinho" spacing="20" alignment="CENTER_LEFT">
+        <padding><Insets top="14" right="20" bottom="14" left="20" /></padding>
+
+        <VBox spacing="2">
+            <Label text="Itens no Carrinho" styleClass="form-label" />
+            <Label fx:id="labelQtdCarrinho" text="0 item(ns)" styleClass="valor-destaque" />
+        </VBox>
+        <VBox spacing="2">
+            <Label text="Valor Total" styleClass="form-label" />
+            <Label fx:id="labelTotalCarrinho" text="R$ 0,00" styleClass="produto-preco" />
+        </VBox>
+        <VBox spacing="2">
+            <Label text="Forma de Pagamento" styleClass="form-label" />
+            <ComboBox fx:id="comboFormaPagamento" prefWidth="160" />
+        </VBox>
+
+        <!-- Bloco dinheiro (aparece só quando forma = Dinheiro) -->
+        <VBox fx:id="blocoDinheiro" spacing="2" visible="false" managed="false">
+            <Label text="Valor Recebido (R$)" styleClass="form-label" />
+            <TextField fx:id="campoValorRecebido" prefWidth="120" promptText="0,00" />
+        </VBox>
+        <VBox fx:id="blocoTroco" spacing="2" visible="false" managed="false">
+            <Label text="Troco" styleClass="form-label" />
+            <Label fx:id="labelTroco" text="R$ 0,00" styleClass="produto-preco" />
+        </VBox>
+
+        <Region HBox.hgrow="ALWAYS" />
+        <Button fx:id="botaoVerCarrinho" text="Ver Carrinho" onAction="#alternarCarrinho" styleClass="botao-secundario" />
+        <Button fx:id="botaoFinalizar" text="Finalizar Compra" onAction="#finalizarCompra" />
+    </HBox>
+
+</VBox>

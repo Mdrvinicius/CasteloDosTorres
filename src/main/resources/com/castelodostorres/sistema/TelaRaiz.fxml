@@ -30,6 +30,7 @@
             </HBox>
 
             <Button fx:id="botaoTelaPrincipal" text="Tela Principal" onAction="#abrirTelaPrincipal" styleClass="nav-botao" maxWidth="Infinity" />
+            <Button fx:id="botaoLoja" text="Loja de Souvenir" onAction="#abrirLoja" styleClass="nav-botao" maxWidth="Infinity" />
             <Button fx:id="botaoCaixa" text="Caixa" onAction="#abrirCaixa" styleClass="nav-botao" maxWidth="Infinity" />
             <Button fx:id="botaoVisitas" text="Visitas" onAction="#abrirVisitas" styleClass="nav-botao" maxWidth="Infinity" />
             <Button fx:id="botaoRelatorios" text="Relatórios dos Dias" onAction="#abrirRelatorios" styleClass="nav-botao" maxWidth="Infinity" />

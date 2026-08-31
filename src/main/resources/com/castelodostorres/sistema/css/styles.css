@@ -281,3 +281,58 @@
     -fx-background-radius: 6;
     -fx-padding: 3 10 3 10;
 }
+
+/* ==================== LOJA ==================== */
+/* card de produto na vitrine */
+.card-produto {
+    -fx-background-color: white;
+    -fx-background-radius: 12;
+    -fx-border-color: #e2e8f0;
+    -fx-border-radius: 12;
+    -fx-padding: 12;
+    -fx-effect: dropshadow(gaussian, rgba(15,23,42,0.06), 8, 0, 0, 2);
+}
+.produto-nome {
+    -fx-font-size: 14px;
+    -fx-font-weight: bold;
+    -fx-text-fill: #1e293b;
+}
+.produto-preco {
+    -fx-font-size: 15px;
+    -fx-font-weight: bold;
+    -fx-text-fill: #15803d;
+}
+.produto-estoque {
+    -fx-font-size: 12px;
+    -fx-text-fill: #64748b;
+}
+/* moldura da imagem do produto */
+.produto-imagem-moldura {
+    -fx-background-color: #f8fafc;
+    -fx-background-radius: 8;
+    -fx-border-color: #e2e8f0;
+    -fx-border-radius: 8;
+}
+/* barra do carrinho no rodapé */
+.barra-carrinho {
+    -fx-background-color: white;
+    -fx-background-radius: 12;
+    -fx-border-color: #e2e8f0;
+    -fx-border-radius: 12;
+    -fx-padding: 16;
+    -fx-effect: dropshadow(gaussian, rgba(15,23,42,0.08), 12, 0, 0, 3);
+}
+
+/* painel expansível do carrinho */
+.painel-carrinho {
+    -fx-background-color: #f8fafc;
+    -fx-border-color: #e2e8f0;
+    -fx-border-width: 1 0 1 0;
+}
+.linha-carrinho {
+    -fx-background-color: white;
+    -fx-background-radius: 8;
+    -fx-border-color: #e2e8f0;
+    -fx-border-radius: 8;
+    -fx-padding: 8 12 8 12;
+}
