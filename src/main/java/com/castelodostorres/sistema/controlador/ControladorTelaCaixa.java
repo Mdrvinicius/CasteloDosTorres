@@ -40,6 +40,8 @@ public class ControladorTelaCaixa implements Initializable {
     private final SaidaCaixaRepositorio saidaCaixaRepositorio = new SaidaCaixaRepositorio();
     private final FechamentoCaixaRepositorio fechamentoRepositorio = new FechamentoCaixaRepositorio();
     private final FuncionarioRepositorio funcionarioRepositorio = new FuncionarioRepositorio();
+    private final VendaRepositorio vendaRepositorio = new VendaRepositorio();
+
 
     // guardo os esperados calculados, pra usar no salvar sem recalcular
     private double dinheiroEsperado;
@@ -93,18 +95,23 @@ public class ControladorTelaCaixa implements Initializable {
             double dinheiroVendas = esperadoNaoAgendadas[0];
             double pixDebitoVendas = esperadoNaoAgendadas[1];
 
+            double[] formasLoja = vendaRepositorio.calcularFormasPagamentoDoDia(dataTexto);
+            double dinheiroLoja = formasLoja[0];
+            double pixDebitoLoja = formasLoja[1] + formasLoja[2]; // pix + débito juntos
+
             double totalSaidas = saidaCaixaRepositorio.totalDoDia(dataTexto);
             labelTotalSaidas.setText("Total de saídas do dia: R$ " + String.format("%.2f", totalSaidas));
 
             // dinheiro esperado = fundo + vendas em dinheiro - saídas
-            dinheiroEsperado = fundo + dinheiroVendas - totalSaidas;
+            dinheiroEsperado = fundo + dinheiroVendas + dinheiroLoja - totalSaidas;
             labelDinheiroEsperado.setText("Esperado: R$ " + String.format("%.2f", dinheiroEsperado));
             labelDetalheDinheiro.setText("(fundo R$ " + String.format("%.2f", fundo) +
-                    " + vendas em dinheiro R$ " + String.format("%.2f", dinheiroVendas) +
+                    " + visitas dinheiro R$ " + String.format("%.2f", dinheiroVendas) +
+                    " + loja dinheiro R$ " + String.format("%.2f", dinheiroLoja) +
                     " − saídas R$ " + String.format("%.2f", totalSaidas) + ")");
 
             // pix+débito esperado = vendas em pix+débito
-            pixDebitoEsperado = pixDebitoVendas;
+            pixDebitoEsperado = pixDebitoVendas + pixDebitoLoja;
             labelPixDebitoEsperado.setText("Esperado: R$ " + String.format("%.2f", pixDebitoEsperado));
 
             double reembolsos = visitaRepositorio.calcularReembolsosDoDia(dataTexto);

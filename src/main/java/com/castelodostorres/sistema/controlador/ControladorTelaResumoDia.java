@@ -38,6 +38,8 @@ public class ControladorTelaResumoDia implements Initializable {
 
     private final VisitaRepositorio repositorio = new VisitaRepositorio();
     private final CalculadoraComissao calculadoraComissao = new CalculadoraComissao();
+    private final com.castelodostorres.sistema.repositorio.VendaRepositorio vendaRepositorio =
+            new com.castelodostorres.sistema.repositorio.VendaRepositorio();
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
@@ -60,13 +62,17 @@ public class ControladorTelaResumoDia implements Initializable {
         String dataTexto = data.toString(); // LocalDate.toString() já dá "aaaa-mm-dd"
 
         try {
-            double total = repositorio.calcularTotalArrecadadoDoDia(dataTexto);
+            double totalVisitas = repositorio.calcularTotalArrecadadoDoDia(dataTexto);
+            double totalVendas = vendaRepositorio.calcularArrecadadoDoDia(dataTexto);
+            double total = totalVisitas + totalVendas;
             labelTotal.setText("R$ " + String.format("%.2f", total));
 
-            double[] formas = repositorio.calcularFormasPagamentoDoDia(dataTexto);
-            labelDinheiro.setText("R$ " + String.format("%.2f", formas[0]));
-            labelPix.setText("R$ " + String.format("%.2f", formas[1]));
-            labelDebito.setText("R$ " + String.format("%.2f", formas[2]));
+            // formas de pagamento = visitas (não-agendadas) + vendas da loja
+            double[] formasVisita = repositorio.calcularFormasPagamentoDoDia(dataTexto);
+            double[] formasVenda = vendaRepositorio.calcularFormasPagamentoDoDia(dataTexto);
+            labelDinheiro.setText("R$ " + String.format("%.2f", formasVisita[0] + formasVenda[0]));
+            labelPix.setText("R$ " + String.format("%.2f", formasVisita[1] + formasVenda[1]));
+            labelDebito.setText("R$ " + String.format("%.2f", formasVisita[2] + formasVenda[2]));
 
             List<Visita> visitasDoDia = repositorio.listarDoDia(dataTexto);
             List<ComissaoFuncionario> comissoes = calculadoraComissao.calcular(visitasDoDia);

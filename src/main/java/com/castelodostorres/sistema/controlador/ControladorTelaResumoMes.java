@@ -58,12 +58,15 @@ public class ControladorTelaResumoMes implements Initializable {
     @FXML private TableColumn<FechamentoCaixa, String> colFechFundoEsp;
     @FXML private TableColumn<FechamentoCaixa, String> colFechFundoReal;
     @FXML private TableColumn<FechamentoCaixa, String> colFechStatusFundo;
+    @FXML private Label labelCustoLoja;
 
     private final DespesaRepositorio despesaRepositorio = new DespesaRepositorio();
 
     private final VisitaRepositorio repositorio = new VisitaRepositorio();
     private final CalculadoraComissao calculadoraComissao = new CalculadoraComissao();
     private final FechamentoCaixaRepositorio fechamentoRepositorio = new FechamentoCaixaRepositorio();
+    private final com.castelodostorres.sistema.repositorio.VendaRepositorio vendaRepositorio =
+            new com.castelodostorres.sistema.repositorio.VendaRepositorio();
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
@@ -133,7 +136,9 @@ public class ControladorTelaResumoMes implements Initializable {
         String mesTexto = String.format("%04d-%02d", ano, mes); // formato "aaaa-mm" (ex: "2026-07")
 
         try {
-            double arrecadado = repositorio.calcularTotalArrecadadoDoMes(mesTexto);
+            // arrecadado = visitas + vendas da loja
+            double arrecadado = repositorio.calcularTotalArrecadadoDoMes(mesTexto)
+                    + vendaRepositorio.calcularArrecadadoDoMes(mesTexto);
 
             List<Visita> visitasDoMes = repositorio.listarDoMes(mesTexto);
             List<ComissaoFuncionario> comissoes = calculadoraComissao.calcular(visitasDoMes);
@@ -157,7 +162,10 @@ public class ControladorTelaResumoMes implements Initializable {
             List<FechamentoCaixa> fechamentos = fechamentoRepositorio.listarDoMes(mesTexto);
             tabelaFechamentos.setItems(FXCollections.observableArrayList(fechamentos));
 
-            double liquidoFinal = arrecadado - totalPago - totalDespesas;
+            // custo dos produtos vendidos na loja no mês (desconta do líquido)
+            double custoLoja = vendaRepositorio.calcularCustoLojaDoMes(mesTexto);
+
+            double liquidoFinal = arrecadado - totalPago - totalDespesas - custoLoja;
 
             String arrecadadoTexto = "R$ " + String.format("%.2f", arrecadado);
             String pagoTexto = "R$ " + String.format("%.2f", totalPago);
@@ -167,6 +175,7 @@ public class ControladorTelaResumoMes implements Initializable {
             labelArrecadado.setText(arrecadadoTexto);
             labelTotalPago.setText(pagoTexto);
             labelTotalDespesas.setText(despesasTexto);
+            labelCustoLoja.setText("R$ " + String.format("%.2f", custoLoja));
             labelLiquidoFinal.setText("R$ " + String.format("%.2f", liquidoFinal));
 
             // repetições na coluna esquerda

@@ -112,6 +112,10 @@
                     <Label text="Total de Despesas" styleClass="form-label" />
                     <Label fx:id="labelTotalDespesas" text="R$ 0,00" styleClass="metrica-valor-vermelho" />
                 </VBox>
+                <VBox styleClass="card-metrica-vermelho" spacing="4">
+                    <Label text="Custo de Loja" styleClass="form-label" />
+                    <Label fx:id="labelCustoLoja" text="R$ 0,00" styleClass="metrica-valor-vermelho" />
+                </VBox>
                 <VBox styleClass="card-metrica-destaque" spacing="4">
                     <Label text="Valor Líquido Final" styleClass="form-label" />
                     <Label fx:id="labelLiquidoFinal" text="R$ 0,00" styleClass="metrica-valor-verde" />

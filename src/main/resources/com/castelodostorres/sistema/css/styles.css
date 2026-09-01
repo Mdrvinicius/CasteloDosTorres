@@ -336,3 +336,17 @@
     -fx-border-radius: 8;
     -fx-padding: 8 12 8 12;
 }
+
+/* card de métrica laranja (custo no relatório de vendas) */
+.card-metrica-laranja {
+    -fx-background-color: #fff7ed;
+    -fx-background-radius: 12;
+    -fx-border-color: #fed7aa;
+    -fx-border-radius: 12;
+    -fx-padding: 14 18 14 18;
+}
+.metrica-valor-laranja {
+    -fx-font-size: 24px;
+    -fx-font-weight: bold;
+    -fx-text-fill: #ea580c;
+}
