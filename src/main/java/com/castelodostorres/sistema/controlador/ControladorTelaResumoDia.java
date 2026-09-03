@@ -109,6 +109,79 @@ public class ControladorTelaResumoDia implements Initializable {
         }
     }
 
+    @FXML
+    public void exportarPdf() { // MÉTODO: exporta o resumo do dia em PDF
+        LocalDate data = seletorData.getValue();
+        if (data == null) { mostrarAviso("Selecione uma data."); return; }
+        String dataTexto = data.toString();
+
+        // escolher onde salvar
+        javafx.stage.FileChooser chooser = new javafx.stage.FileChooser();
+        chooser.setTitle("Salvar Resumo do Dia em PDF");
+        chooser.getExtensionFilters().add(new javafx.stage.FileChooser.ExtensionFilter("PDF", "*.pdf"));
+        chooser.setInitialFileName("resumo-dia-" + dataTexto + ".pdf");
+        java.io.File destino = chooser.showSaveDialog(labelTotal.getScene().getWindow());
+        if (destino == null) return; // cancelou
+
+        try {
+            com.castelodostorres.sistema.util.GeradorPdf pdf = new com.castelodostorres.sistema.util.GeradorPdf();
+            pdf.cabecalho("Resumo do Dia",
+                    "Data: " + com.castelodostorres.sistema.util.FormatadorData.formatar(data.atStartOfDay().toString()));
+
+            // recalcula os valores (mesmos do gerar)
+            double totalVisitas = repositorio.calcularTotalArrecadadoDoDia(dataTexto);
+            double totalVendas = vendaRepositorio.calcularArrecadadoDoDia(dataTexto);
+            double total = totalVisitas + totalVendas;
+
+            double[] formasVisita = repositorio.calcularFormasPagamentoDoDia(dataTexto);
+            double[] formasVenda = vendaRepositorio.calcularFormasPagamentoDoDia(dataTexto);
+
+            double[] est = repositorio.calcularEstatisticasDoDia(dataTexto);
+
+            java.util.List<com.castelodostorres.sistema.modelo.Visita> visitasDoDia = repositorio.listarDoDia(dataTexto);
+            java.util.List<com.castelodostorres.sistema.modelo.dto.ComissaoFuncionario> comissoes =
+                    calculadoraComissao.calcular(visitasDoDia);
+            double totalComissao = 0;
+            for (com.castelodostorres.sistema.modelo.dto.ComissaoFuncionario c : comissoes) totalComissao += c.getValor();
+            totalComissao = Math.round(totalComissao * 100.0) / 100.0;
+
+            double reembolsos = est[5];
+            double valorFinal = total - totalComissao;
+
+            pdf.secao("Resumo Geral");
+            pdf.linha("Visitas", String.valueOf((int) est[0]));
+            pdf.linha("Inteiras", String.valueOf((int) est[1]));
+            pdf.linha("Meias", String.valueOf((int) est[2]));
+            pdf.linha("Não Pagantes", String.valueOf((int) est[3]));
+            pdf.linha("Total Arrecadado", "R$ " + String.format("%.2f", total));
+
+            pdf.secao("Formas de Pagamento");
+            pdf.linha("Dinheiro", "R$ " + String.format("%.2f", formasVisita[0] + formasVenda[0]));
+            pdf.linha("Pix", "R$ " + String.format("%.2f", formasVisita[1] + formasVenda[1]));
+            pdf.linha("Débito", "R$ " + String.format("%.2f", formasVisita[2] + formasVenda[2]));
+
+            pdf.secao("Pagamento aos Funcionários");
+            java.util.List<String[]> linhasComissao = new java.util.ArrayList<>();
+            for (com.castelodostorres.sistema.modelo.dto.ComissaoFuncionario c : comissoes) {
+                linhasComissao.add(new String[]{ c.getNome(), c.getPapel(), "R$ " + String.format("%.2f", c.getValor()) });
+            }
+            pdf.tabela(new String[]{ "Funcionário", "Função", "A Receber" },
+                    linhasComissao,
+                    new float[]{ 200, 120, 120 });
+            pdf.espaco(4);
+            pdf.linha("Total a Pagar", "R$ " + String.format("%.2f", totalComissao));
+
+            pdf.secao("Fechamento");
+            pdf.linha("Total de Reembolsos", "R$ " + String.format("%.2f", reembolsos));
+            pdf.linha("Valor Final do Dia", "R$ " + String.format("%.2f", valorFinal));
+
+            pdf.salvarComo(destino);
+            mostrarAviso("PDF salvo com sucesso em:\n" + destino.getAbsolutePath());
+        } catch (Exception e) {
+            mostrarAviso("Erro ao gerar PDF: " + e.getMessage());
+        }
+    }
+
     private void mostrarAviso(String mensagem) {
         Alert alerta = new Alert(Alert.AlertType.INFORMATION);
         alerta.setTitle("Aviso");

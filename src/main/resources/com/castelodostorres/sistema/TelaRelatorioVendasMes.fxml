@@ -31,6 +31,7 @@
             <Label text="Ano:" styleClass="form-label" />
             <TextField fx:id="campoAno" prefWidth="80" />
             <Button text="Gerar" onAction="#gerar" />
+            <Button text="Exportar PDF" onAction="#exportarPdf" styleClass="botao-secundario" />
             <Button text="Relatório do Dia" onAction="#abrirDia" styleClass="botao-secundario" />
         </HBox>
 

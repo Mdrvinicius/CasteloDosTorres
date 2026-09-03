@@ -28,6 +28,7 @@
             <Label text="Data:" styleClass="form-label" />
             <DatePicker fx:id="seletorData" />
             <Button text="Gerar" onAction="#gerar" />
+            <Button text="Exportar PDF" onAction="#exportarPdf" styleClass="botao-secundario" />
             <Button text="Relatório do Mês" onAction="#abrirMes" styleClass="botao-secundario" />
         </HBox>
 

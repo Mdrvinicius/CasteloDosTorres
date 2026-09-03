@@ -124,4 +124,57 @@ public class ControladorRelatorioVendasDia implements Initializable, PrecisaDaTe
         a.setTitle("Aviso"); a.setHeaderText(null); a.setContentText(m);
         a.showAndWait();
     }
+
+    @FXML
+    public void exportarPdf() { // MÉTODO: exporta vendas da loja do dia (com itens por venda)
+        LocalDate data = seletorData.getValue();
+        if (data == null) { mostrarAviso("Selecione uma data."); return; }
+        String dataTexto = data.toString();
+
+        javafx.stage.FileChooser chooser = new javafx.stage.FileChooser();
+        chooser.setTitle("Salvar Vendas do Dia em PDF");
+        chooser.getExtensionFilters().add(new javafx.stage.FileChooser.ExtensionFilter("PDF", "*.pdf"));
+        chooser.setInitialFileName("vendas-dia-" + dataTexto + ".pdf");
+        java.io.File destino = chooser.showSaveDialog(labelFaturamento.getScene().getWindow());
+        if (destino == null) return;
+
+        try {
+            com.castelodostorres.sistema.util.GeradorPdf pdf = new com.castelodostorres.sistema.util.GeradorPdf();
+            pdf.cabecalho("Vendas da Loja - Dia",
+                    "Data: " + FormatadorData.formatar(data.atStartOfDay().toString()));
+
+            double faturamento = vendaRepositorio.calcularArrecadadoDoDia(dataTexto);
+            double custo = vendaRepositorio.calcularCustoLojaDoDia(dataTexto);
+            double lucro = faturamento - custo;
+
+            pdf.secao("Resumo");
+            pdf.linha("Faturamento", "R$ " + String.format("%.2f", faturamento));
+            pdf.linha("Custo", "R$ " + String.format("%.2f", custo));
+            pdf.linha("Lucro", "R$ " + String.format("%.2f", lucro));
+
+            pdf.secao("Vendas");
+            List<Venda> vendas = vendaRepositorio.listarDoDia(dataTexto);
+            for (Venda v : vendas) {
+                String forma = v.getValorDinheiro() > 0 ? "Dinheiro" : (v.getValorPix() > 0 ? "Pix" : (v.getValorDebito() > 0 ? "Débito" : "-"));
+                pdf.linha(FormatadorData.formatar(v.getDataHora()) + " — " + v.getStatus(),
+                        "R$ " + String.format("%.2f", v.getValorTotal()) + " (" + forma + ")");
+                java.util.List<com.castelodostorres.sistema.modelo.ItemVenda> itens = vendaRepositorio.listarItens(v.getId());
+                java.util.List<String[]> linhasItem = new java.util.ArrayList<>();
+                for (com.castelodostorres.sistema.modelo.ItemVenda iv : itens) {
+                    linhasItem.add(new String[]{
+                            iv.getQuantidade() + "x " + iv.getNomeProduto(),
+                            "R$ " + String.format("%.2f", iv.getPrecoVendaUnitario()),
+                            "R$ " + String.format("%.2f", iv.getSubtotalVenda()) });
+                }
+                pdf.tabela(new String[]{ "Produto", "Preço Unit.", "Subtotal" },
+                        linhasItem, new float[]{ 240, 110, 110 });
+                pdf.espaco(8);
+            }
+
+            pdf.salvarComo(destino);
+            mostrarAviso("PDF salvo em:\n" + destino.getAbsolutePath());
+        } catch (Exception e) {
+            mostrarAviso("Erro ao gerar PDF: " + e.getMessage());
+        }
+    }
 }

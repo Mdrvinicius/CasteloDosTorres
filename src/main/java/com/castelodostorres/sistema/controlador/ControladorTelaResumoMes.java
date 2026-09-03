@@ -194,4 +194,96 @@ public class ControladorTelaResumoMes implements Initializable {
         double totalDiv = f.getDivergenciaDinheiro() + f.getDivergenciaPixdebito();
         return totalDiv < 0 ? "Faltou" : "Sobrou";
     }
+
+    @FXML
+    public void exportarPdf() { // MÉTODO: exporta o resumo do mês em PDF
+        Integer mes = comboMes.getValue();
+        if (mes == null) { labelArrecadado.setText("Selecione um mês."); return; }
+        int ano;
+        try { ano = Integer.parseInt(campoAno.getText().trim()); }
+        catch (NumberFormatException e) { labelArrecadado.setText("Ano inválido."); return; }
+        String mesTexto = String.format("%04d-%02d", ano, mes);
+
+        javafx.stage.FileChooser chooser = new javafx.stage.FileChooser();
+        chooser.setTitle("Salvar Resumo do Mês em PDF");
+        chooser.getExtensionFilters().add(new javafx.stage.FileChooser.ExtensionFilter("PDF", "*.pdf"));
+        chooser.setInitialFileName("resumo-mes-" + mesTexto + ".pdf");
+        java.io.File destino = chooser.showSaveDialog(labelArrecadado.getScene().getWindow());
+        if (destino == null) return;
+
+        try {
+            com.castelodostorres.sistema.util.GeradorPdf pdf = new com.castelodostorres.sistema.util.GeradorPdf();
+            pdf.cabecalho("Resumo do Mês", "Período: " + String.format("%02d/%04d", mes, ano));
+
+            double arrecadado = repositorio.calcularTotalArrecadadoDoMes(mesTexto)
+                    + vendaRepositorio.calcularArrecadadoDoMes(mesTexto);
+
+            List<Visita> visitasDoMes = repositorio.listarDoMes(mesTexto);
+            List<ComissaoFuncionario> comissoes = calculadoraComissao.calcular(visitasDoMes);
+            double totalPago = 0;
+            for (ComissaoFuncionario c : comissoes) totalPago += c.getValor();
+            totalPago = Math.round(totalPago * 100.0) / 100.0;
+
+            List<Despesa> despesas = despesaRepositorio.listarDoMes(mesTexto);
+            double totalDespesas = 0;
+            for (Despesa d : despesas) totalDespesas += d.getValor();
+
+            double custoLoja = vendaRepositorio.calcularCustoLojaDoMes(mesTexto);
+            double liquidoFinal = arrecadado - totalPago - totalDespesas - custoLoja;
+
+            pdf.secao("Resumo Financeiro");
+            pdf.linha("Valor Total Arrecadado", "R$ " + String.format("%.2f", arrecadado));
+            pdf.linha("Total Pago aos Funcionários", "R$ " + String.format("%.2f", totalPago));
+            pdf.linha("Total de Despesas", "R$ " + String.format("%.2f", totalDespesas));
+            pdf.linha("Custo de Loja", "R$ " + String.format("%.2f", custoLoja));
+            pdf.linha("Valor Líquido Final", "R$ " + String.format("%.2f", liquidoFinal));
+
+            pdf.secao("Pagamentos aos Funcionários");
+            java.util.List<String[]> linhasComissao = new java.util.ArrayList<>();
+            for (ComissaoFuncionario c : comissoes) {
+                linhasComissao.add(new String[]{ c.getNome(), c.getPapel(), "R$ " + String.format("%.2f", c.getValor()) });
+            }
+            pdf.tabela(new String[]{ "Funcionário", "Função", "Total no Mês" },
+                    linhasComissao, new float[]{ 200, 120, 120 });
+
+            pdf.secao("Despesas");
+            java.util.List<String[]> linhasDespesa = new java.util.ArrayList<>();
+            for (Despesa d : despesas) {
+                linhasDespesa.add(new String[]{
+                        FormatadorData.formatar(d.getDataHoraCadastro()),
+                        d.getNome(),
+                        "RECORRENTE".equals(d.getTipo()) ? "Recorrente" : "Avulsa",
+                        "R$ " + String.format("%.2f", d.getValor()) });
+            }
+            pdf.tabela(new String[]{ "Data", "Razão", "Tipo", "Valor" },
+                    linhasDespesa, new float[]{ 110, 180, 100, 100 });
+
+            pdf.secao("Fechamentos de Caixa");
+            List<FechamentoCaixa> fechamentos = fechamentoRepositorio.listarDoMes(mesTexto);
+            java.util.List<String[]> linhasFech = new java.util.ArrayList<>();
+            for (FechamentoCaixa f : fechamentos) {
+                linhasFech.add(new String[]{
+                        FormatadorData.formatar(f.getDataHoraFechamento()),
+                        f.getNomeFuncionario(),
+                        "R$ " + String.format("%.2f", f.getDinheiroContado()),
+                        "R$ " + String.format("%.2f", f.getPixdebitoContado()),
+                        "R$ " + String.format("%.2f", f.getDivergenciaDinheiro()),
+                        "R$ " + String.format("%.2f", f.getDivergenciaPixdebito()),
+                        statusFechamento(f) });
+            }
+            pdf.tabela(new String[]{ "Data", "Fechou", "Dinheiro", "Pix+Déb", "Div.Din", "Div.Pix", "Status" },
+                    linhasFech, new float[]{ 90, 90, 70, 70, 65, 65, 55 });
+
+            pdf.salvarComo(destino);
+            mostrarAvisoPdf("PDF salvo em:\n" + destino.getAbsolutePath());
+        } catch (Exception e) {
+            mostrarAvisoPdf("Erro ao gerar PDF: " + e.getMessage());
+        }
+    }
+
+    private void mostrarAvisoPdf(String m) {
+        javafx.scene.control.Alert a = new javafx.scene.control.Alert(javafx.scene.control.Alert.AlertType.INFORMATION);
+        a.setTitle("Aviso"); a.setHeaderText(null); a.setContentText(m);
+        a.showAndWait();
+    }
 }
