@@ -276,6 +276,9 @@ public class VisitaRepositorio {
                 while (resultado.next()) {
                     Visita visita = new Visita();
                     visita.setId(resultado.getInt("id"));
+                    visita.setGuiaId(resultado.getInt("guia_id"));
+                    Object recepId = resultado.getObject("recepcionista_id");
+                    visita.setRecepcionistaId(recepId == null ? null : ((Number) recepId).intValue());
                     visita.setNomeGuia(resultado.getString("nome_guia"));
                     visita.setNomeRecepcionista(resultado.getString("nome_recepcionista"));
                     visita.setQuantidadeInteira(resultado.getInt("quantidade_inteira"));
@@ -367,6 +370,9 @@ public class VisitaRepositorio {
                 while (resultado.next()) {
                     Visita visita = new Visita();
                     visita.setId(resultado.getInt("id"));
+                    visita.setGuiaId(resultado.getInt("guia_id"));
+                    Object recepId = resultado.getObject("recepcionista_id");
+                    visita.setRecepcionistaId(recepId == null ? null : ((Number) recepId).intValue());
                     visita.setNomeGuia(resultado.getString("nome_guia"));
                     visita.setNomeRecepcionista(resultado.getString("nome_recepcionista"));
                     visita.setQuantidadeInteira(resultado.getInt("quantidade_inteira"));

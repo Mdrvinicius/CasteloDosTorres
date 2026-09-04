@@ -2,28 +2,36 @@ package com.castelodostorres.sistema.modelo.dto;
 
 public class ComissaoFuncionario {
 
+    private final int funcionarioId; // ATRIBUTO: id do funcionário (pra casar com pagamentos)
     private final String nome;    // ATRIBUTO: nome do funcionário
     private final String papel;   // ATRIBUTO: "GUIA" ou "RECEPCIONISTA"
     private double valor;         // ATRIBUTO: total acumulado a receber (não é final: vai somando)
+    private double pago;          // ATRIBUTO: quanto já foi pago no mês (preenchido depois)
 
-    public ComissaoFuncionario(String nome, String papel, double valor) { // CONSTRUTOR
+    public ComissaoFuncionario(int funcionarioId, String nome, String papel, double valor) { // CONSTRUTOR
+        this.funcionarioId = funcionarioId;
         this.nome = nome;
         this.papel = papel;
         this.valor = Math.round(valor * 100.0) / 100.0;
     }
 
-    public String getNome()
-    { return nome; }
+    public int getFuncionarioId() { return funcionarioId; }
 
-    public String getPapel()
-    { return papel; }
+    public String getNome() { return nome; }
 
-    public double getValor()
-    { return valor; }
+    public String getPapel() { return papel; }
 
-    public void setValor(double valor)
-    { this.valor = valor; }
+    public double getValor() { return valor; }
+
+    public void setValor(double valor) { this.valor = valor; }
 
     public void adicionar(double valor) {
-        this.valor = Math.round((this.valor + valor) * 100.0) / 100.0; } // MÉTODO: soma ao acumulado
+        this.valor = Math.round((this.valor + valor) * 100.0) / 100.0;
+    } // MÉTODO: soma ao acumulado
+
+    // --- pago e falta pagar (preenchidos no Resumo do Mês) ---
+    public double getPago() { return pago; }
+    public void setPago(double pago) { this.pago = pago; }
+
+    public double getFaltaPagar() { return Math.round((valor - pago) * 100.0) / 100.0; } // MÉTODO: total - pago
 }

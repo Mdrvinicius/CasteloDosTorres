@@ -58,7 +58,8 @@ public class ControladorTelaResumoMes implements Initializable {
     @FXML private TableColumn<FechamentoCaixa, String> colFechFundoEsp;
     @FXML private TableColumn<FechamentoCaixa, String> colFechFundoReal;
     @FXML private TableColumn<FechamentoCaixa, String> colFechStatusFundo;
-    @FXML private Label labelCustoLoja;
+    @FXML private Label labelCustoLoja;    @FXML private TableColumn<ComissaoFuncionario, String> colunaPago;
+    @FXML private TableColumn<ComissaoFuncionario, String> colunaFalta;
 
     private final DespesaRepositorio despesaRepositorio = new DespesaRepositorio();
 
@@ -67,6 +68,8 @@ public class ControladorTelaResumoMes implements Initializable {
     private final FechamentoCaixaRepositorio fechamentoRepositorio = new FechamentoCaixaRepositorio();
     private final com.castelodostorres.sistema.repositorio.VendaRepositorio vendaRepositorio =
             new com.castelodostorres.sistema.repositorio.VendaRepositorio();
+    private final com.castelodostorres.sistema.repositorio.PagamentoFuncionarioRepositorio pagamentoRepositorio =
+            new com.castelodostorres.sistema.repositorio.PagamentoFuncionarioRepositorio();
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
@@ -80,6 +83,11 @@ public class ControladorTelaResumoMes implements Initializable {
         colunaNome.setCellValueFactory(new PropertyValueFactory<>("nome"));
         colunaPapel.setCellValueFactory(new PropertyValueFactory<>("papel"));
         colunaValor.setCellValueFactory(new PropertyValueFactory<>("valor"));
+
+        colunaPago.setCellValueFactory(d -> new javafx.beans.property.SimpleStringProperty(
+                "R$ " + String.format("%.2f", d.getValue().getPago())));
+        colunaFalta.setCellValueFactory(d -> new javafx.beans.property.SimpleStringProperty(
+                "R$ " + String.format("%.2f", d.getValue().getFaltaPagar())));
 
         colunaRazaoDespesa.setCellValueFactory(new PropertyValueFactory<>("nome"));
         colunaValorDespesa.setCellValueFactory(new PropertyValueFactory<>("valor"));
@@ -142,6 +150,11 @@ public class ControladorTelaResumoMes implements Initializable {
 
             List<Visita> visitasDoMes = repositorio.listarDoMes(mesTexto);
             List<ComissaoFuncionario> comissoes = calculadoraComissao.calcular(visitasDoMes);
+            java.util.Map<Integer, Double> pagosPorFuncionario = pagamentoRepositorio.somarPorFuncionarioNoMes(mesTexto);
+            for (ComissaoFuncionario c : comissoes) {
+                Double pago = pagosPorFuncionario.get(c.getFuncionarioId());
+                c.setPago(pago == null ? 0.0 : pago);
+            }
             tabelaComissao.setItems(FXCollections.observableArrayList(comissoes));
 
             double totalPago = 0;

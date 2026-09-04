@@ -13,27 +13,28 @@ public class CalculadoraComissao {
     public List<ComissaoFuncionario> calcular(List<Visita> visitas) { // MÉTODO: recebe as visitas e devolve a comissão por funcionário
         Map<String, ComissaoFuncionario> acumulado = new LinkedHashMap<>();
 
-        for (Visita visita : visitas) { // percorre cada visita do período
+        for (Visita visita : visitas) {
             // --- comissão do guia ---
             double comissaoGuia = calcularValor(
                     visita.getGuiaTipoRemuneracao(),
                     visita.getGuiaValorRemuneracao(),
                     visita
             );
-            acumular(acumulado, visita.getNomeGuia(), "GUIA", comissaoGuia);
+            acumular(acumulado, visita.getGuiaId(), visita.getNomeGuia(), "GUIA", comissaoGuia);
 
             // --- comissão da recepcionista (se houver) ---
-            if (visita.getNomeRecepcionista() != null && visita.getRecepcionistaTipoRemuneracao() != null) {
+            if (visita.getNomeRecepcionista() != null && visita.getRecepcionistaTipoRemuneracao() != null
+                    && visita.getRecepcionistaId() != null) {
                 double comissaoRecep = calcularValor(
                         visita.getRecepcionistaTipoRemuneracao(),
                         visita.getRecepcionistaValorRemuneracao(),
                         visita
                 );
-                acumular(acumulado, visita.getNomeRecepcionista(), "RECEPCIONISTA", comissaoRecep);
+                acumular(acumulado, visita.getRecepcionistaId(), visita.getNomeRecepcionista(), "RECEPCIONISTA", comissaoRecep);
             }
         }
 
-        return new ArrayList<>(acumulado.values()); // converte o mapa numa lista pra exibir
+        return new ArrayList<>(acumulado.values());
     }
 
     private double calcularValor(String tipo, double valorRemuneracao, Visita visita) { // MÉTODO: aplica a fórmula certa
@@ -45,15 +46,15 @@ public class CalculadoraComissao {
             int pagantes = visita.getQuantidadeInteira() + visita.getQuantidadeMeia();
             resultado = pagantes * valorRemuneracao;
         }
-        return Math.round(resultado * 100.0) / 100.0; // arredonda pra 2 casas, mata a dízima
+        return Math.round(resultado * 100.0) / 100.0;
     }
 
-    private void acumular(Map<String, ComissaoFuncionario> mapa, String nome, String papel, double valor) { // MÉTODO: soma no acumulado
-        String chave = papel + ":" + nome; // chave única por funcionário+papel
+    private void acumular(Map<String, ComissaoFuncionario> mapa, int funcionarioId, String nome, String papel, double valor) { // MÉTODO: soma no acumulado
+        String chave = papel + ":" + funcionarioId; // chave única por funcionário+papel (por id, robusto)
         if (mapa.containsKey(chave)) {
-            mapa.get(chave).adicionar(valor); // já existe: soma
+            mapa.get(chave).adicionar(valor);
         } else {
-            mapa.put(chave, new ComissaoFuncionario(nome, papel, valor)); // primeiro: cria
+            mapa.put(chave, new ComissaoFuncionario(funcionarioId, nome, papel, valor));
         }
     }
 }

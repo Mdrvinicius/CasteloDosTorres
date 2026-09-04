@@ -21,6 +21,7 @@ public class ControladorTelaRaiz {
     @FXML private javafx.scene.control.Button botaoDespesas;
     @FXML private javafx.scene.control.Button botaoFuncionarios;
     @FXML private javafx.scene.control.Button botaoConfiguracao;
+    @FXML private javafx.scene.control.Button botaoPagamentos;
 
     @FXML
     public void abrirTelaPrincipal() { // MÉTODO: chamado pelo botão "Tela Principal"
@@ -174,10 +175,16 @@ public class ControladorTelaRaiz {
         }
     }
 
+    @FXML
+    public void abrirPagamentos() {
+        trocarConteudo("/com/castelodostorres/sistema/TelaPagamentos.fxml");
+        marcarAtivo(botaoPagamentos);
+    }
+
     private void marcarAtivo(javafx.scene.control.Button ativo) { // MÉTODO: destaca só o botão da tela aberta
         javafx.scene.control.Button[] todos = {
                 botaoTelaPrincipal, botaoLoja, botaoCaixa, botaoVisitas, botaoRelatorios,
-                botaoResumoMes, botaoDespesas, botaoFuncionarios, botaoConfiguracao
+                botaoResumoMes, botaoDespesas, botaoFuncionarios, botaoConfiguracao, botaoPagamentos
         };
         for (javafx.scene.control.Button b : todos) {
             if (b != null) {

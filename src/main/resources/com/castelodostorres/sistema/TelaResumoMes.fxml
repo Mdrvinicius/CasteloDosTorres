@@ -48,9 +48,11 @@
                     <Label text="Detalhamento de Pagamentos aos Funcionários" styleClass="subtitulo" />
                     <TableView fx:id="tabelaComissao" prefHeight="250">
                         <columns>
-                            <TableColumn fx:id="colunaNome" text="Funcionário" prefWidth="220" />
-                            <TableColumn fx:id="colunaPapel" text="Função" prefWidth="130" />
-                            <TableColumn fx:id="colunaValor" text="Total Pago no Mês (R$)" prefWidth="160" />
+                            <TableColumn fx:id="colunaNome" text="Funcionário" prefWidth="200" />
+                            <TableColumn fx:id="colunaPapel" text="Função" prefWidth="120" />
+                            <TableColumn fx:id="colunaValor" text="Comissão do Mês (R$)" prefWidth="150" />
+                            <TableColumn fx:id="colunaPago" text="Pago (R$)" prefWidth="120" />
+                            <TableColumn fx:id="colunaFalta" text="Falta Pagar (R$)" prefWidth="130" />
                         </columns>
                     </TableView>
                     <HBox alignment="CENTER_LEFT" spacing="8">

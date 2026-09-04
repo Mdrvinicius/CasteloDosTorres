@@ -26,6 +26,7 @@ public class MigradorDeSchema {
         aplicarSeNecessario(conexao, versaoAtual, 9, MigradorDeSchema::migracaoVersao9);
         aplicarSeNecessario(conexao, versaoAtual, 10, MigradorDeSchema::migracaoVersao10);
         aplicarSeNecessario(conexao, versaoAtual, 11, MigradorDeSchema::migracaoVersao11);
+        aplicarSeNecessario(conexao, versaoAtual, 12, MigradorDeSchema::migracaoVersao12);
         // no futuro, cada mudança nova de schema vira mais uma linha aqui, com número seguinte (3, 4, 5...)
     }
 
@@ -282,6 +283,20 @@ public class MigradorDeSchema {
                 quantidade INTEGER NOT NULL,
                 preco_venda_unitario REAL NOT NULL,
                 preco_custo_unitario REAL NOT NULL
+            )
+            """);
+        }
+    }
+    private static void migracaoVersao12(Connection conexao) throws SQLException { // pagamentos aos funcionários
+        try (Statement comando = conexao.createStatement()) {
+            comando.execute("""
+            CREATE TABLE IF NOT EXISTS pagamento_funcionario (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                funcionario_id INTEGER NOT NULL REFERENCES funcionario(id),
+                nome_funcionario TEXT NOT NULL,
+                mes_referencia TEXT NOT NULL,
+                valor REAL NOT NULL,
+                data_hora_registro TEXT NOT NULL
             )
             """);
         }

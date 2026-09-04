@@ -33,10 +33,11 @@
             <Button fx:id="botaoLoja" text="Loja de Souvenir" onAction="#abrirLoja" styleClass="nav-botao" maxWidth="Infinity" />
             <Button fx:id="botaoCaixa" text="Caixa" onAction="#abrirCaixa" styleClass="nav-botao" maxWidth="Infinity" />
             <Button fx:id="botaoVisitas" text="Visitas" onAction="#abrirVisitas" styleClass="nav-botao" maxWidth="Infinity" />
+            <Button fx:id="botaoFuncionarios" text="Funcionários" onAction="#abrirFuncionarios" styleClass="nav-botao" maxWidth="Infinity" />
+            <Button fx:id="botaoPagamentos" text="Pagamentos" onAction="#abrirPagamentos" styleClass="nav-botao" maxWidth="Infinity" />
             <Button fx:id="botaoRelatorios" text="Relatórios dos Dias" onAction="#abrirRelatorios" styleClass="nav-botao" maxWidth="Infinity" />
             <Button fx:id="botaoResumoMes" text="Relatório do Mês" onAction="#abrirResumoMes" styleClass="nav-botao" maxWidth="Infinity" />
             <Button fx:id="botaoDespesas" text="Despesas" onAction="#abrirDespesas" styleClass="nav-botao" maxWidth="Infinity" />
-            <Button fx:id="botaoFuncionarios" text="Funcionários" onAction="#abrirFuncionarios" styleClass="nav-botao" maxWidth="Infinity" />
             <Button fx:id="botaoConfiguracao" text="Configuração" onAction="#abrirConfiguracao" styleClass="nav-botao" maxWidth="Infinity" />
         </VBox>
     </left>

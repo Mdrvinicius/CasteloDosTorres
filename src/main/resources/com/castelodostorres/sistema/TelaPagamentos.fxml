@@ -1,0 +1,106 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.ComboBox?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.ScrollPane?>
+<?import javafx.scene.control.TableColumn?>
+<?import javafx.scene.control.TableView?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.Region?>
+<?import javafx.scene.layout.VBox?>
+
+<ScrollPane xmlns="http://javafx.com/javafx" xmlns:fx="http://javafx.com/fxml"
+            fx:controller="com.castelodostorres.sistema.controlador.ControladorTelaPagamentos"
+            fitToWidth="true" styleClass="painel-conteudo">
+
+    <VBox spacing="16">
+        <padding><Insets top="20" right="20" bottom="20" left="20" /></padding>
+
+        <VBox spacing="2">
+            <Label text="Pagamentos aos Funcionários" styleClass="titulo-tela" />
+            <Label text="Registre os pagamentos de comissão feitos aos funcionários." styleClass="texto-suave" />
+        </VBox>
+
+        <!-- CARD 1: registrar pagamento -->
+        <VBox styleClass="card" spacing="12">
+            <Label fx:id="labelFormulario" text="Registrar Pagamento" styleClass="subtitulo" />
+
+            <HBox spacing="14" alignment="BOTTOM_LEFT">
+                <VBox spacing="4" prefWidth="360">
+                    <Label text="Funcionário" styleClass="form-label" />
+                    <ComboBox fx:id="comboFuncionario" maxWidth="Infinity" />
+                </VBox>
+                <VBox spacing="4" prefWidth="110">
+                    <Label text="Mês Ref." styleClass="form-label" />
+                    <ComboBox fx:id="comboMes" maxWidth="Infinity" />
+                </VBox>
+                <VBox spacing="4" prefWidth="90">
+                    <Label text="Ano Ref." styleClass="form-label" />
+                    <TextField fx:id="campoAno" />
+                </VBox>
+                <VBox spacing="4" prefWidth="140">
+                    <Label text="Valor Pago (R$)" styleClass="form-label" />
+                    <TextField fx:id="campoValor" promptText="0,00" />
+                </VBox>
+                <Button fx:id="botaoSalvar" text="Salvar" onAction="#salvar" />
+            </HBox>
+            <HBox spacing="10">
+                <Button fx:id="botaoCancelarEdicao" text="Cancelar Edição" onAction="#cancelarEdicao" styleClass="botao-secundario" />
+            </HBox>
+        </VBox>
+
+        <!-- CARD 2: comissões a pagar (do mês) -->
+        <VBox styleClass="card" spacing="10">
+            <HBox alignment="CENTER_LEFT" spacing="10">
+                <Label text="Comissões a Pagar" styleClass="subtitulo" />
+                <Region HBox.hgrow="ALWAYS" />
+                <Label text="Mês:" styleClass="form-label" />
+                <ComboBox fx:id="comboMesComissao" prefWidth="110" />
+                <TextField fx:id="campoAnoComissao" prefWidth="80" />
+                <Button text="Ver" onAction="#gerarComissoes" styleClass="botao-secundario" />
+            </HBox>
+            <Label text="Dê duplo-clique num funcionário para preencher o pagamento acima." styleClass="texto-suave" />
+
+            <TableView fx:id="tabelaComissoes" prefHeight="260">
+                <columns>
+                    <TableColumn fx:id="colComNome" text="Funcionário" prefWidth="220" />
+                    <TableColumn fx:id="colComPapel" text="Função" prefWidth="120" />
+                    <TableColumn fx:id="colComComissao" text="Comissão (R$)" prefWidth="130" />
+                    <TableColumn fx:id="colComPago" text="Pago (R$)" prefWidth="120" />
+                    <TableColumn fx:id="colComFalta" text="Falta Pagar (R$)" prefWidth="130" />
+                </columns>
+            </TableView>
+        </VBox>
+
+        <!-- CARD 3: pagamentos registrados (do mês) -->
+        <VBox styleClass="card" spacing="10">
+            <HBox alignment="CENTER_LEFT" spacing="10">
+                <Label text="Pagamentos Registrados" styleClass="subtitulo" />
+                <Region HBox.hgrow="ALWAYS" />
+                <Label text="Mês:" styleClass="form-label" />
+                <ComboBox fx:id="comboMesFiltro" prefWidth="110" />
+                <TextField fx:id="campoAnoFiltro" prefWidth="80" />
+                <Button text="Ver" onAction="#filtrar" styleClass="botao-secundario" />
+            </HBox>
+            <Label text="Dê duplo-clique num pagamento para editar." styleClass="texto-suave" />
+
+            <TableView fx:id="tabelaPagamentos" prefHeight="260">
+                <columns>
+                    <TableColumn fx:id="colFuncionario" text="Funcionário" prefWidth="240" />
+                    <TableColumn fx:id="colValor" text="Valor Pago (R$)" prefWidth="150" />
+                    <TableColumn fx:id="colData" text="Registrado em" prefWidth="170" />
+                </columns>
+            </TableView>
+
+            <HBox spacing="10" alignment="CENTER_LEFT">
+                <Label fx:id="labelTotalPago" text="Total pago no mês: R$ 0,00" styleClass="valor-destaque" />
+                <Region HBox.hgrow="ALWAYS" />
+                <Button fx:id="botaoExcluir" text="Excluir Selecionado" onAction="#excluir" styleClass="botao-perigo" />
+            </HBox>
+        </VBox>
+
+    </VBox>
+</ScrollPane>
