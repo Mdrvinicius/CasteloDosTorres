@@ -119,7 +119,7 @@ public class ControladorTelaResumoDia implements Initializable {
         javafx.stage.FileChooser chooser = new javafx.stage.FileChooser();
         chooser.setTitle("Salvar Resumo do Dia em PDF");
         chooser.getExtensionFilters().add(new javafx.stage.FileChooser.ExtensionFilter("PDF", "*.pdf"));
-        chooser.setInitialFileName("resumo-dia-" + dataTexto + ".pdf");
+        chooser.setInitialFileName("resumo-dia-" + dataTexto + "_gerado-" + java.time.LocalDate.now() + ".pdf");
         java.io.File destino = chooser.showSaveDialog(labelTotal.getScene().getWindow());
         if (destino == null) return; // cancelou
 

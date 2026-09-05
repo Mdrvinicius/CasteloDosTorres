@@ -48,28 +48,66 @@ public class GeradorPdf {
         fluxo.endText();
     }
 
-    public void cabecalho(String tituloRelatorio, String subtitulo) throws IOException { // MÉTODO: cabeçalho padrão do sistema
-        escreverTexto("Castelo dos Torres", MARGEM, y, PDType1Font.HELVETICA_BOLD, 20);
-        y -= 26;
+    public void cabecalho(String tituloRelatorio, String subtitulo) throws IOException { // MÉTODO: cabeçalho com logo + identidade
+        float alturaLogo = 45;
+        float yTopo = y;
 
-        escreverTexto(tituloRelatorio, MARGEM, y, PDType1Font.HELVETICA_BOLD, 14);
-        y -= 18;
+        // tenta desenhar o logo à esquerda
+        float xTexto = MARGEM; // onde o texto começa (depois do logo, se houver)
+        try {
+            java.io.InputStream is = getClass().getResourceAsStream("/com/castelodostorres/sistema/imagens/logo5.png");
+            if (is != null) {
+                byte[] bytes = is.readAllBytes();
+                is.close();
+                org.apache.pdfbox.pdmodel.graphics.image.PDImageXObject logo =
+                        org.apache.pdfbox.pdmodel.graphics.image.PDImageXObject.createFromByteArray(documento, bytes, "logo");
+                float proporcao = (float) logo.getWidth() / logo.getHeight();
+                float larguraLogo = alturaLogo * proporcao;
+                fluxo.drawImage(logo, MARGEM, yTopo - alturaLogo, larguraLogo, alturaLogo);
+                xTexto = MARGEM + larguraLogo + 12; // texto começa depois do logo
+            }
+        } catch (Exception e) {
+            // se falhar o logo, segue sem ele
+        }
 
+        // nome da empresa em azul-marinho
+        fluxo.beginText();
+        fluxo.setFont(PDType1Font.HELVETICA_BOLD, 20);
+        fluxo.setNonStrokingColor(27 / 255f, 42 / 255f, 65 / 255f); // azul-marinho (#1b2a41)
+        fluxo.newLineAtOffset(xTexto, yTopo - 20);
+        fluxo.showText("Castelo dos Torres");
+        fluxo.endText();
+
+        // título do relatório
+        fluxo.beginText();
+        fluxo.setFont(PDType1Font.HELVETICA_BOLD, 13);
+        fluxo.setNonStrokingColor(30 / 255f, 41 / 255f, 59 / 255f); // cinza escuro
+        fluxo.newLineAtOffset(xTexto, yTopo - 38);
+        fluxo.showText(tituloRelatorio);
+        fluxo.endText();
+
+        fluxo.setNonStrokingColor(0, 0, 0); // volta pro preto
+        y = yTopo - alturaLogo - 16; // desce abaixo do logo
+
+        // subtítulo (data)
         if (subtitulo != null && !subtitulo.isBlank()) {
             escreverTexto(subtitulo, MARGEM, y, PDType1Font.HELVETICA, 11);
             y -= 16;
         }
 
-        y -= 6;
+        // linha separadora em azul-marinho
+        y -= 4;
+        fluxo.setStrokingColor(27 / 255f, 42 / 255f, 65 / 255f);
         fluxo.moveTo(MARGEM, y);
         fluxo.lineTo(LARGURA - MARGEM, y);
         fluxo.stroke();
+        fluxo.setStrokingColor(0, 0, 0);
         y -= 16;
     }
 
     public void secao(String titulo) throws IOException { // MÉTODO: título de seção
         garantirEspaco(30);
-        y -= 6;
+        y -= 14;
         escreverTexto(titulo, MARGEM, y, PDType1Font.HELVETICA_BOLD, 12);
         y -= 18;
     }
@@ -84,10 +122,12 @@ public class GeradorPdf {
         y -= px;
     }
 
-    public void tabela(String[] cabecalhos, List<String[]> linhas, float[] largurasCol) throws IOException { // MÉTODO: desenha uma tabela por posição absoluta
-        float alturaLinha = 16;
+    public void tabela(String[] cabecalhos, List<String[]> linhas, float[] largurasCol) throws IOException { // MÉTODO: tabela com bordas e cabeçalho destacado
+        float alturaLinha = 18;
+        float larguraTotal = 0;
+        for (float l : largurasCol) larguraTotal += l;
 
-        // calcula a posição X de cada coluna (acumulando as larguras)
+        // posição X de cada coluna
         float[] xColunas = new float[cabecalhos.length];
         float xAtual = MARGEM;
         for (int i = 0; i < cabecalhos.length; i++) {
@@ -95,21 +135,57 @@ public class GeradorPdf {
             xAtual += largurasCol[i];
         }
 
-        // cabeçalho da tabela
+        // ---- cabeçalho da tabela (fundo cinza-azulado + texto) ----
         garantirEspaco(alturaLinha);
+        float yTopo = y;
+        // fundo do cabeçalho
+        fluxo.setNonStrokingColor(226 / 255f, 232 / 255f, 240 / 255f); // cinza claro (#e2e8f0)
+        fluxo.addRect(MARGEM, yTopo - alturaLinha + 4, larguraTotal, alturaLinha);
+        fluxo.fill();
+        fluxo.setNonStrokingColor(0, 0, 0); // volta pro preto
+        // texto do cabeçalho
         for (int i = 0; i < cabecalhos.length; i++) {
-            escreverTexto(cortar(cabecalhos[i], largurasCol[i]), xColunas[i], y, PDType1Font.HELVETICA_BOLD, 10);
+            escreverTexto(cortar(cabecalhos[i], largurasCol[i]), xColunas[i] + 3, yTopo - alturaLinha + 9, PDType1Font.HELVETICA_BOLD, 10);
         }
         y -= alturaLinha;
 
-        // linhas de dados
+        // ---- linhas de dados ----
         for (String[] linha : linhas) {
             garantirEspaco(alturaLinha);
+            float yLinha = y;
             for (int i = 0; i < linha.length && i < xColunas.length; i++) {
-                escreverTexto(cortar(linha[i], largurasCol[i]), xColunas[i], y, PDType1Font.HELVETICA, 10);
+                escreverTexto(cortar(linha[i], largurasCol[i]), xColunas[i] + 3, yLinha - alturaLinha + 9, PDType1Font.HELVETICA, 10);
             }
             y -= alturaLinha;
         }
+
+        // ---- desenha as bordas (grade) ----
+        float yBase = y; // fim da tabela
+        float yTopoTabela = yTopo + 4; // topo real (cabeçalho começa aqui)
+        int totalLinhas = linhas.size() + 1; // +1 do cabeçalho
+
+        fluxo.setStrokingColor(180 / 255f, 190 / 255f, 200 / 255f); // cinza da borda
+        // linhas horizontais
+        float yh = yTopoTabela;
+        for (int i = 0; i <= totalLinhas; i++) {
+            fluxo.moveTo(MARGEM, yh);
+            fluxo.lineTo(MARGEM + larguraTotal, yh);
+            fluxo.stroke();
+            yh -= alturaLinha;
+        }
+        // linhas verticais
+        float xv = MARGEM;
+        fluxo.moveTo(xv, yTopoTabela);
+        fluxo.lineTo(xv, yBase + 4);
+        fluxo.stroke();
+        for (int i = 0; i < largurasCol.length; i++) {
+            xv += largurasCol[i];
+            fluxo.moveTo(xv, yTopoTabela);
+            fluxo.lineTo(xv, yBase + 4);
+            fluxo.stroke();
+        }
+        fluxo.setStrokingColor(0, 0, 0); // volta pro preto
+        y -= 8;
     }
 
     private String cortar(String texto, float larguraCol) { // MÉTODO: corta o texto pra não invadir a coluna vizinha (aproximado)

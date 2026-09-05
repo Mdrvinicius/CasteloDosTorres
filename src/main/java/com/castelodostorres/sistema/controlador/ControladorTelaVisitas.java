@@ -44,7 +44,7 @@ public class ControladorTelaVisitas implements Initializable, PrecisaDaTelaRaiz 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
         configurarColunas();
-        carregarTodas();
+        carregarDeHoje();
         configurarCliqueDuplo();
         carregarGuiasNoComboBusca();
     }
@@ -72,6 +72,17 @@ public class ControladorTelaVisitas implements Initializable, PrecisaDaTelaRaiz 
         colunaNaoPagantes.setCellValueFactory(new PropertyValueFactory<>("quantidadeNaoPagante"));
         colunaTotal.setCellValueFactory(new PropertyValueFactory<>("valorTotal"));
         colunaStatus.setCellValueFactory(new PropertyValueFactory<>("status"));
+    }
+
+    private void carregarDeHoje() { // MÉTODO: mostra as visitas de hoje
+        LocalDate hoje = LocalDate.now();
+        seletorDataBusca.setValue(hoje); // deixa o seletor mostrando hoje (tira essa linha se quiser vazio)
+        try {
+            List<Visita> visitas = repositorio.buscar(null, hoje.toString());
+            tabelaVisitas.setItems(FXCollections.observableArrayList(visitas));
+        } catch (SQLException e) {
+            System.out.println("Erro ao carregar visitas de hoje: " + e.getMessage());
+        }
     }
 
     private void carregarTodas() { // MÉTODO: busca todas as visitas e joga na tabela
@@ -134,9 +145,8 @@ public class ControladorTelaVisitas implements Initializable, PrecisaDaTelaRaiz 
     @FXML
     public void limpar() {
         comboGuiaBusca.getSelectionModel().clearSelection();
-        seletorDataBusca.setValue(null);
         labelResumoGuia.setText("");
-        carregarTodas();
+        carregarDeHoje(); // limpar volta pra hoje, não pra todas
     }
 
     private void carregarGuiasNoComboBusca() { // MÉTODO: enche o combo de busca com as guias

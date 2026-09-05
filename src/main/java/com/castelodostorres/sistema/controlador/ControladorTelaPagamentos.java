@@ -303,4 +303,84 @@ public class ControladorTelaPagamentos implements Initializable, PrecisaDaTelaRa
         a.setTitle("Aviso"); a.setHeaderText(null); a.setContentText(m);
         a.showAndWait();
     }
+
+    @FXML
+    public void exportarPdf() { // MÉTODO: exporta comissões + pagamentos registrados do mês em PDF
+        Integer mes = comboMesComissao.getValue();
+        if (mes == null) { mostrarAviso("Selecione o mês das comissões."); return; }
+        int ano;
+        try { ano = Integer.parseInt(campoAnoComissao.getText().trim()); }
+        catch (NumberFormatException e) { mostrarAviso("Ano das comissões inválido."); return; }
+        String mesTexto = String.format("%04d-%02d", ano, mes);
+
+        javafx.stage.FileChooser chooser = new javafx.stage.FileChooser();
+        chooser.setTitle("Salvar Pagamento de Funcionários em PDF");
+        chooser.getExtensionFilters().add(new javafx.stage.FileChooser.ExtensionFilter("PDF", "*.pdf"));
+        chooser.setInitialFileName("pagamento-funcionarios-" + mesTexto + "_gerado-" + java.time.LocalDate.now() + ".pdf");
+        java.io.File destino = chooser.showSaveDialog(labelFormulario.getScene().getWindow());
+        if (destino == null) return;
+
+        try {
+            // data de emissão (agora)
+            String emissao = FormatadorData.formatar(LocalDateTime.now().toString());
+
+            com.castelodostorres.sistema.util.GeradorPdf pdf = new com.castelodostorres.sistema.util.GeradorPdf();
+            pdf.cabecalho("Pagamento de Funcionários", "Data: " + emissao);
+            pdf.linha("Período de referência", String.format("%02d/%04d", mes, ano));
+
+            // --- comissões do mês ---
+            List<Visita> visitas = visitaRepositorio.listarDoMes(mesTexto);
+            List<ComissaoFuncionario> comissoes = calculadoraComissao.calcular(visitas);
+            Map<Integer, Double> pagos = repositorio.somarPorFuncionarioNoMes(mesTexto);
+            for (ComissaoFuncionario c : comissoes) {
+                Double pago = pagos.get(c.getFuncionarioId());
+                c.setPago(pago == null ? 0.0 : pago);
+            }
+            comissoes.sort(Comparator.comparing(ComissaoFuncionario::getNome, String.CASE_INSENSITIVE_ORDER));
+
+            pdf.secao("Comissões do Mês");
+            java.util.List<String[]> linhasCom = new java.util.ArrayList<>();
+            double totalComissao = 0, totalPagoCom = 0, totalFalta = 0;
+            for (ComissaoFuncionario c : comissoes) {
+                linhasCom.add(new String[]{
+                        c.getNome(),
+                        c.getPapel(),
+                        "R$ " + String.format("%.2f", c.getValor()),
+                        "R$ " + String.format("%.2f", c.getPago()),
+                        "R$ " + String.format("%.2f", c.getFaltaPagar()) });
+                totalComissao += c.getValor();
+                totalPagoCom += c.getPago();
+                totalFalta += c.getFaltaPagar();
+            }
+            pdf.tabela(new String[]{ "Funcionário", "Função", "Comissão", "Pago", "Falta Pagar" },
+                    linhasCom, new float[]{ 160, 110, 90, 90, 90 });
+
+            pdf.espaco(6);
+            pdf.linha("Total de Comissões", "R$ " + String.format("%.2f", totalComissao));
+            pdf.linha("Total Pago", "R$ " + String.format("%.2f", totalPagoCom));
+            pdf.linha("Total a Pagar", "R$ " + String.format("%.2f", totalFalta));
+
+            // --- pagamentos registrados do mês (com datas) ---
+            List<PagamentoFuncionario> pagamentos = repositorio.listarDoMes(mesTexto);
+            pdf.secao("Pagamentos Registrados");
+            java.util.List<String[]> linhasPag = new java.util.ArrayList<>();
+            double totalRegistrado = 0;
+            for (PagamentoFuncionario p : pagamentos) {
+                linhasPag.add(new String[]{
+                        p.getNomeFuncionario(),
+                        "R$ " + String.format("%.2f", p.getValor()),
+                        FormatadorData.formatar(p.getDataHoraRegistro()) });
+                totalRegistrado += p.getValor();
+            }
+            pdf.tabela(new String[]{ "Funcionário", "Valor Pago", "Registrado em" },
+                    linhasPag, new float[]{ 200, 120, 160 });
+            pdf.espaco(6);
+            pdf.linha("Total Registrado no Mês", "R$ " + String.format("%.2f", totalRegistrado));
+
+            pdf.salvarComo(destino);
+            mostrarAviso("PDF salvo em:\n" + destino.getAbsolutePath());
+        } catch (Exception e) {
+            mostrarAviso("Erro ao gerar PDF: " + e.getMessage());
+        }
+    }
 }

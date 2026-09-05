@@ -220,7 +220,7 @@ public class ControladorTelaResumoMes implements Initializable {
         javafx.stage.FileChooser chooser = new javafx.stage.FileChooser();
         chooser.setTitle("Salvar Resumo do Mês em PDF");
         chooser.getExtensionFilters().add(new javafx.stage.FileChooser.ExtensionFilter("PDF", "*.pdf"));
-        chooser.setInitialFileName("resumo-mes-" + mesTexto + ".pdf");
+        chooser.setInitialFileName("resumo-mes-" + mesTexto + "_gerado-" + java.time.LocalDate.now() + ".pdf");
         java.io.File destino = chooser.showSaveDialog(labelArrecadado.getScene().getWindow());
         if (destino == null) return;
 

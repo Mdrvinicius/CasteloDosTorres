@@ -146,7 +146,7 @@ public class ControladorRelatorioVendasMes implements Initializable, PrecisaDaTe
         javafx.stage.FileChooser chooser = new javafx.stage.FileChooser();
         chooser.setTitle("Salvar Vendas do Mês em PDF");
         chooser.getExtensionFilters().add(new javafx.stage.FileChooser.ExtensionFilter("PDF", "*.pdf"));
-        chooser.setInitialFileName("vendas-mes-" + mesTexto + ".pdf");
+        chooser.setInitialFileName("vendas-mes-" + mesTexto + "_gerado-" + java.time.LocalDate.now() + ".pdf");
         java.io.File destino = chooser.showSaveDialog(labelFaturamento.getScene().getWindow());
         if (destino == null) return;
 

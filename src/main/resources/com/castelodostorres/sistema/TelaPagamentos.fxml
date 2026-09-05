@@ -19,10 +19,14 @@
     <VBox spacing="16">
         <padding><Insets top="20" right="20" bottom="20" left="20" /></padding>
 
-        <VBox spacing="2">
-            <Label text="Pagamentos aos Funcionários" styleClass="titulo-tela" />
-            <Label text="Registre os pagamentos de comissão feitos aos funcionários." styleClass="texto-suave" />
-        </VBox>
+        <HBox alignment="CENTER_LEFT" spacing="12">
+            <VBox spacing="2">
+                <Label text="Pagamentos aos Funcionários" styleClass="titulo-tela" />
+                <Label text="Registre os pagamentos de comissão feitos aos funcionários." styleClass="texto-suave" />
+            </VBox>
+            <Region HBox.hgrow="ALWAYS" />
+            <Button text="Exportar PDF" onAction="#exportarPdf" styleClass="botao-secundario" />
+        </HBox>
 
         <!-- CARD 1: registrar pagamento -->
         <VBox styleClass="card" spacing="12">

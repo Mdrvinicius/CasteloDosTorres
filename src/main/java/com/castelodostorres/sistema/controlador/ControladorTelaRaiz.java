@@ -57,9 +57,11 @@ public class ControladorTelaRaiz {
 
     @FXML
     public void abrirRelatorios() {
-
+        if (VerificadorSenha.verificar()) {
             trocarConteudo("/com/castelodostorres/sistema/TelaResumoDia.fxml");
             marcarAtivo(botaoRelatorios);
+        }
+
 
     }
     @FXML

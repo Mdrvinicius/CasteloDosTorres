@@ -50,14 +50,16 @@
     </ScrollPane>
 
     <!-- Painel expansível do carrinho (escondido por padrão) -->
-    <VBox fx:id="painelCarrinho" styleClass="painel-carrinho" spacing="8" visible="false" managed="false">
+    <!-- Painel expansível do carrinho (escondido por padrão) -->
+    <VBox fx:id="painelCarrinho" styleClass="painel-carrinho" spacing="8" visible="false" managed="false"
+          minHeight="280" prefHeight="280">
         <padding><Insets top="14" right="20" bottom="14" left="20" /></padding>
         <HBox alignment="CENTER_LEFT">
             <Label text="Itens do Carrinho" styleClass="subtitulo" />
             <Region HBox.hgrow="ALWAYS" />
             <Label fx:id="labelTotalPainel" text="Total: R$ 0,00" styleClass="produto-preco" />
         </HBox>
-        <ScrollPane fitToWidth="true" styleClass="painel-conteudo" prefHeight="220">
+        <ScrollPane fitToWidth="true" styleClass="painel-conteudo" VBox.vgrow="ALWAYS" prefHeight="220">
             <VBox fx:id="listaCarrinho" spacing="8" />
         </ScrollPane>
     </VBox>
