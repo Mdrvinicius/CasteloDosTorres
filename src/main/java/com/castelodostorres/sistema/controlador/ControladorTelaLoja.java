@@ -43,10 +43,18 @@ public class ControladorTelaLoja implements Initializable, PrecisaDaTelaRaiz {
     @FXML private VBox blocoTroco;
     @FXML private TextField campoValorRecebido;
     @FXML private Label labelTroco;
+    // divisão
+    @FXML private VBox blocoDivisao;
+    @FXML private TextField campoDivDinheiro;
+    @FXML private TextField campoDivPix;
+    @FXML private TextField campoDivDebito;
+    @FXML private Label labelSomaDivisao;
 
     private final ProdutoRepositorio produtoRepositorio = new ProdutoRepositorio();
     private final VendaRepositorio vendaRepositorio = new VendaRepositorio();
     private ControladorTelaRaiz telaRaiz;
+
+    private static final String OPCAO_DIVIDIR = "Dividir Pagamento";
 
     private static class ItemCarrinho {
         Produto produto;
@@ -64,9 +72,13 @@ public class ControladorTelaLoja implements Initializable, PrecisaDaTelaRaiz {
 
     @Override
     public void initialize(URL url, ResourceBundle rb) {
-        comboFormaPagamento.setItems(FXCollections.observableArrayList("Dinheiro", "Pix", "Débito"));
-        comboFormaPagamento.valueProperty().addListener((o, a, n) -> atualizarBlocoDinheiro());
+        comboFormaPagamento.setItems(FXCollections.observableArrayList("Dinheiro", "Pix", "Débito", OPCAO_DIVIDIR));
+        comboFormaPagamento.valueProperty().addListener((o, a, n) -> atualizarBlocosPagamento());
         campoValorRecebido.textProperty().addListener((o, a, n) -> atualizarTroco());
+        // atualiza a soma da divisão ao vivo
+        campoDivDinheiro.textProperty().addListener((o, a, n) -> atualizarSomaDivisao());
+        campoDivPix.textProperty().addListener((o, a, n) -> atualizarSomaDivisao());
+        campoDivDebito.textProperty().addListener((o, a, n) -> atualizarSomaDivisao());
         carregarCategorias();
         carregarVitrine(listarSeguro());
         atualizarRodape();
@@ -176,7 +188,8 @@ public class ControladorTelaLoja implements Initializable, PrecisaDaTelaRaiz {
         }
         labelQtdCarrinho.setText(totalItens + " item(ns)");
         labelTotalCarrinho.setText("R$ " + String.format("%.2f", total));
-        atualizarTroco(); // total mudou, recalcula troco se estiver em dinheiro
+        atualizarTroco();
+        atualizarSomaDivisao();
     }
 
     private double totalCarrinho() {
@@ -185,8 +198,12 @@ public class ControladorTelaLoja implements Initializable, PrecisaDaTelaRaiz {
         return total;
     }
 
-    private void atualizarBlocoDinheiro() { // MÉTODO: mostra/esconde o bloco de dinheiro conforme a forma
-        boolean ehDinheiro = "Dinheiro".equals(comboFormaPagamento.getValue());
+    private void atualizarBlocosPagamento() { // MÉTODO: mostra/esconde os blocos conforme a forma escolhida
+        String forma = comboFormaPagamento.getValue();
+        boolean ehDinheiro = "Dinheiro".equals(forma);
+        boolean ehDividir = OPCAO_DIVIDIR.equals(forma);
+
+        // bloco dinheiro (valor recebido + troco)
         blocoDinheiro.setVisible(ehDinheiro);
         blocoDinheiro.setManaged(ehDinheiro);
         blocoTroco.setVisible(ehDinheiro);
@@ -197,14 +214,32 @@ public class ControladorTelaLoja implements Initializable, PrecisaDaTelaRaiz {
         } else {
             atualizarTroco();
         }
+
+        // bloco divisão (3 campos)
+        blocoDivisao.setVisible(ehDividir);
+        blocoDivisao.setManaged(ehDividir);
+        if (!ehDividir) {
+            campoDivDinheiro.clear();
+            campoDivPix.clear();
+            campoDivDebito.clear();
+            labelSomaDivisao.setText("Soma: R$ 0,00");
+        } else {
+            atualizarSomaDivisao();
+        }
     }
 
-    private void atualizarTroco() { // MÉTODO: calcula troco ao vivo (só display)
+    private void atualizarTroco() {
         if (!"Dinheiro".equals(comboFormaPagamento.getValue())) return;
         double recebido = lerValor(campoValorRecebido);
         double troco = recebido - totalCarrinho();
         if (troco < 0) troco = 0;
         labelTroco.setText("R$ " + String.format("%.2f", troco));
+    }
+
+    private void atualizarSomaDivisao() { // MÉTODO: soma dos 3 campos ao vivo
+        if (!OPCAO_DIVIDIR.equals(comboFormaPagamento.getValue())) return;
+        double soma = lerValor(campoDivDinheiro) + lerValor(campoDivPix) + lerValor(campoDivDebito);
+        labelSomaDivisao.setText("Soma: R$ " + String.format("%.2f", soma));
     }
 
     private double lerValor(TextField campo) {
@@ -291,22 +326,43 @@ public class ControladorTelaLoja implements Initializable, PrecisaDaTelaRaiz {
         if (forma == null) { mostrarAviso("Selecione a forma de pagamento."); return; }
 
         double total = totalCarrinho();
+        double vDinheiro = 0, vPix = 0, vDebito = 0;
 
-        if ("Dinheiro".equals(forma)) {
+        if (OPCAO_DIVIDIR.equals(forma)) {
+            // pagamento dividido: valida a soma
+            vDinheiro = lerValor(campoDivDinheiro);
+            vPix = lerValor(campoDivPix);
+            vDebito = lerValor(campoDivDebito);
+            if (vDinheiro < 0 || vPix < 0 || vDebito < 0) {
+                mostrarAviso("Os valores não podem ser negativos.");
+                return;
+            }
+            double soma = vDinheiro + vPix + vDebito;
+            if (Math.abs(soma - total) > 0.001) {
+                mostrarAviso("A soma das formas (R$ " + String.format("%.2f", soma) +
+                        ") não bate com o total (R$ " + String.format("%.2f", total) + ").");
+                return;
+            }
+        } else if ("Dinheiro".equals(forma)) {
             double recebido = lerValor(campoValorRecebido);
             if (recebido < total) {
                 mostrarAviso("Valor recebido (R$ " + String.format("%.2f", recebido) +
                         ") é menor que o total (R$ " + String.format("%.2f", total) + ").");
                 return;
             }
+            vDinheiro = total;
+        } else if ("Pix".equals(forma)) {
+            vPix = total;
+        } else if ("Débito".equals(forma)) {
+            vDebito = total;
         }
 
         Venda venda = new Venda();
         venda.setDataHora(LocalDateTime.now().toString());
         venda.setValorTotal(total);
-        venda.setValorDinheiro("Dinheiro".equals(forma) ? total : 0);
-        venda.setValorPix("Pix".equals(forma) ? total : 0);
-        venda.setValorDebito("Débito".equals(forma) ? total : 0);
+        venda.setValorDinheiro(vDinheiro);
+        venda.setValorPix(vPix);
+        venda.setValorDebito(vDebito);
 
         for (ItemCarrinho ic : carrinho) {
             ItemVenda iv = new ItemVenda();
@@ -324,7 +380,10 @@ public class ControladorTelaLoja implements Initializable, PrecisaDaTelaRaiz {
             carrinho.clear();
             comboFormaPagamento.getSelectionModel().clearSelection();
             campoValorRecebido.clear();
-            atualizarBlocoDinheiro();
+            campoDivDinheiro.clear();
+            campoDivPix.clear();
+            campoDivDebito.clear();
+            atualizarBlocosPagamento();
             atualizarRodape();
             painelCarrinho.setVisible(false);
             painelCarrinho.setManaged(false);

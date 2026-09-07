@@ -50,7 +50,6 @@
     </ScrollPane>
 
     <!-- Painel expansível do carrinho (escondido por padrão) -->
-    <!-- Painel expansível do carrinho (escondido por padrão) -->
     <VBox fx:id="painelCarrinho" styleClass="painel-carrinho" spacing="8" visible="false" managed="false"
           minHeight="280" prefHeight="280">
         <padding><Insets top="14" right="20" bottom="14" left="20" /></padding>
@@ -89,6 +88,17 @@
         <VBox fx:id="blocoTroco" spacing="2" visible="false" managed="false">
             <Label text="Troco" styleClass="form-label" />
             <Label fx:id="labelTroco" text="R$ 0,00" styleClass="produto-preco" />
+        </VBox>
+
+        <!-- Bloco divisão (aparece só quando forma = Dividir Pagamento) -->
+        <VBox fx:id="blocoDivisao" spacing="2" visible="false" managed="false">
+            <Label text="Dinheiro / Pix / Débito (R$)" styleClass="form-label" />
+            <HBox spacing="8">
+                <TextField fx:id="campoDivDinheiro" prefWidth="90" promptText="Dinheiro" />
+                <TextField fx:id="campoDivPix" prefWidth="90" promptText="Pix" />
+                <TextField fx:id="campoDivDebito" prefWidth="90" promptText="Débito" />
+                <Label fx:id="labelSomaDivisao" text="Soma: R$ 0,00" styleClass="texto-suave" />
+            </HBox>
         </VBox>
 
         <Region HBox.hgrow="ALWAYS" />

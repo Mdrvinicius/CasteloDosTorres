@@ -62,7 +62,7 @@ public class ControladorRelatorioVendasMes implements Initializable, PrecisaDaTe
             if (evento.getClickCount() == 2) {
                 Venda sel = tabelaVendas.getSelectionModel().getSelectedItem();
                 if (sel != null && telaRaiz != null) {
-                    telaRaiz.abrirDetalhesVenda(sel);
+                    telaRaiz.abrirDetalhesVenda(sel, "MES");
                 }
             }
         });

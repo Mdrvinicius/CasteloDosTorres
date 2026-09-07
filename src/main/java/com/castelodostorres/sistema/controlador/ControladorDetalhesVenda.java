@@ -30,6 +30,7 @@ public class ControladorDetalhesVenda implements PrecisaDaTelaRaiz {
     private final VendaRepositorio vendaRepositorio = new VendaRepositorio();
     private ControladorTelaRaiz telaRaiz;
     private Venda venda;
+    private String origem = "DIA";
 
     @Override
     public void setTelaRaiz(ControladorTelaRaiz telaRaiz) {
@@ -39,6 +40,10 @@ public class ControladorDetalhesVenda implements PrecisaDaTelaRaiz {
     public void setVenda(Venda venda) { // MÉTODO: recebe a venda e preenche
         this.venda = venda;
         preencher();
+    }
+
+    public void setOrigem(String origem) { // MÉTODO: guarda de onde veio (dia ou mês)
+        this.origem = origem;
     }
 
     @FXML
@@ -83,6 +88,12 @@ public class ControladorDetalhesVenda implements PrecisaDaTelaRaiz {
 
     @FXML
     public void voltar() {
-        if (telaRaiz != null) telaRaiz.abrirRelatorioVendas();
+        if (telaRaiz != null) {
+            if ("MES".equals(origem)) {
+                telaRaiz.abrirRelatorioVendasMes();
+            } else {
+                telaRaiz.abrirRelatorioVendas(); // dia (padrão)
+            }
+        }
     }
 }

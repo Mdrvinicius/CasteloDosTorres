@@ -160,16 +160,19 @@ public class ControladorTelaRaiz {
     }
 
     public void abrirRelatorioVendasMes() { // MÉTODO: relatório de vendas do mês
-        trocarConteudo("/com/castelodostorres/sistema/TelaRelatorioVendasMes.fxml");
+        if (VerificadorSenha.verificar()) {
+            trocarConteudo("/com/castelodostorres/sistema/TelaRelatorioVendasMes.fxml");
+        }
     }
 
-    public void abrirDetalhesVenda(com.castelodostorres.sistema.modelo.Venda venda) { // MÉTODO: detalhes de uma venda
+    public void abrirDetalhesVenda(com.castelodostorres.sistema.modelo.Venda venda, String origem) { // origem: "DIA" ou "MES"
         try {
             javafx.fxml.FXMLLoader loader = new javafx.fxml.FXMLLoader(
                     getClass().getResource("/com/castelodostorres/sistema/TelaDetalhesVenda.fxml"));
             javafx.scene.Parent tela = loader.load();
             ControladorDetalhesVenda controlador = loader.getController();
             controlador.setTelaRaiz(this);
+            controlador.setOrigem(origem);
             controlador.setVenda(venda);
             painelRaiz.setCenter(tela);
         } catch (java.io.IOException e) {
@@ -179,8 +182,10 @@ public class ControladorTelaRaiz {
 
     @FXML
     public void abrirPagamentos() {
-        trocarConteudo("/com/castelodostorres/sistema/TelaPagamentos.fxml");
-        marcarAtivo(botaoPagamentos);
+        if (VerificadorSenha.verificar()) {
+            trocarConteudo("/com/castelodostorres/sistema/TelaPagamentos.fxml");
+            marcarAtivo(botaoPagamentos);
+        }
     }
 
     private void marcarAtivo(javafx.scene.control.Button ativo) { // MÉTODO: destaca só o botão da tela aberta
