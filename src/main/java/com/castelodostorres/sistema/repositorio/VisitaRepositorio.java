@@ -438,6 +438,10 @@ public class VisitaRepositorio {
                     visita.setDinheiroBruto(resultado.getDouble("dinheiro_bruto"));
                     visita.setPixBruto(resultado.getDouble("pix_bruto"));
                     visita.setDebitoBruto(resultado.getDouble("debito_bruto"));
+                    visita.setObservacoes(resultado.getString("observacoes"));
+                    visita.setMotivoCancelamento(resultado.getString("motivo_cancelamento"));
+                    visita.setMotivoReembolso(resultado.getString("motivo_reembolso"));
+
                     lista.add(visita);
                 }
             }
